@@ -1,0 +1,12 @@
+{
+  "extends": ["eslint-config-airbnb-es5"],
+  "rules": {
+    "comma-dangle": ["error", "never"],
+    "indent": ["error", 4],
+    "no-use-before-define": ["error", { "functions": false, "classes": false }],
+    "arrow-parens": ["error", "always"],
+    "object-curly-spacing": ["error", "never"],
+    "max-len": ["error", 120],
+    "no-param-reassign": ["error", { "props": false }]
+  }
+}

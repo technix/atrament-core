@@ -1,0 +1,35 @@
+{
+  "name": "atrament",
+  "version": "1.0.0",
+  "description": "Atrament - text adventure engine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server --inline --hot --content-base build/",
+    "build": "webpack -p --config webpack.config.js",
+    "build:dev": "webpack --config webpack.config.js",
+    "lint": "./node_modules/.bin/eslint ./src/ --ext .js"
+  },
+  "author": "Serhii Mozhaiskyi (sergei.mozhaisky@gmail.com)",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-eslint": "^7.1.1",
+    "css-loader": "^0.26.1",
+    "eslint": "^3.12.2",
+    "eslint-config-airbnb-es5": "^1.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-react": "^6.8.0",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.9.0",
+    "html-webpack-plugin": "^2.24.1",
+    "path": "^0.12.7",
+    "raw-loader": "^0.5.1",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.14.0",
+    "webpack-dev-server": "^1.16.2"
+  },
+  "dependencies": {
+    "inkjs": "^1.4.6",
+    "jquery": "^3.1.1"
+  }
+}

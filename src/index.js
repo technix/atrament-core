@@ -22,7 +22,7 @@ function startGame(storyContent) {
 }
 
 $(document).ready(function start() {
-    $.get('/example.ink.json').then(function done(content) {
+    $.get('/intercept.ink.json').then(function done(content) {
         startGame(content);
     });
 });

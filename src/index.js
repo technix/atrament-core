@@ -2,7 +2,7 @@
 var $ = require('jquery');
 
 var atrament = require('./atrament');
-var ui = require('./theme/default');
+var ui = require('./theme/paper');
 
 function startGame(storyContent) {
     var story = atrament.init(storyContent);

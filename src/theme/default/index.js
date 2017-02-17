@@ -27,7 +27,9 @@ var UI = {
         var choices = $();
         scene.choices.forEach(function renderChoice(choice) {
             choices = choices.add(
-                $('<div class="choice-wrapper">').html(
+                $('<div')
+                .addClass('choice-wrapper')
+                .html(
                     '<a href="#" class="choice" data-id="' +  choice.id + '">' + choice.text + '</a>'
                 )
             );

@@ -1,32 +1,29 @@
-var AtramentStory = require('./story.js');
+import AtramentStory from './story';
 
-var Atrament = {
-    ui: null,
-    story: null,
-    init: function init(storyContent) {
-        this.story = new AtramentStory(storyContent);
-        return this;
-    },
-    setUI: function setUI(ui) {
-        this.ui = ui;
-        return this;
-    },
-    startGame: function startGame() {
-        var self = this;
-
-        function choiceCallback(id) {
-            self.story.makeChoice(id);
-            continueStory();
-        }
-
-        function continueStory() {
-            var scene = self.story.getScene();
-            self.ui.renderScene(scene);
-        }
-
-        self.ui.init(choiceCallback);
-        continueStory();
+class Atrament {
+    constructor(storyContent) {
+        this.atramentStory = new AtramentStory(storyContent);
     }
-};
 
-module.exports = Atrament;
+    set ui(uiObj) {
+        this.UI = uiObj;
+    }
+
+    startGame() {
+        this.UI.init(this.choiceCallback.bind(this));
+        this.continueStory();
+    }
+
+    choiceCallback(id) {
+        this.atramentStory.makeChoice(id);
+        this.continueStory();
+    }
+
+    continueStory() {
+        const scene = this.atramentStory.getScene();
+        this.UI.renderScene(scene);
+    }
+
+}
+
+export default Atrament;

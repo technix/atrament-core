@@ -1,11 +1,12 @@
+/* global document */
+import $ from 'jquery';
+import Atrament from './atrament';
+import UI from './theme/paper';
 
-var $ = require('jquery');
-
-var atrament = require('./atrament');
-var ui = require('./theme/paper');
-
-$(document).ready(function start() {
-    $.get('/intercept.ink.json').then(function done(content) {
-        atrament.init(content).setUI(ui).startGame();
+$(document).ready(() => {
+    $.get('/intercept.ink.json').then((content) => {
+        const atrament = new Atrament(content);
+        atrament.ui = UI;
+        atrament.startGame();
     });
 });

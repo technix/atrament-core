@@ -1,4 +1,4 @@
-import {Story} from 'inkjs/dist/ink-es2015';
+import {Story} from 'inkjs/dist/ink';
 
 class AtramentStory {
     constructor(storyContent) {

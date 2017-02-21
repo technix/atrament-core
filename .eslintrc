@@ -1,5 +1,6 @@
 {
-  "extends": ["eslint-config-airbnb-es5"],
+  "parser": "babel-eslint",
+  "extends": ["airbnb/base"],
   "rules": {
     "comma-dangle": ["error", "never"],
     "indent": ["error", 4],

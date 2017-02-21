@@ -44,7 +44,6 @@ export default (env = {production: false}) => {
             loaders: [
                 {
                     test: /\.js$/,
-                    exclude: /node_modules/,
                     loader: 'babel-loader?presets[]=es2015'
                 },
                 {

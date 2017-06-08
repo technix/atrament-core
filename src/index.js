@@ -6,10 +6,15 @@ import UI from './theme/paper';
 const atrament = new Atrament('intercept');
 window.Atrament = atrament;
 
+function choiceCallback(id) {
+    atrament.choice(id);
+    return atrament.scene();
+}
+
 $(document).ready(() => {
     $.get('/intercept.ink.json').then((content) => {
+        UI.init(choiceCallback);
         atrament.story = content;
-        atrament.ui = UI;
-        atrament.startGame();
+        UI.renderScene(atrament.scene());
     });
 });

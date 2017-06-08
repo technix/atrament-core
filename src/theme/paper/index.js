@@ -8,13 +8,14 @@ const config = {
 
 const UI = {
     init: function init(choiceCallback) {
+        const self = this;
         $('#atrament-container').append('<div id="text-container"><div id="text-stub"></div></div>');
         $('#atrament-container').append('<div id="choice-container"></div>');
         $('#choice-container').on('click', 'a', function choiceSelected(e) {
             e.preventDefault();
             $('#choice-container').html('');
             const id = $(this).attr('data-id');
-            choiceCallback(id);
+            self.renderScene(choiceCallback(id));
         });
     },
     renderScene: function renderScene(scene) {

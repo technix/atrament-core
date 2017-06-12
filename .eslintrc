@@ -1,7 +1,9 @@
 {
   "parser": "babel-eslint",
   "extends": ["airbnb/base"],
+  "plugins": ["vue"],
   "rules": {
+    "vue/jsx-uses-vars": 2,
     "comma-dangle": ["error", "never"],
     "indent": ["error", 4],
     "no-use-before-define": ["error", { "functions": false, "classes": false }],

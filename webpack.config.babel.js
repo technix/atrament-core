@@ -43,6 +43,10 @@ export default (env = {production: false}) => {
         module: {
             loaders: [
                 {
+                    test: /\.vue$/,
+                    loader: 'vue-loader'
+                },
+                {
                     test: /\.js$/,
                     loader: 'babel-loader?presets[]=es2015'
                 },

@@ -48,14 +48,17 @@ class Atrament {
     }
 
     save() {
-        const state = this.atramentStory.saveState();
-        this.storage.setItem(this.gameId, JSON.stringify(state));
+        const gameState = {
+            state: this.atramentStory.saveState(),
+            story: this.$story
+        };
+        this.storage.setItem(this.gameId, JSON.stringify(gameState));
     }
 
     load() {
-        const state = JSON.parse(this.storage.getItem(this.gameId));
-        this.atramentStory.loadState(state);
-        this.continueStory();
+        const gameState = JSON.parse(this.storage.getItem(this.gameId));
+        this.$story = gameState.story;
+        this.atramentStory.loadState(gameState.state);
     }
 }
 

@@ -1,9 +1,13 @@
 <template>
+<div class="wrapper">
     <div class="atrament-scroll">
         <div class="atrament-container">
             <story-component :story="story"></story-component>
         </div>
     </div>
+<button v-on:click="saveGame">Save</button>
+<button v-on:click="loadGame">Load</button>
+</div>
 </template>
 
 <script>
@@ -13,6 +17,17 @@ export default {
     props: ['story'],
     components: {
         'story-component': Story
+    },
+    methods: {
+        saveGame() {
+            this.$atrament.save();
+            console.log('game is saved');
+        },
+        loadGame() {
+            this.$atrament.load();
+            this.story = this.$atrament.getStory();
+            console.log('game is loaded');
+        }
     }
 };
 </script>

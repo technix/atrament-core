@@ -1,46 +1,46 @@
 <template>
     <div class="atrament-scroll">
-        <div class="atrament-container"></div>
+        <div class="atrament-container">
+            <story-component :story="story"></story-component>
+        </div>
     </div>
 </template>
 
 <script>
 /* global fetch */
 import 'whatwg-fetch';
-import Atrament from '../atrament';
 import Story from './story.vue';
-
-const atrament = new Atrament('intercept');
-this.Atrament = atrament;
-
-function choiceCallback(id) {
-    atrament.choice(id);
-    return atrament.scene();
-}
 
 export default {
     data() {
         return {
-            scene: {},
-            choiceCallback
+            story: []
         };
     },
     components: {
         'story-component': Story
     },
     beforeMount() {
-        fetch('/intercept.ink.json').then(
-            (content) => {
-                atrament.story = content;
-                this.scene = atrament.scene();
-            }
-        );
+        fetch('/intercept.ink.json')
+            .then((content) => content.json())
+            .then((json) => {
+                this.$atrament.story = json;
+                this.story = this.$atrament.startStory();
+            });
+    },
+    watch: {
+        story: function story() {
+            return this.$atrament.getStory();
+        }
     }
 };
-
 </script>
 
 <style>
+::-webkit-scrollbar {
+    display: none;
+}
+
 .atrament-scroll {
     width: 200px;
     height: 400px;

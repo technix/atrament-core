@@ -26,6 +26,11 @@ export default (env = {production: false}) => {
                     except: ['Container']
                 }
             }));
+            wpPlugins.push(new webpack.DefinePlugin({
+                'process.env': {
+                    NODE_ENV: '"production"'
+                }
+            }));
         }
         return wpPlugins;
     })();

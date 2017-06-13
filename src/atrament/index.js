@@ -5,10 +5,35 @@ class Atrament {
     constructor(gameId) {
         this.storage = window.localStorage;
         this.gameId = gameId;
+        this.sceneId = 0;
+        this.$story = [];
     }
 
     set story(storyContent) {
         this.atramentStory = new AtramentStory(storyContent);
+    }
+
+    getStory() {
+        return this.$story;
+    }
+
+    startStory() {
+        this.$story = [];
+        return this.updateStory();
+    }
+
+    continueStory(choiceId) {
+        this.choice(choiceId);
+        return this.updateStory();
+    }
+
+    updateStory() {
+        this.sceneId += 1;
+        const scene = this.scene();
+        scene.id = this.sceneId;
+        scene.isActive = true;
+        this.$story.push(scene);
+        return this.$story;
     }
 
     scene() {
@@ -17,10 +42,6 @@ class Atrament {
 
     choice(id) {
         this.atramentStory.makeChoice(id);
-    }
-
-    continue() {
-        return this.getScene();
     }
 
     save() {

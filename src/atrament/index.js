@@ -2,14 +2,13 @@
 import AtramentStory from './story';
 
 class Atrament {
-    constructor(gameId) {
+    constructor() {
         this.storage = window.localStorage;
-        this.gameId = gameId;
-        this.sceneId = 0;
-        this.$story = [];
     }
 
-    set story(storyContent) {
+    initStory(gameId, storyContent) {
+        this.$story = [];
+        this.gameId = gameId;
         this.atramentStory = new AtramentStory(storyContent);
     }
 
@@ -22,18 +21,22 @@ class Atrament {
         return this.updateStory();
     }
 
-    continueStory(choiceId) {
+    continueStory(sceneId, choiceId) {
+        this.$story[sceneId].isActive = false;
         this.choice(choiceId);
         return this.updateStory();
     }
 
     updateStory() {
-        this.sceneId += 1;
         const scene = this.scene();
-        scene.id = this.sceneId;
+        scene.id = this.$story.length;
         scene.isActive = true;
         this.$story.push(scene);
         return this.$story;
+    }
+
+    resetStory() {
+        this.$story = [];
     }
 
     scene() {

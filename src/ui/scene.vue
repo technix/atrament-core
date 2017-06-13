@@ -14,8 +14,7 @@ export default {
     props: ['scene'],
     methods: {
         select(choice) {
-            this.scene.isActive = false;
-            this.$atrament.continueStory(choice.id);
+            this.$atrament.continueStory(this.scene.id, choice.id);
         }
     }
 };

@@ -23,28 +23,25 @@ class Atrament {
 
     continueStory(sceneId, choiceId) {
         this.$story[sceneId].isActive = false;
-        this.choice(choiceId);
+        this.atramentStory.makeChoice(choiceId);
         return this.updateStory();
     }
 
     updateStory() {
-        const scene = this.scene();
-        scene.id = this.$story.length;
-        scene.isActive = true;
+        const scene = this.nextScene();
         this.$story.push(scene);
         return this.$story;
     }
 
+    nextScene() {
+        const scene = this.atramentStory.getScene();
+        scene.id = this.$story.length;
+        scene.isActive = true;
+        return scene;
+    }
+
     resetStory() {
         this.$story = [];
-    }
-
-    scene() {
-        return this.atramentStory.getScene();
-    }
-
-    choice(id) {
-        this.atramentStory.makeChoice(id);
     }
 
     save() {

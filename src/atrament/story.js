@@ -12,7 +12,8 @@ class AtramentStory {
             choices: []
         };
         while (this.story.canContinue) {
-            scene.text.push(this.story.Continue()); // eslint-disable-line new-cap
+            this.story.Continue();
+            scene.text.push(this.story.currentText); // eslint-disable-line new-cap
             scene.tags.push(this.story.currentTags); // eslint-disable-line new-cap
         }
         this.story.currentChoices.forEach((choice, index) => {

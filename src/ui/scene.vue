@@ -23,12 +23,22 @@ export default {
 <style>
 .text-wrapper {
     padding: 10px;
-    border-bottom: 1px dashed #CCCCCC;
+    border-top: 1px dashed #CCCCCC;
 }
 
 .choice-wrapper {
+    text-align: left;
+    padding-top: 0px;
     padding: 10px;
-    text-align:center;
+}
+
+.choice-wrapper a {
+    display: block;
+    width: 80%;
+    border-top: 1px solid #EEEEEE;
+    padding: 4px;
+    margin-bottom: 10px;
+    color: #333399;
 }
 
 .choice {

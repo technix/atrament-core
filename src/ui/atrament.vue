@@ -47,9 +47,11 @@ export default {
 }
 
 .atrament-container {
+    display: flex;
     width: 100%;
     height: 100%;
     overflow-y: scroll;
     position: relative;
+    font-family: Georgia, sans-serif;
 }
 </style>

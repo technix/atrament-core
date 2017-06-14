@@ -16,5 +16,8 @@ export default {
 </script>
 
 <style>
-
+.story-container {
+    width: 100%;
+    margin: auto;
+}
 </style>

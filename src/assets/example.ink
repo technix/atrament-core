@@ -1,3 +1,19 @@
+- Here we go.
+
+* Go!
+* Move on!
+
+-
+
+// test of splash scene
+# scene: splash
+# bg: background-blue.jpg
+
+* [%% "text":"Target 1", "img":"", "x":100, "y":100]
+* [%% "text":"Target 2", "img":"", "x":150, "y":150]
+* [%% "text":"Target 3", "img":"", "x":200, "y":200]
+
+
 - I looked at Monsieur Fogg 
 *   ... and I could contain myself no longer.
     'What is the purpose of our journey, Monsieur?'

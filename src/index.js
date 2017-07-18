@@ -10,7 +10,7 @@ window.Atrament = atrament; // FIXME: global Atrament object for debugging purpo
 Vue.prototype.$atrament = atrament;
 const app = new Vue(AtramentUI).$mount('#atrament-app');
 
-fetch('/intercept.ink.json')
+fetch('/example.ink.json')
     .then((content) => content.json())
     .then((json) => {
         atrament.initStory('intercept', json);

@@ -1,5 +1,15 @@
 import {Story} from 'inkjs/dist/ink-es2015';
 
+function parseTags(tags) {
+    const tagsObj = {};
+    tags.forEach((item) => {
+        const line = item.split(':');
+        tagsObj[line[0].trim()] = line[1].trim();
+    });
+    return tagsObj;
+}
+
+
 class AtramentStory {
     constructor(storyContent) {
         this.story = new Story(storyContent);
@@ -7,17 +17,26 @@ class AtramentStory {
 
     getScene() {
         const scene = {
+            type: 'text',
             text: [],
             tags: [],
             choices: []
         };
         while (this.story.canContinue) {
             this.story.Continue();
+            const tags = parseTags(this.story.currentTags);
+            if (tags.scene) {
+                scene.type = tags.scene;
+            }
             scene.text.push(this.story.currentText); // eslint-disable-line new-cap
-            scene.tags.push(this.story.currentTags); // eslint-disable-line new-cap
+            scene.tags.push(tags); // eslint-disable-line new-cap
         }
-        this.story.currentChoices.forEach((choice, index) => {
-            scene.choices.push({id: index, text: choice.text});
+        this.story.currentChoices.forEach((choiceObj, id) => {
+            let choice = choiceObj.text;
+            if (choice.substr(0, 2) === '%%') {
+                choice = JSON.parse(`{${choice.slice(2)}}`);
+            }
+            scene.choices.push({id, choice});
         });
         return scene;
     }

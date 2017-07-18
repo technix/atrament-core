@@ -4,7 +4,7 @@
         <p v-for="paragraph in scene.text" v-html="paragraph"></p>
     </div>
     <div class="choice-wrapper" v-if="scene.isActive">
-        <a href="#" v-on:click="select(choice)" v-for="choice in scene.choices" class="choice" v-html="choice.text"></a>
+        <a href="#" v-on:click="select(choice)" v-for="choice in scene.choices" class="choice" v-html="choice.choice"></a>
     </div>
 </div>
 </template>

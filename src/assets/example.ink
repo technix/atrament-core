@@ -1,4 +1,4 @@
-- Here we go.
+- Here we <b>go</b>.
 
 * Go!
 * Move on!

@@ -17,9 +17,10 @@ export default {
     computed: {
         choiceStyle: function () {
             const styles = [];
-            if (this.scene.tags['styleChoices']) {
-                this.scene.tags.styleChoices.styles.forEach((s) => {
-                    styles.push(Object.assign({},this.scene.tags.styleAllChoices, s));
+            const t = this.scene.tags;
+            if (t['styleChoices']) {
+                t.styleChoices.styles.forEach((s) => {
+                    styles.push(Object.assign({}, t.styleAllChoices, s));
                 });
             }
             return styles;

@@ -6,12 +6,15 @@
 -
 
 // test of splash scene
+# tag_without_content
 # scene: splash
-# bg: background-blue.jpg
+# styleScene: {"background":"url(background-blue.jpg)"}
+# styleAllChoices: {"background":"\#999999", "padding":"10px"}
+# styleChoices: {"styles":[{"top":"100px", "left":"100px"}, {"top":"150px", "left":"150px"}, {"top":"200px", "left":"200px"}]}
 
-* [%% "text":"Target 1", "img":"", "x":100, "y":100]
-* [%% "text":"Target 2", "img":"", "x":150, "y":150]
-* [%% "text":"Target 3", "img":"", "x":200, "y":200]
+* [Target 1]
+* [Target 2]
+* [Target 3]
 
 
 - I looked at Monsieur Fogg 

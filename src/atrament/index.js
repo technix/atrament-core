@@ -26,6 +26,9 @@ class Atrament {
         this.$story.forEach((item) => {
             if (item.id === sceneId) {
                 item.isActive = false;
+                if (item.type !== 'text') {
+                    this.resetStory();
+                }
             }
         });
         this.atramentStory.makeChoice(choiceId);

@@ -4,7 +4,12 @@ function parseTags(tags) {
     const tagsObj = {};
     tags.forEach((item) => {
         const line = item.split(':');
-        tagsObj[line[0].trim()] = line[1].trim();
+        const key = line[0].trim();
+        let content = line.slice(1).join(':').trim();
+        if (content.substr(0, 1) === '{') {
+            content = JSON.parse(content); // this is JSON
+        }
+        tagsObj[key] = content;
     });
     return tagsObj;
 }
@@ -19,24 +24,22 @@ class AtramentStory {
         const scene = {
             type: 'text',
             text: [],
-            tags: [],
+            tags: {},
             choices: []
         };
         while (this.story.canContinue) {
             this.story.Continue();
+            // add story text
+            scene.text.push(this.story.currentText); // eslint-disable-line new-cap
+            // add tags
             const tags = parseTags(this.story.currentTags);
             if (tags.scene) {
                 scene.type = tags.scene;
             }
-            scene.text.push(this.story.currentText); // eslint-disable-line new-cap
-            scene.tags.push(tags); // eslint-disable-line new-cap
+            scene.tags = Object.assign({}, scene.tags, tags);
         }
-        this.story.currentChoices.forEach((choiceObj, id) => {
-            let choice = choiceObj.text;
-            if (choice.substr(0, 2) === '%%') {
-                choice = JSON.parse(`{${choice.slice(2)}}`);
-            }
-            scene.choices.push({id, choice});
+        this.story.currentChoices.forEach((choice, id) => {
+            scene.choices.push({id, choice: choice.text});
         });
         return scene;
     }

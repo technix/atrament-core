@@ -1,5 +1,5 @@
 /* global window */
-import AtramentStory from './story';
+import atramentStory from './story';
 
 class Atrament {
     constructor() {
@@ -10,7 +10,7 @@ class Atrament {
     initStory(gameId, storyContent) {
         this.$story = [];
         this.gameId = gameId;
-        this.atramentStory = new AtramentStory(storyContent);
+        atramentStory.init(storyContent);
     }
 
     getStory() {
@@ -31,7 +31,7 @@ class Atrament {
                 }
             }
         });
-        this.atramentStory.makeChoice(choiceId);
+        atramentStory.makeChoice(choiceId);
         return this.updateStory();
     }
 
@@ -45,7 +45,7 @@ class Atrament {
     }
 
     nextScene() {
-        const scene = this.atramentStory.getScene();
+        const scene = atramentStory.getScene();
         scene.id = this.sceneId;
         this.sceneId += 1;
         scene.isActive = true;
@@ -59,7 +59,7 @@ class Atrament {
 
     save() {
         const gameState = {
-            state: this.atramentStory.saveState(),
+            state: atramentStory.saveState(),
             story: this.$story
         };
         this.storage.setItem(this.gameId, JSON.stringify(gameState));
@@ -68,7 +68,7 @@ class Atrament {
     load() {
         const gameState = JSON.parse(this.storage.getItem(this.gameId));
         this.$story = gameState.story;
-        this.atramentStory.loadState(gameState.state);
+        atramentStory.loadState(gameState.state);
     }
 }
 

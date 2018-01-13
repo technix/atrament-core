@@ -76,9 +76,27 @@ class AtramentStory {
         return this.story.variablesState[name];
     }
 
+    // get all global variable values
+    getVars() {
+        const vState = this.story.variablesState;
+        const vars = {};
+        // eslint-disable-next-line no-underscore-dangle
+        Object.keys(vState._globalVariables).forEach((k) => {
+            vars[k] = vState[k];
+        });
+        return vars;
+    }
+
     // set variable value
     setVar(name, value) {
         this.story.variablesState[name] = value;
+    }
+
+    // batch set variables values
+    setVars(vars) {
+        Object.keys(vars).forEach((k) => {
+            this.story.variablesState[k] = vars[k];
+        });
     }
 
     // get visit count

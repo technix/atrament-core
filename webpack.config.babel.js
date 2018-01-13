@@ -53,7 +53,7 @@ export default (env = {production: false}) => {
                 },
                 {
                     test: /\.js$/,
-                    loader: 'babel-loader?presets[]=es2015'
+                    loader: 'babel-loader'
                 },
                 {
                     test: /\.css/,

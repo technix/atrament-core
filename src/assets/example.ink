@@ -8,9 +8,9 @@
 // test of splash scene
 # tag_without_content
 # scene: splash
-# styleScene: {"background":"url(background-blue.jpg)"}
+# styleScene: {"background-image":"url(map.png)"}
 # styleAllChoices: {"background":"\#999999", "padding":"10px"}
-# styleChoices: {"styles":[{"top":"100px", "left":"100px"}, {"top":"150px", "left":"150px"}, {"top":"200px", "left":"200px"}]}
+# styleChoices: {"styles":[{"top":"90px", "left":"190px"}, {"top":"275px", "left":"215px"}, {"top":"460px", "left":"120px"}]}
 
 * [Target 1]
 * [Target 2]

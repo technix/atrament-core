@@ -52,6 +52,6 @@ export default {
     height: 100%;
     overflow-y: scroll;
     position: relative;
-    font-family: Georgia, sans-serif;
+    font-family: 'Lora', sans-serif;
 }
 </style>

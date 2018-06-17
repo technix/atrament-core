@@ -6,6 +6,7 @@ const atrament = new Atrament();
 
 const story = fs.readFileSync('intercept.ink.json');
 const storyJson = JSON.parse(story);
+
 atrament.initStory('intercept', storyJson);
 
 const atramentstory = atrament.startStory();

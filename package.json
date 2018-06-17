@@ -25,6 +25,6 @@
     "webpack": "3.10.0"
   },
   "dependencies": {
-    "inkjs": "1.5.2"
+    "inkjs": "1.6.0"
   }
 }

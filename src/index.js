@@ -1,12 +1,22 @@
-/* global window */
 import Episode from './episode';
 
+function stub(id) {
+  return new Promise((resolve) => {
+    console.warn(`${id} is not implemented`);
+    resolve(false);
+  });
+}
+
 class Atrament {
-  constructor(gameConfig, fileLoader) {
-    this.storage = {};// window.localStorage;
+  constructor(gameConfig, storyLoader, saveLoader) {
     this.game = gameConfig;
     this.currentEpisode = {};
-    this.fileLoader = fileLoader;
+    this.storyLoader = storyLoader;
+    this.saveLoader = saveLoader;
+    this.events = {
+      saveGame: () => stub('saveGame'),
+      loadGame: () => stub('loadGame')
+    };
   }
 
   startGame() {
@@ -26,12 +36,33 @@ class Atrament {
   }
 
   startEpisode(filename) {
-    return this.fileLoader(filename).then((data) => {
+    return this.storyLoader(filename).then((data) => {
       const storyContent = JSON.parse(data);
-      this.currentEpisode = new Episode(storyContent);
+      this.currentEpisode = new Episode(filename, storyContent);
       this.currentEpisode.startEpisode();
       return filename;
     });
+  }
+
+  getGameState() {
+    return {
+      episode: this.currentEpisode.getState()
+    };
+  }
+
+  // register event handler
+  on(eventName, eventHandler) {
+    this.events[eventName] = eventHandler;
+  }
+
+  // dispatch event
+  dispatch(eventName, eventParams) {
+    let params = eventParams;
+    if (eventName === 'saveGame') {
+      // pass game state
+      params = this.getGameState();
+    }
+    return this.events[eventName](params);
   }
 
 /*
@@ -50,7 +81,6 @@ class Atrament {
     atramentStory.loadState(gameState.state);
   }
 */
-
 }
 
 module.exports = Atrament;

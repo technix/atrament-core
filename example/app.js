@@ -19,6 +19,18 @@ function fileLoader(filename) {
 
 const atrament = new Atrament(gameConfig, fileLoader);
 
+// promise-based file saver
+atrament.on('saveGame', (data) => new Promise((resolve) => {
+  fs.writeFile('save.json', JSON.stringify(data), () => {
+    console.log('Game saved');
+    resolve();
+  });
+}));
+
+setTimeout(() => {
+  atrament.dispatch('saveGame');
+}, 2000);
+
 atrament.startGame().then(renderScene);
 
 function renderScene() {

@@ -1,7 +1,8 @@
 import atramentStory from './story';
 
 class Episode {
-  constructor(storyContent) {
+  constructor(filename, storyContent) {
+    this.id = filename;
     this.$episode = [];
     this.sceneId = -1;
     atramentStory.init(storyContent);
@@ -24,6 +25,11 @@ class Episode {
 
   // internal methods
 
+  // eslint-disable-next-line class-methods-use-this
+  getStory() {
+    return atramentStory;
+  }
+
   getEpisode() {
     return this.$episode;
   }
@@ -43,6 +49,15 @@ class Episode {
     scene.isActive = true;
     scene.id = this.sceneId;
     this.$episode.push(scene);
+  }
+
+  // get state snapshot
+  getState() {
+    return {
+      filename: this.id,
+      episode: this.$episode,
+      story: JSON.parse(atramentStory.saveState())
+    };
   }
 }
 

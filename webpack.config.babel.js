@@ -26,7 +26,7 @@ export default (env = {production: false}) => {
       app: ['./src/index.js']
     },
     output: {
-      path: path.resolve(__dirname, 'build'),
+      path: path.resolve(__dirname, env.production ? 'dist' : 'build'),
       publicPath: '/',
       filename: 'atrament.js',
       library: 'Atrament',

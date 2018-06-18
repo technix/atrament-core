@@ -1,21 +1,19 @@
 import Episode from './episode';
 
 function stub(id) {
-  return new Promise((resolve) => {
-    console.warn(`${id} is not implemented`);
-    resolve(false);
+  return new Promise(() => {
+    throw new Error(`${id} is not implemented`);
   });
 }
 
 class Atrament {
-  constructor(gameConfig, storyLoader, saveLoader) {
+  constructor(gameConfig) {
     this.game = gameConfig;
     this.currentEpisode = {};
-    this.storyLoader = storyLoader;
-    this.saveLoader = saveLoader;
     this.events = {
-      saveGame: () => stub('saveGame'),
-      loadGame: () => stub('loadGame')
+      loadStory: () => stub('loadStory'),
+      loadGame: () => stub('loadGame'),
+      saveGame: () => stub('saveGame')
     };
   }
 
@@ -28,7 +26,7 @@ class Atrament {
 
   loadGame(slotId) {
     let gameState = {};
-    return this.saveLoader(slotId)
+    return this.dispatch('loadGame', slotId)
       .then((data) => {
         gameState = JSON.parse(data);
         return this.loadEpisode(gameState.episode.filename);
@@ -60,7 +58,7 @@ class Atrament {
   }
 
   loadEpisode(filename) {
-    return this.storyLoader(filename).then((data) => {
+    return this.dispatch('loadStory', filename).then((data) => {
       const storyContent = JSON.parse(data);
       this.currentEpisode = new Episode(filename, storyContent);
     });

@@ -17,9 +17,10 @@ function fileLoader(filename) {
   });
 }
 
-const atrament = new Atrament(gameConfig, fileLoader, fileLoader);
+const atrament = new Atrament(gameConfig);
 
-// promise-based file saver
+atrament.on('loadStory', (filename) => fileLoader(filename));
+atrament.on('loadGame', (slotId) => fileLoader(slotId));
 atrament.on('saveGame', (p) => new Promise((resolve) => {
   fs.writeFile(p.id, JSON.stringify(p.data), () => {
     console.log('Game saved');

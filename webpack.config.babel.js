@@ -6,6 +6,7 @@ export default (env = {production: false}) => {
     const wpPlugins = [];
     if (env.production) {
       wpPlugins.push(new webpack.optimize.UglifyJsPlugin({
+        sourceMap: true,
         mangle: {
           except: ['Container']
         }

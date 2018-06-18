@@ -9,8 +9,8 @@ class Episode {
   }
 
   // public methods
-  startEpisode() {
-    this.resetEpisode();
+  start() {
+    this.reset();
     this.nextScene();
   }
 
@@ -34,7 +34,7 @@ class Episode {
     return this.$episode;
   }
 
-  resetEpisode() {
+  reset() {
     this.$episode.splice(0);
   }
 

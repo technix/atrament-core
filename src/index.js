@@ -21,7 +21,9 @@ class Atrament {
 
   startGame() {
     // load first episode
-    return this.startEpisode(this.game.episodes[0]);
+    return this.loadEpisode(this.game.episodes[0]).then(() => {
+      this.currentEpisode.start();
+    });
   }
 
   getCurrentScene() {
@@ -35,12 +37,10 @@ class Atrament {
     });
   }
 
-  startEpisode(filename) {
+  loadEpisode(filename) {
     return this.storyLoader(filename).then((data) => {
       const storyContent = JSON.parse(data);
       this.currentEpisode = new Episode(filename, storyContent);
-      this.currentEpisode.startEpisode();
-      return filename;
     });
   }
 
@@ -57,14 +57,18 @@ class Atrament {
 
   // dispatch event
   dispatch(eventName, eventParams) {
-    let params = eventParams;
-    if (eventName === 'saveGame') {
-      // pass game state
-      params = this.getGameState();
-    }
-    return this.events[eventName](params);
+    return this.events[eventName](eventParams);
   }
 
+  saveGame(slotId) {
+    return this.dispatch(
+      'saveGame',
+      {
+        id: slotId,
+        data: this.getGameState()
+      }
+    );
+  }
 /*
 
   save() {

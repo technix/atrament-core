@@ -17,19 +17,21 @@ function fileLoader(filename) {
   });
 }
 
-const atrament = new Atrament(gameConfig, fileLoader);
+const atrament = new Atrament(gameConfig, fileLoader, fileLoader);
 
 // promise-based file saver
-atrament.on('saveGame', (data) => new Promise((resolve) => {
-  fs.writeFile('save.json', JSON.stringify(data), () => {
+atrament.on('saveGame', (p) => new Promise((resolve) => {
+  fs.writeFile(p.id, JSON.stringify(p.data), () => {
     console.log('Game saved');
     resolve();
   });
 }));
 
+
 setTimeout(() => {
-  atrament.dispatch('saveGame');
+  atrament.saveGame('savefile.json');
 }, 2000);
+
 
 atrament.startGame().then(renderScene);
 

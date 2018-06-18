@@ -2,18 +2,27 @@ const fs = require('fs');
 const inquirer = require('inquirer'); // eslint-disable-line import/no-extraneous-dependencies
 const Atrament = require('../build/atrament');
 
-const atrament = new Atrament();
+const gameConfig = {
+  episodes: [
+    'intercept.ink.json'
+  ]
+};
 
-const story = fs.readFileSync('intercept.ink.json');
-const storyJson = JSON.parse(story);
+// Promise-based file loader, return file contents when resolved
+function fileLoader(filename) {
+  return new Promise((resolve) => {
+    fs.readFile(filename, (err, data) => {
+      resolve(data);
+    });
+  });
+}
 
-atrament.initStory('intercept', storyJson);
+const atrament = new Atrament(gameConfig, fileLoader);
 
-const atramentstory = atrament.startStory();
-choiceScreen(atramentstory);
+atrament.startGame().then(renderScene);
 
-function choiceScreen(sceneList) {
-  const scene = sceneList[sceneList.length - 1];
+function renderScene() {
+  const scene = atrament.getCurrentScene();
   console.log(scene.text.join(''));
   const choices = scene.choices.map(
     (t) => ({name: t.choice, value: t.id})
@@ -26,6 +35,6 @@ function choiceScreen(sceneList) {
       choices
     }
   ]).then((v) => {
-    choiceScreen(atrament.continueStory(scene.id, v.choice));
+    atrament.makeChoice(v.choice).then(renderScene);
   });
 }

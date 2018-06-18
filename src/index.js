@@ -26,6 +26,28 @@ class Atrament {
     });
   }
 
+  loadGame(slotId) {
+    let gameState = {};
+    return this.saveLoader(slotId)
+      .then((data) => {
+        gameState = JSON.parse(data);
+        return this.loadEpisode(gameState.episode.filename);
+      })
+      .then(() => {
+        this.currentEpisode.restoreState(gameState.episode);
+      });
+  }
+
+  saveGame(slotId) {
+    return this.dispatch(
+      'saveGame',
+      {
+        id: slotId,
+        data: this.getGameState()
+      }
+    );
+  }
+
   getCurrentScene() {
     return this.currentEpisode.getCurrentScene();
   }
@@ -59,32 +81,6 @@ class Atrament {
   dispatch(eventName, eventParams) {
     return this.events[eventName](eventParams);
   }
-
-  saveGame(slotId) {
-    return this.dispatch(
-      'saveGame',
-      {
-        id: slotId,
-        data: this.getGameState()
-      }
-    );
-  }
-/*
-
-  save() {
-    const gameState = {
-      state: atramentStory.saveState(),
-      story: this.$story
-    };
-    this.storage.setItem(this.gameId, JSON.stringify(gameState));
-  }
-
-  load() {
-    const gameState = JSON.parse(this.storage.getItem(this.gameId));
-    this.$story = gameState.story;
-    atramentStory.loadState(gameState.state);
-  }
-*/
 }
 
 module.exports = Atrament;

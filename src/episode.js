@@ -59,6 +59,13 @@ class Episode {
       story: JSON.parse(atramentStory.saveState())
     };
   }
+
+  // restore
+  restoreState(state) {
+    this.id = state.filename;
+    this.$episode = state.episode;
+    atramentStory.loadState(JSON.stringify(state.story));
+  }
 }
 
 export default Episode;

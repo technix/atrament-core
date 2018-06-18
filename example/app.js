@@ -27,13 +27,15 @@ atrament.on('saveGame', (p) => new Promise((resolve) => {
   });
 }));
 
-
+/*
 setTimeout(() => {
   atrament.saveGame('savefile.json');
 }, 2000);
+*/
 
+atrament.loadGame('save.json').then(renderScene);
 
-atrament.startGame().then(renderScene);
+// atrament.startGame().then(renderScene);
 
 function renderScene() {
   const scene = atrament.getCurrentScene();

@@ -1,11 +1,23 @@
 import atramentStory from './story';
 
 class Episode {
-  constructor(filename, storyContent) {
+  constructor(filename, storyContent, inkFunctions, inkObservers) {
     this.id = filename;
     this.$episode = [];
     this.sceneId = -1;
     atramentStory.init(storyContent);
+    // register ink functions
+    if (inkFunctions) {
+      Object.keys(inkFunctions).forEach((fn) => {
+        atramentStory.bindFunction(fn, inkFunctions[fn]);
+      });
+    }
+    // register ink variable observers
+    if (inkObservers) {
+      Object.keys(inkObservers).forEach((ob) => {
+        atramentStory.observeVar(ob, inkObservers[ob]);
+      });
+    }
   }
 
   // public methods

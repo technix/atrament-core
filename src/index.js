@@ -15,6 +15,8 @@ class Atrament {
       loadGame: () => stub('loadGame'),
       saveGame: () => stub('saveGame')
     };
+    this.inkFunctions = {};
+    this.inkObservers = {};
   }
 
   startGame() {
@@ -60,7 +62,7 @@ class Atrament {
   loadEpisode(filename) {
     return this.dispatch('loadStory', filename).then((data) => {
       const storyContent = JSON.parse(data);
-      this.currentEpisode = new Episode(filename, storyContent);
+      this.currentEpisode = new Episode(filename, storyContent, this.inkFunctions, this.inkObservers);
     });
   }
 
@@ -78,6 +80,20 @@ class Atrament {
   // dispatch event
   dispatch(eventName, eventParams) {
     return this.events[eventName](eventParams);
+  }
+
+  // register functions for ink story
+  registerFunctions(fnList) {
+    Object.keys(fnList).forEach((fn) => {
+      this.inkFunctions[fn] = fnList[fn];
+    });
+  }
+
+  // register observers for ink story variables
+  registerObservers(obList) {
+    Object.keys(obList).forEach((ob) => {
+      this.inkObservers[ob] = obList[ob];
+    });
   }
 }
 

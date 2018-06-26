@@ -28,15 +28,27 @@ atrament.on('saveGame', (p) => new Promise((resolve) => {
   });
 }));
 
+// register observers
+atrament.registerObservers({
+  forceful: (...params) => { console.log(params); },
+  evasive: (...params) => { console.log(params); }
+});
+
+// register fjunctions
+atrament.registerFunctions({
+  raise: (...params) => { console.log('RAISE CALLED', params); }
+});
+
+
 /*
 setTimeout(() => {
   atrament.saveGame('savefile.json');
 }, 2000);
 */
 
-atrament.loadGame('save.json').then(renderScene);
+// atrament.loadGame('save.json').then(renderScene);
 
-// atrament.startGame().then(renderScene);
+atrament.startGame().then(renderScene);
 
 function renderScene() {
   const scene = atrament.getCurrentScene();

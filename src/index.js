@@ -13,7 +13,8 @@ class Atrament {
     this.events = {
       loadStory: () => stub('loadStory'),
       loadGame: () => stub('loadGame'),
-      saveGame: () => stub('saveGame')
+      saveGame: () => stub('saveGame'),
+      error: () => stub('error')
     };
     this.inkFunctions = {};
     this.inkObservers = {};
@@ -53,8 +54,13 @@ class Atrament {
   }
 
   makeChoice(choiceId) {
-    return new Promise((resolve) => {
-      this.currentEpisode.makeChoice(choiceId);
+    return new Promise((resolve, reject) => {
+      try {
+        this.currentEpisode.makeChoice(choiceId);
+      } catch (error) {
+        this.dispatch('error', error);
+        reject(error);
+      }
       resolve();
     });
   }

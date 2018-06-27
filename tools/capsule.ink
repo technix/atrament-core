@@ -59,7 +59,7 @@ VAR chamber_door_open = false
     * * {has_knife} [Вырезать обшивку]
         На то, чтобы вырезать обшивку из капсулы, ушло немало времени.
         ~ has_cover = true
-    - -
+    + + -> chamber_exam
 + {chamber_door_open} [Пройти в хранилище] -> storage_room
 - 
 -> chamber_exam

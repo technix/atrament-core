@@ -3,3 +3,44 @@
 *Atrament: (obsolete) ink*
 
 Text adventure engine, based on Inkjs.
+
+## Methods
+
+    const atrament = new Atrament(gameConfig);
+Constructor - creates new Atrament object and initializes it with game configuration.
+
+    atrament.on(event, handlerFunction);
+Add event handler. Currently, the following events are available:
+- `loadStory`: called when ink.json story file is loaded. Handler function should return a Promise which returns file content at resolve.
+- `saveGame`: called when game state is saved. Handler function receives object `{id: 'save id', data: saveDataObj}` and should return Promise which resolves when game is saved.
+- `loadGame`: called when game state is loaded. Handler function should return a Promise which returns saved data as string.
+- `error`: called when error happens.
+
+    atrament.registerObservers(observersList);
+Register observers for variables. Format for observersList: `{variableName: handlerFunction, ...}`. Handler function takes two parameter - variable name and it's value.
+
+    atrament.registerFunctions(functionsList);
+Register functions exposed to Ink story. Format for functionsList: `{functionName: handlerFunction, ...}`.
+
+    atrament.startGame();
+Start game from first episode.
+
+    atrament.getCurrentScene();
+Get content of current scene.
+
+    atrament.makeChoice(choiceId);
+Make choice with give ID.
+
+    atrament.saveGame(slotId);
+Emits `saveGame` event with given slot ID.
+
+    atrament.loadGame(slotId);
+Emits `loadGame` event with given slot ID. Should be used instead of `startGame` when you load a game.
+
+## TODO
+- [ ] Checkpoints
+- [ ] Navigation between checkpoints
+- [ ] Multiple .ink as one game
+- [ ] ink function for switching episodes
+- [ ] Unit test framework
+- [ ] Plugins - sound, localstorage etc.

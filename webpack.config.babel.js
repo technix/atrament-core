@@ -1,45 +1,41 @@
 import path from 'path';
-import webpack from 'webpack'; // eslint-disable-line import/no-extraneous-dependencies
+import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 
-export default (env = {production: false}) => {
-  const webpackPlugins = (() => {
-    const wpPlugins = [];
-    if (env.production) {
-      wpPlugins.push(new webpack.optimize.UglifyJsPlugin({
-        sourceMap: true,
-        mangle: {
-          except: ['Container']
-        }
-      }));
-      wpPlugins.push(new webpack.DefinePlugin({
-        'process.env': {
-          NODE_ENV: '"production"'
-        }
-      }));
-    }
-    return wpPlugins;
-  })();
-
+export default (env, argv) => {
   return {
     devtool: 'sourcemap',
     entry: {
       app: ['./src/index.js']
     },
     output: {
-      path: path.resolve(__dirname, env.production ? 'dist' : 'build'),
+      path: path.resolve(__dirname, argv.mode === 'production' ? 'dist' : 'build'),
       publicPath: '/',
       filename: 'atrament.js',
       library: 'Atrament',
-      libraryTarget: 'umd'
+      libraryTarget: 'umd',
+      globalObject: 'typeof self !== \'undefined\' ? self : this',
     },
     module: {
-      loaders: [
+      rules: [
         {
           test: /\.js$/,
           loader: 'babel-loader'
         }
       ]
     },
-    plugins: webpackPlugins
+    optimization: {
+      minimizer: [
+        new UglifyJsPlugin({
+          cache: true,
+          parallel: true,
+          sourceMap: true,
+          uglifyOptions: {
+            mangle: {
+              reserved: ['Container']
+            }
+          }
+        })
+      ]
+    }
   };
 };

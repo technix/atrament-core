@@ -5,23 +5,25 @@
   "main": "dist/atrament.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dist": "webpack --env.production --config webpack.config.babel.js",
-    "build": "webpack --config webpack.config.babel.js",
+    "dist": "webpack --mode production --config webpack.config.babel.js",
+    "build": "webpack --mode development --config webpack.config.babel.js",
     "lint": "./node_modules/.bin/eslint ./src/ --ext .js"
   },
   "author": "Serhii Mozhaiskyi (sergei.mozhaisky@gmail.com)",
   "license": "MIT",
   "devDependencies": {
-    "babel-core": "6.26.0",
-    "babel-loader": "7.1.2",
-    "babel-preset-env": "1.6.1",
-    "eslint": "4.15.0",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "2.8.0",
-    "file-loader": "1.1.6",
+    "babel-core": "6.26.3",
+    "babel-loader": "7.1.4",
+    "babel-preset-env": "1.7.0",
+    "eslint": "5.0.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "2.13.0",
+    "file-loader": "1.1.11",
     "inquirer": "^6.0.0",
     "path": "0.12.7",
-    "webpack": "3.10.0"
+    "uglifyjs-webpack-plugin": "^1.2.7",
+    "webpack": "4.12.2",
+    "webpack-cli": "^3.0.8"
   },
   "dependencies": {
     "inkjs": "1.6.0"

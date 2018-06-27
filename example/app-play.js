@@ -4,7 +4,7 @@ const Atrament = require('../build/atrament');
 
 const gameConfig = {
   episodes: [
-    'intercept.ink.json'
+    process.argv[2]
   ]
 };
 
@@ -27,6 +27,7 @@ atrament.on('saveGame', (p) => new Promise((resolve) => {
     resolve();
   });
 }));
+atrament.on('error', (e) => console.error(e));
 
 // register observers
 atrament.registerObservers({
@@ -53,6 +54,10 @@ atrament.startGame().then(renderScene);
 function renderScene() {
   const scene = atrament.getCurrentScene();
   console.log(scene.text.join(''));
+  if (!scene.choices.length) {
+    gameOver();
+    return;
+  }
   const choices = scene.choices.map(
     (t) => ({name: t.choice, value: t.id})
   );
@@ -64,6 +69,12 @@ function renderScene() {
       choices
     }
   ]).then((v) => {
-    atrament.makeChoice(v.choice).then(renderScene);
+    atrament.makeChoice(v.choice)
+      .then(renderScene)
+      .catch(gameOver);
   });
+}
+
+function gameOver() {
+  console.log('END.');
 }

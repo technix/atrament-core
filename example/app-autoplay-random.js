@@ -3,7 +3,7 @@ const Atrament = require('../build/atrament');
 
 const gameConfig = {
   episodes: [
-    'intercept.ink.json'
+    process.argv[2]
   ]
 };
 
@@ -32,7 +32,7 @@ function renderScene() {
       (t) => ({name: t.choice, value: t.id})
     );
     const selected = Math.floor(Math.random() * choices.length);
-    console.log('>>', choices[selected].name);
+    console.log('=>', choices[selected].name);
     atrament.makeChoice(choices[selected].value)
       .then(renderScene)
       .catch(gameOver);

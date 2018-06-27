@@ -1,29 +1,35 @@
 import atramentStory from './story';
 
 class Episode {
-  constructor(filename, storyContent, inkFunctions, inkObservers) {
+  constructor(filename, storyContent) {
     this.id = filename;
     this.$episode = [];
     this.sceneId = -1;
     atramentStory.init(storyContent);
-    // register ink functions
-    if (inkFunctions) {
-      Object.keys(inkFunctions).forEach((fn) => {
-        atramentStory.bindFunction(fn, inkFunctions[fn]);
-      });
-    }
-    // register ink variable observers
-    if (inkObservers) {
-      Object.keys(inkObservers).forEach((ob) => {
-        atramentStory.observeVar(ob, inkObservers[ob]);
-      });
-    }
+  }
+
+  // register ink variable observers
+  registerObservers(inkObservers) {
+    Object.keys(inkObservers).forEach((ob) => {
+      atramentStory.observeVar(ob, inkObservers[ob]);
+    });
+  }
+
+  // register ink functions
+  registerFunctions(inkFunctions) {
+    Object.keys(inkFunctions).forEach((fn) => {
+      atramentStory.bindFunction(fn, inkFunctions[fn]);
+    });
   }
 
   // public methods
   start() {
     this.reset();
-    this.nextScene();
+  }
+
+  renderScene(commandRunner) {
+    const scene = atramentStory.getScene();
+    return this.updateEpisode(scene);
   }
 
   getCurrentScene() {
@@ -32,7 +38,6 @@ class Episode {
 
   makeChoice(choiceId) {
     atramentStory.makeChoice(choiceId);
-    this.nextScene();
   }
 
   // internal methods
@@ -50,17 +55,17 @@ class Episode {
     this.$episode.splice(0);
   }
 
-  nextScene() {
+  updateEpisode(scene) {
     // deactivate previous scene
     if (this.sceneId >= 0) {
       this.$episode[this.sceneId].isActive = false;
     }
     this.sceneId += 1;
-    // get new scene
-    const scene = atramentStory.getScene();
+    // append new scene
     scene.isActive = true;
     scene.id = this.sceneId;
     this.$episode.push(scene);
+    return scene;
   }
 
   // get state snapshot

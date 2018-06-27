@@ -52,7 +52,7 @@ setTimeout(() => {
 atrament.startGame().then(renderScene);
 
 function renderScene() {
-  const scene = atrament.getCurrentScene();
+  const scene = atrament.renderScene();
   console.log(scene.text.join(''));
   if (!scene.choices.length) {
     gameOver();

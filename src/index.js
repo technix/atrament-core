@@ -49,6 +49,14 @@ class Atrament {
     );
   }
 
+  // render scene
+  renderScene() {
+    return this.currentEpisode.renderScene(
+      commandRunner(this.currentEpisode)
+    );
+  }
+
+  // get current scene, rendered by renderScene
   getCurrentScene() {
     return this.currentEpisode.getCurrentScene();
   }
@@ -68,7 +76,11 @@ class Atrament {
   loadEpisode(filename) {
     return this.dispatch('loadStory', filename).then((data) => {
       const storyContent = JSON.parse(data);
-      this.currentEpisode = new Episode(filename, storyContent, this.inkFunctions, this.inkObservers);
+      const episode = new Episode(filename, storyContent);
+      // register ink functions and observers for new episode
+      episode.registerFunctions(this.inkFunctions);
+      episode.registerObservers(this.inkObservers);
+      this.currentEpisode = episode;
     });
   }
 

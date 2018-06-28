@@ -27,7 +27,7 @@ class Episode {
     this.reset();
   }
 
-  renderScene(commandRunner) {
+  renderScene() {
     const scene = atramentStory.getScene();
     return this.updateEpisode(scene);
   }

@@ -51,9 +51,7 @@ class Atrament {
 
   // render scene
   renderScene() {
-    return this.currentEpisode.renderScene(
-      commandRunner(this.currentEpisode)
-    );
+    return this.currentEpisode.renderScene();
   }
 
   // get current scene, rendered by renderScene

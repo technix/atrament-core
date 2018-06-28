@@ -40,16 +40,17 @@ class Episode {
     atramentStory.makeChoice(choiceId);
   }
 
-  // internal methods
+  // getters
 
-  // eslint-disable-next-line class-methods-use-this
-  getStory() {
+  get story() {
     return atramentStory;
   }
 
-  getEpisode() {
+  get content() {
     return this.$episode;
   }
+
+  // internal methods
 
   reset() {
     this.$episode.splice(0);

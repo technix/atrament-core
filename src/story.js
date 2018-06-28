@@ -21,6 +21,12 @@ const AtramentStory = {
     thisStory = new Story(storyContent);
   },
 
+  // getters
+
+  get state() {
+    return thisStory.state;
+  },
+
   getScene() {
     const scene = {
       type: 'text',

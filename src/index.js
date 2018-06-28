@@ -111,6 +111,10 @@ class Atrament {
       this.inkObservers[ob] = obList[ob];
     });
   }
+
+  debug() {
+    return this.currentEpisode.story.state;
+  }
 }
 
 module.exports = Atrament;

@@ -43,4 +43,5 @@ function renderScene() {
 
 function gameOver() {
   console.log('END.');
+  console.log(atrament.debug());
 }

@@ -27,7 +27,7 @@ const AtramentStory = {
     return thisStory.state;
   },
 
-  getScene() {
+  getScene(cmdRunner) {
     const scene = {
       type: 'text',
       text: [],
@@ -36,8 +36,16 @@ const AtramentStory = {
     };
     while (thisStory.canContinue) {
       thisStory.Continue();
-      // add story text
-      scene.text.push(thisStory.currentText); // eslint-disable-line new-cap
+      if (thisStory.currentText.indexOf('>>>') === 0) {
+        // parse command
+        const output = cmdRunner(thisStory.currentText);
+        if (output) {
+          scene.text.push(output);
+        }
+      } else {
+        // add story text
+        scene.text.push(thisStory.currentText); // eslint-disable-line new-cap
+      }
       // add tags
       const tags = parseTags(thisStory.currentTags);
       if (tags.scene) {

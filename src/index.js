@@ -1,4 +1,5 @@
 import episode from './episode';
+import command from './command';
 
 function stub(id) {
   return new Promise(() => {
@@ -55,7 +56,7 @@ const Atrament = {
 
   // render scene
   renderScene() {
-    return episode.renderScene();
+    return episode.renderScene(command.run);
   },
 
   getCurrentEpisode() {
@@ -117,6 +118,10 @@ const Atrament = {
     Object.keys(obList).forEach((ob) => {
       inkObservers[ob] = obList[ob];
     });
+  },
+
+  registerCommand(cmd, callback, deps) {
+    command.register(cmd, callback, deps);
   },
 
   debug() {

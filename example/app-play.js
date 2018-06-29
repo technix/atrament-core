@@ -41,6 +41,13 @@ atrament.registerFunctions({
 });
 
 
+atrament.registerCommand('IMG', (url) => `<img src="${url}">`);
+atrament.registerCommand(
+  'CLEAR',
+  (params, episode) => { episode.reset(); return false; },
+  ['episode']
+);
+
 /*
 setTimeout(() => {
   atrament.saveGame('savefile.json');

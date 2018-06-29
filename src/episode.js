@@ -14,6 +14,7 @@ const Episode = {
 
   reset() {
     $episode.splice(0);
+    sceneId = -1;
   },
 
   // register ink variable observers
@@ -30,8 +31,8 @@ const Episode = {
     });
   },
 
-  renderScene() {
-    const scene = atramentStory.getScene();
+  renderScene(cmdRunner) {
+    const scene = atramentStory.getScene(cmdRunner);
     return this.updateEpisode(scene);
   },
 

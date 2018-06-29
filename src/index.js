@@ -58,6 +58,10 @@ const Atrament = {
     return episode.renderScene();
   },
 
+  getCurrentEpisode() {
+    return episode.content;
+  },
+
   // get current scene, rendered by renderScene
   getCurrentScene() {
     return episode.getCurrentScene();

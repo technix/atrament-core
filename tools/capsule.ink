@@ -46,10 +46,7 @@ VAR chamber_door_open = false
     Одного взгляда на индикаторы было достаточно, чтобы понять -- остальные капсулы вышли из строя. Выходит, из нас пятерых только мне повезло достичь точки назначения живым.
     Я осмотрел панель. Похоже, с помощью переключателей можно перенаправить питание с капсул на дверь. Главное - подобрать нужное напряжение...
     * * [Переключить питание]
-        >>> PUZZLE
-    * * * [Открыть дверь]
-    На щитке загорелась зеленая лампа. Где-то загудели механизмы, управляющие дверными замками. 
-    ~ chamber_door_open = true
+        -> electropuzzle(-> chamber_room)
 + [Осмотреть капсулы]
     Всего капсул пять. Моя капсула открыта. {not has_cover: Внутри виднеется кожаная обшивка.} 
     * * [Потрогать обшивку]
@@ -64,6 +61,65 @@ VAR chamber_door_open = false
 - 
 -> chamber_exam
 
+== electropuzzle(-> return_to_story)
+
+VAR voltage = 16
+VAR tumbler1 = false
+VAR tumbler2 = false
+VAR tumbler3 = false
+VAR tumbler4 = true
+VAR tumbler5 = false
+
+- (electropuzzle_solve)
+>>> CLEAR
+
+>>> IMG gfx/scale-{voltage}.png
+
+{voltage > 9: На щитке горит красная лампочка - это означает, что цепь перегружена.}
+{voltage == 9: На щитке загорелась зеленая лампа. Где-то загудели механизмы, управляющие дверными замками.}
+{voltage < 9: Похоже, напряжения в цепи недостаточно для управления дверным реле.}
+
++ {voltage == 9} [Открыть дверь]
+    ~ chamber_door_open = true
+   -> return_to_story
+
++ {voltage != 9 and tumbler1} [Капсула 1: ВКЛ]
+    ~ voltage = voltage + 5
+    ~ tumbler1 = false
++ {voltage != 9 and not tumbler1} [Капсула 1: выкл]
+    ~ voltage = voltage - 5
+    ~ tumbler1 = true
+
++ {voltage != 9 and tumbler2} [Капсула 2: ВКЛ]
+    ~ voltage = voltage + 1
+    ~ tumbler2 = false
++ {voltage != 9 and not tumbler2} [Капсула 2: выкл]
+    ~ voltage = voltage - 1
+    ~ tumbler2 = true
+
++ {voltage != 9 and tumbler3} [Капсула 3: ВКЛ]
+    ~ voltage = voltage + 2
+    ~ tumbler3 = false
++ {voltage != 9 and not tumbler3} [Капсула 3: выкл]
+    ~ voltage = voltage - 2
+    ~ tumbler3 = true
+
++ {voltage != 9 and tumbler4} [Капсула 4: ВКЛ]
+    ~ voltage = voltage + 6
+    ~ tumbler4 = false
++ {voltage != 9 and not tumbler4} [Капсула 4: выкл]
+    ~ voltage = voltage - 6
+    ~ tumbler4 = true
+
++ {voltage != 9 and tumbler5} [Капсула 5: ВКЛ]
+    ~ voltage = voltage + 8
+    ~ tumbler5 = false
++ {voltage != 9 and not tumbler5} [Капсула 5: выкл]
+    ~ voltage = voltage - 8
+    ~ tumbler5 = true
+-
+-> electropuzzle_solve
+
 
 == cutscene1
 >>> IMG gfx/out.png
@@ -74,6 +130,7 @@ VAR chamber_door_open = false
 * [...] ->->
     
 == storage_room
+>>> CLEAR
 VAR storage_door_open = false
 VAR glass_cube_broken = false
 VAR engine_room_open = false
@@ -135,6 +192,7 @@ VAR engine_room_open = false
 -> storage_exam
 
 == engine_room
+>>> CLEAR
 VAR used_cover = false
 
 Тесное небольшое помещение. От гула машин, поддерживающих работу комплекса, звенит в ушах. Рядом с лестницей, ведущей наверх, находится пульт управления. Справа от пульта виден вентиль системы управления гермодверью хранилища{used_cover:, на который наброшена кожаная обшивка капсулы}.
@@ -169,6 +227,7 @@ VAR used_cover = false
 -> engine_exam
 
 == stairs_room
+>>> CLEAR
 VAR has_warm = false
 
 Луч света из щели дверей хранилища освещает небольшую комнату. Сверху из лестничного пролета виден дневной свет. Здесь очень холодно.
@@ -209,7 +268,6 @@ VAR has_warm = false
 -> hall_exam
 
 == cutscene_end
->>> CLEAR
 >>> IMG gfx/monument.png
 Получасовой спуск оказался утомителен для меня, и я остановился отдохнуть возле поросшего травой монумента.
 На вершине холма виднелось здание, в котором я провел столько лет. Но теперь причина, по которой оно оказалось заброшенным, больше меня не беспокоила - то, что я увидел сверху, давало мне надежду.

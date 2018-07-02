@@ -51,7 +51,7 @@ const Episode = {
   },
 
   get content() {
-    return this.$episode;
+    return $episode;
   },
 
   // internal methods

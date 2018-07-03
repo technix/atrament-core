@@ -7,9 +7,10 @@ Text adventure engine, based on Inkjs.
 ## Methods
 
 ```
-const atrament = new Atrament(gameConfig);
+import atrament from atrament;
+atrament.init(gameConfig);
 ```
-Constructor - creates new Atrament object and initializes it with game configuration.
+Initialize Atrament with game configuration.
 
 ```
 atrament.on(event, handlerFunction);
@@ -31,14 +32,29 @@ atrament.registerFunctions(functionsList);
 Register functions exposed to Ink story. Format for functionsList: `{functionName: handlerFunction, ...}`.
 
 ```
+atrament.registerCommand('CLEAR', (params, episode) => { episode.clear(); }, ['episode'] );
+```
+Register Ink command. Commands in Ink are written as `>>> COMMAND` and can have parameters (`>>> IMG gfx/intro.png`). You can use 'episode' and 'scene' objects in your callback. To do so, you have to list them in dependencies array (last parameter to registerCommand)
+
+```
 atrament.startGame();
 ```
 Start game from first episode.
 
 ```
+atrament.renderScene();
+```
+Render new scene. Commands are executed at this stage.
+
+```
 atrament.getCurrentScene();
 ```
 Get content of current scene.
+
+```
+atrament.getCurrentEpisode();
+```
+Get current episode (array of all available scenes).
 
 ```
 atrament.makeChoice(choiceId);

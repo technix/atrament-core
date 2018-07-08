@@ -1,30 +1,18 @@
 import AtramentStory from './story';
 
 class Episode {
-  constructor(episodeId, storyContent) {
+  constructor(episodeId, storyContent, inkObservers, inkFunctions) {
     this.id = episodeId;
     this.$episode = [];
     this.$story = new AtramentStory(storyContent);
     this.sceneId = -1;
+    inkObservers.attach(this.$story);
+    inkFunctions.attach(this.$story);
   }
 
   reset() {
     this.$episode.splice(0);
     this.sceneId = -1;
-  }
-
-  // register ink variable observers
-  registerObservers(inkObservers) {
-    Object.keys(inkObservers).forEach((ob) => {
-      this.$story.observeVar(ob, inkObservers[ob]);
-    });
-  }
-
-  // register ink functions
-  registerFunctions(inkFunctions) {
-    Object.keys(inkFunctions).forEach((fn) => {
-      this.$story.bindFunction(fn, inkFunctions[fn]);
-    });
   }
 
   renderScene(cmdInstance) {

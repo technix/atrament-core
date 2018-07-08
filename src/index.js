@@ -1,5 +1,7 @@
 import Episode from './episode';
 import Command from './command';
+import InkObservers from './ink/observers';
+import InkFunctions from './ink/functions';
 
 function stub(id) {
   return new Promise(() => {
@@ -16,8 +18,8 @@ class Atrament {
       saveGame: () => stub('saveGame'),
       error: () => stub('error')
     };
-    this.inkFunctions = {};
-    this.inkObservers = {};
+    this.inkObservers = new InkObservers();
+    this.inkFunctions = new InkFunctions();
     this.inkCommands = {};
     this.episode = {};
     this.command = {};
@@ -81,18 +83,19 @@ class Atrament {
   loadEpisode(filename) {
     return this.dispatch('loadStory', filename).then((data) => {
       const storyContent = JSON.parse(data);
-      // init episode
-      const episode = new Episode(filename, storyContent);
-      // register ink functions and observers for new episode
-      episode.registerFunctions(this.inkFunctions);
-      episode.registerObservers(this.inkObservers);
-      this.episode = episode;
-      // register commands with correct dependencies
-      this.command = new Command({episode: this.episode, story: this.episode.story});
-      Object.keys(this.inkCommands).forEach((cmd) => {
-        const cmdObj = this.inkCommands[cmd];
-        this.command.register(cmd, cmdObj.callback, cmdObj.deps);
-      });
+      this.initEpisode(filename, storyContent);
+    });
+  }
+
+  initEpisode(filename, storyContent) {
+    // init episode
+    const episode = new Episode(filename, storyContent, this.inkObservers, this.inkFunctions);
+    this.episode = episode;
+    // register commands with correct dependencies
+    this.command = new Command({episode: this.episode, story: this.episode.story});
+    Object.keys(this.inkCommands).forEach((cmd) => {
+      const cmdObj = this.inkCommands[cmd];
+      this.command.register(cmd, cmdObj.callback, cmdObj.deps);
     });
   }
 
@@ -114,16 +117,12 @@ class Atrament {
 
   // register functions for ink story
   registerFunctions(fnList) {
-    Object.keys(fnList).forEach((fn) => {
-      this.inkFunctions[fn] = fnList[fn];
-    });
+    this.inkFunctions.register(fnList);
   }
 
   // register observers for ink story variables
   registerObservers(obList) {
-    Object.keys(obList).forEach((ob) => {
-      this.inkObservers[ob] = obList[ob];
-    });
+    this.inkObservers.register(obList);
   }
 
   // register Ink commands

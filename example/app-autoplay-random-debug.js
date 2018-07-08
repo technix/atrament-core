@@ -1,5 +1,5 @@
 const fs = require('fs');
-const atrament = require('../build/atrament');
+const Atrament = require('../build/atrament');
 
 const gameConfig = {
   episodes: [
@@ -16,7 +16,8 @@ function fileLoader(filename) {
   });
 }
 
-atrament.init(gameConfig);
+
+const atrament = new Atrament(gameConfig);
 
 atrament.on('loadStory', fileLoader);
 atrament.on('loadGame', fileLoader);

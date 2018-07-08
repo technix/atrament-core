@@ -1,89 +1,85 @@
-import atramentStory from './story';
+import AtramentStory from './story';
 
-let id;
-let $episode;
-let sceneId;
-
-const Episode = {
-  init(episodeId, storyContent) {
-    id = episodeId;
-    $episode = [];
-    sceneId = -1;
-    atramentStory.init(storyContent);
-  },
+class Episode {
+  constructor(episodeId, storyContent) {
+    this.id = episodeId;
+    this.$episode = [];
+    this.$story = new AtramentStory(storyContent);
+    this.sceneId = -1;
+  }
 
   reset() {
-    $episode.splice(0);
-    sceneId = -1;
-  },
+    this.$episode.splice(0);
+    this.sceneId = -1;
+  }
 
   // register ink variable observers
   registerObservers(inkObservers) {
     Object.keys(inkObservers).forEach((ob) => {
-      atramentStory.observeVar(ob, inkObservers[ob]);
+      this.$story.observeVar(ob, inkObservers[ob]);
     });
-  },
+  }
 
   // register ink functions
   registerFunctions(inkFunctions) {
     Object.keys(inkFunctions).forEach((fn) => {
-      atramentStory.bindFunction(fn, inkFunctions[fn]);
+      this.$story.bindFunction(fn, inkFunctions[fn]);
     });
-  },
+  }
 
-  renderScene(cmdRunner) {
-    const scene = atramentStory.getScene(cmdRunner);
+  renderScene(cmdInstance) {
+    const scene = this.$story.getScene(cmdInstance);
     return this.updateEpisode(scene);
-  },
+  }
 
   getCurrentScene() {
-    return $episode[$episode.length - 1];
-  },
+    return this.$episode[this.$episode.length - 1];
+  }
 
   makeChoice(choiceId) {
-    atramentStory.makeChoice(choiceId);
-  },
+    this.$story.makeChoice(choiceId);
+  }
 
   // getters
 
   get story() {
-    return atramentStory;
-  },
+    return this.$story;
+  }
 
   get content() {
-    return $episode;
-  },
+    return this.$episode;
+  }
 
   // internal methods
 
   updateEpisode(scene) {
     // deactivate previous scene
-    if (sceneId >= 0) {
-      $episode[sceneId].isActive = false;
+    if (this.sceneId >= 0) {
+      this.$episode[this.sceneId].isActive = false;
     }
-    sceneId += 1;
+    this.sceneId += 1;
     // append new scene
     scene.isActive = true;
-    scene.id = sceneId;
-    $episode.push(scene);
+    scene.id = this.sceneId;
+    this.$episode.push(scene);
     return scene;
-  },
+  }
 
   // get state snapshot
   getState() {
     return {
-      filename: id,
-      episode: $episode,
-      story: JSON.parse(atramentStory.saveState())
+      filename: this.id,
+      episode: this.$episode,
+      story: JSON.parse(this.$story.saveState())
     };
-  },
+  }
 
   // restore
   restoreState(state) {
-    id = state.filename;
-    $episode = state.episode;
-    atramentStory.loadState(JSON.stringify(state.story));
+    this.id = state.filename;
+    this.$episode = state.episode;
+    this.$story.loadState(JSON.stringify(state.story));
   }
-};
+}
 
 export default Episode;

@@ -1,6 +1,7 @@
 const fs = require('fs');
-const atrament = require('../build/atrament');
+const Atrament = require('../build/atrament');
 
+let atrament;
 let currentPlay = 1;
 const numPlays = process.argv[3] || 100;
 
@@ -27,7 +28,7 @@ function fileLoader(filename) {
 
 function playGame(cfg) {
   console.log(currentPlay);
-  atrament.init(cfg);
+  atrament = new Atrament(cfg);
   atrament.on('loadStory', fileLoader);
   atrament.on('loadGame', fileLoader);
   atrament.on('error', (e) => console.error(e));

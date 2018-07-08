@@ -7,8 +7,8 @@ Text adventure engine, based on Inkjs.
 ## Methods
 
 ```
-import atrament from atrament;
-atrament.init(gameConfig);
+import Atrament from 'atrament';
+const atrament = new Atrament(gameConfig);
 ```
 Initialize Atrament with game configuration.
 

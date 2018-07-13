@@ -23,6 +23,7 @@ class Atrament {
     this.inkCommands = {};
     this.episode = {};
     this.command = {};
+    this.transcript = [];
   }
 
   startGame() {
@@ -56,7 +57,11 @@ class Atrament {
 
   // render scene
   renderScene() {
-    return this.episode.renderScene(this.command);
+    const scene = this.episode.renderScene(this.command);
+    if (this.game.transcript) {
+      this.transcript.push(scene);
+    }
+    return scene;
   }
 
   getCurrentEpisode() {
@@ -68,9 +73,16 @@ class Atrament {
     return this.episode.getCurrentScene();
   }
 
+  getTranscript() {
+    return this.transcript;
+  }
+
   makeChoice(choiceId) {
     return new Promise((resolve, reject) => {
       try {
+        if (this.game.transcript) {
+          this.transcript[this.transcript.length - 1].chosen = choiceId;
+        }
         this.episode.makeChoice(choiceId);
       } catch (error) {
         this.dispatch('error', error);

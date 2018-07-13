@@ -76,5 +76,6 @@ Emits `loadGame` event with given slot ID. Should be used instead of `startGame`
 - [ ] Navigation between checkpoints
 - [ ] Multiple .ink as one game
 - [ ] ink function for switching episodes
+- [x] Transcript
 - [ ] Unit test framework
 - [ ] Plugins - sound, localstorage etc.

@@ -94,7 +94,7 @@ class Atrament {
 
   loadEpisode(filename) {
     return this.dispatch('loadStory', filename).then((data) => {
-      const storyContent = JSON.parse(data);
+      const storyContent = typeof data === 'string' ? JSON.parse(data) : data;
       this.initEpisode(filename, storyContent);
     });
   }

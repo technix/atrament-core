@@ -12,7 +12,7 @@ const gameConfig = {
 function fileLoader(filename) {
   return new Promise((resolve) => {
     fs.readFile(filename, (err, data) => {
-      resolve(data);
+      resolve(data.toString());
     });
   });
 }

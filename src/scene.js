@@ -5,7 +5,8 @@ function parseTags(tags) {
     const line = item.split(':');
     const key = line[0].trim();
     let content = line.slice(1).join(':').trim();
-    if (content.substr(0, 1) === '{') {
+    const firstChar = content.substr(0, 1);
+    if (firstChar === '{' || firstChar === '[') {
       content = JSON.parse(content); // this is JSON
     }
     tagsObj[key] = content;

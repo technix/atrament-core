@@ -71,6 +71,12 @@ atrament.loadGame(slotId);
 ```
 Emits `loadGame` event with given slot ID. Should be used instead of `startGame` when you load a game.
 
+```
+atrament.getTranscript();
+```
+Get transcript output.
+
+
 ## TODO
 - [ ] Checkpoints
 - [ ] Navigation between checkpoints
@@ -79,3 +85,10 @@ Emits `loadGame` event with given slot ID. Should be used instead of `startGame`
 - [x] Transcript
 - [ ] Unit test framework
 - [ ] Plugins - sound, localstorage etc.
+
+## LICENSE
+Atrament is distributed under MIT license.
+Copyright (c) 2018 Serhii "techniX" Mozhaiskyi
+
+inkjs is copyright (c) 2017 Yannick Lohse
+Ink is copyright (c) 2017 inkle Ltd.

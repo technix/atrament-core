@@ -30,10 +30,10 @@ atrament.on('saveGame', (p) => new Promise((resolve) => {
 atrament.on('error', (e) => console.error(e));
 
 // register observers
-atrament.registerObservers({
-  forceful: (...params) => { console.log(params); },
-  evasive: (...params) => { console.log(params); }
-});
+//atrament.registerObservers({
+//  forceful: (...params) => { console.log(params); },
+//  evasive: (...params) => { console.log(params); }
+//});
 
 // register fjunctions
 atrament.registerFunctions({

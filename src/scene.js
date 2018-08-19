@@ -17,6 +17,7 @@ function parseTags(tags) {
 function getScene(thisStory, cmdInstance) {
   const scene = {
     type: 'text',
+    content: [],
     text: [],
     tags: {},
     choices: []
@@ -40,6 +41,8 @@ function getScene(thisStory, cmdInstance) {
       scene.type = tags.scene;
     }
     scene.tags = Object.assign({}, scene.tags, tags);
+    // save content - text along with tags
+    scene.content.push({text: currentText, tags});
   }
   thisStory.currentChoices.forEach((choice, id) => {
     scene.choices.push({id, choice: choice.text});

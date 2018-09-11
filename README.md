@@ -2,7 +2,11 @@
 
 *Atrament: (obsolete) ink*
 
-Text adventure engine, based on Inkjs.
+THIS IS A WORK IN PROGRESS.
+
+Atrament is a simple interface to Inkjs, which can be used as a core engine for your game app.
+
+If you are looking for ready-to-use solution, take a look at Atrament-UI, HTML5 frontend to Atrament, based on Preact: https://github.com/technix/atrament-ui
 
 ## Methods
 
@@ -91,4 +95,5 @@ Atrament is distributed under MIT license.
 Copyright (c) 2018 Serhii "techniX" Mozhaiskyi
 
 inkjs is copyright (c) 2017 Yannick Lohse
+
 Ink is copyright (c) 2017 inkle Ltd.

@@ -25,7 +25,7 @@ class Episode {
   }
 
   makeChoice(choiceId) {
-    this.$story.makeChoice(choiceId);
+    this.$story.ChooseChoiceIndex(choiceId); // eslint-disable-line new-cap;
   }
 
   // getters

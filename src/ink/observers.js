@@ -11,7 +11,7 @@ class InkObservers {
 
   attach(story) {
     Object.keys(this.observers).forEach((ob) => {
-      story.observeVar(ob, this.observers[ob]);
+      story.ObserveVariable(ob, this.observers[ob]);
     });
   }
 }

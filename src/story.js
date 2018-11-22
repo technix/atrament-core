@@ -1,56 +1,41 @@
 import {Story} from 'inkjs/dist/ink-es2015';
 import getScene from './scene';
 
-class AtramentStory {
-  constructor(storyContent) {
-    this.story = new Story(storyContent);
-  }
+/*
+  * make choice:        story.ChooseChoiceIndex(choiceId)
+  * get global tags:    story.globalTags
+  * get tags for knot:  story.TagsForContentAtPath(knot)
+  * go to knot/stitch:  story.ChoosePathString(ref)
+  * register observer variable:
+      function callback(variableName:string, newValue) {}
+      story.ObserveVariable(varName, callback);
+  * bind external function:
+      story.BindExternalFunction(name, function_definition)
+*/
 
+class AtramentStory extends Story {
   // getters
 
-  get state() {
-    return this.story.state;
-  }
-
   getScene(cmdInstance) {
-    return getScene(this.story, cmdInstance);
-  }
-
-  makeChoice(id) {
-    this.story.ChooseChoiceIndex(id); // eslint-disable-line new-cap
+    return getScene(this, cmdInstance);
   }
 
   saveState() {
-    return this.story.state.toJson();
+    return this.state.toJson();
   }
 
   loadState(jsonState) {
-    this.story.state.LoadJson(jsonState); // eslint-disable-line new-cap
-  }
-
-  // get global tags for story
-  globalTags() {
-    return this.story.globalTags;
-  }
-
-  // get tags for knot
-  tagsForKnot(knot) {
-    return this.story.TagsForContentAtPath(knot); // eslint-disable-line new-cap
-  }
-
-  // go to knot/stitch
-  goTo(ref) {
-    this.story.ChoosePathString(ref); // eslint-disable-line new-cap
+    this.state.LoadJson(jsonState);
   }
 
   // get variable value
   getVar(name) {
-    return this.story.variablesState[name];
+    return this.variablesState[name];
   }
 
   // get all global variable values
   getVars() {
-    const vState = this.story.variablesState;
+    const vState = this.variablesState;
     const vars = {};
     // eslint-disable-next-line no-underscore-dangle
     Object.keys(vState._globalVariables).forEach((k) => {
@@ -61,31 +46,19 @@ class AtramentStory {
 
   // set variable value
   setVar(name, value) {
-    this.story.variablesState[name] = value;
+    this.variablesState[name] = value;
   }
 
   // batch set variables values
   setVars(vars) {
     Object.keys(vars).forEach((k) => {
-      this.story.variablesState[k] = vars[k];
+      this.variablesState[k] = vars[k];
     });
   }
 
   // get visit count
   getVisitCount(ref) {
-    this.story.state.VisitCountAtPathString(ref); // eslint-disable-line new-cap
-  }
-
-  // register observe variable callback
-  // function callback(variableName:string, newValue) {}
-  observeVar(name, callback) {
-    this.story.ObserveVariable(name, callback); // eslint-disable-line new-cap
-  }
-
-  // bind external function
-  // (name, function_definition)
-  bindFunction(fnName, functionDef) {
-    this.story.BindExternalFunction(fnName, functionDef); // eslint-disable-line new-cap
+    this.state.VisitCountAtPathString(ref);
   }
 }
 

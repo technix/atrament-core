@@ -11,7 +11,7 @@ class InkFunctions {
 
   attach(story) {
     Object.keys(this.functions).forEach((fn) => {
-      story.bindFunction(fn, this.functions[fn]);
+      story.BindExternalFunction(fn, this.functions[fn]);
     });
   }
 }

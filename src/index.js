@@ -1,4 +1,4 @@
-import Episode from './episode';
+import AtramentStory from './story';
 import Command from './command';
 import InkObservers from './ink/observers';
 import InkFunctions from './ink/functions';
@@ -8,6 +8,16 @@ function stub(id) {
     throw new Error(`${id} is not implemented`);
   });
 }
+
+/*
+  gameConfig: {
+    storyFile: 'filename.ink.json',
+    transcript: true
+  }
+*/
+
+// Atrament.story.getCurrentEpisode();
+// Atrament.story.getCurrentScene();
 
 class Atrament {
   constructor(gameConfig) {
@@ -21,15 +31,15 @@ class Atrament {
     this.inkObservers = new InkObservers();
     this.inkFunctions = new InkFunctions();
     this.inkCommands = {};
-    this.episode = {};
+    this.story = {};
     this.command = {};
     this.transcript = [];
   }
 
   startGame() {
     // load first episode
-    return this.loadEpisode(this.game.episodes[0]).then(() => {
-      this.episode.reset();
+    return this.loadStoryFile().then(() => {
+      this.story.clearEpisode();
     });
   }
 
@@ -38,10 +48,10 @@ class Atrament {
     return this.dispatch('loadGame', slotId)
       .then((data) => {
         gameState = JSON.parse(data);
-        return this.loadEpisode(gameState.episode.filename);
+        return this.loadStoryFile();
       })
       .then(() => {
-        this.episode.restoreState(gameState.episode);
+        this.story.restoreState(gameState);
       });
   }
 
@@ -57,20 +67,11 @@ class Atrament {
 
   // render scene
   renderScene() {
-    const scene = this.episode.renderScene(this.command);
+    const scene = this.story.renderScene(this.command);
     if (this.game.transcript) {
       this.transcript.push(scene);
     }
     return scene;
-  }
-
-  getCurrentEpisode() {
-    return this.episode.content;
-  }
-
-  // get current scene, rendered by renderScene
-  getCurrentScene() {
-    return this.episode.getCurrentScene();
   }
 
   getTranscript() {
@@ -83,7 +84,7 @@ class Atrament {
         if (this.game.transcript) {
           this.transcript[this.transcript.length - 1].chosen = choiceId;
         }
-        this.episode.makeChoice(choiceId);
+        this.story.ChooseChoiceIndex(choiceId); // eslint-disable-line new-cap
       } catch (error) {
         this.dispatch('error', error);
         reject(error);
@@ -92,23 +93,23 @@ class Atrament {
     });
   }
 
-  loadEpisode(filename) {
-    return this.dispatch('loadStory', filename).then((data) => {
+  loadStoryFile() {
+    return this.dispatch('loadStory', this.game.storyFile).then((data) => {
       let storyContent = data;
       if (typeof data === 'string') {
         const outputFileContent = data.replace('\uFEFF', '');
         storyContent = JSON.parse(outputFileContent);
       }
-      this.initEpisode(filename, storyContent);
+      this.initEpisode(storyContent);
     });
   }
 
-  initEpisode(filename, storyContent) {
+  initEpisode(storyContent) {
     // init episode
-    const episode = new Episode(filename, storyContent, this.inkObservers, this.inkFunctions);
-    this.episode = episode;
+    const story = new AtramentStory(storyContent, this.inkObservers, this.inkFunctions);
+    this.story = story;
     // register commands with correct dependencies
-    this.command = new Command({episode: this.episode, story: this.episode.story});
+    this.command = new Command({story: this.story});
     Object.keys(this.inkCommands).forEach((cmd) => {
       const cmdObj = this.inkCommands[cmd];
       this.command.register(cmd, cmdObj.callback, cmdObj.deps);
@@ -116,9 +117,7 @@ class Atrament {
   }
 
   getGameState() {
-    return {
-      episode: this.episode.getState()
-    };
+    return this.story.getState();
   }
 
   // register event handler
@@ -147,7 +146,7 @@ class Atrament {
   }
 
   debug() {
-    return this.episode.story.state;
+    return this.story.state;
   }
 }
 

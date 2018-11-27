@@ -6,9 +6,7 @@ let currentPlay = 1;
 const numPlays = process.argv[3] || 100;
 
 const gameConfig = {
-  episodes: [
-    process.argv[2]
-  ]
+  storyFile: process.argv[2]
 };
 
 const res = {

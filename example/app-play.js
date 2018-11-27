@@ -3,9 +3,7 @@ const inquirer = require('inquirer'); // eslint-disable-line import/no-extraneou
 const Atrament = require('../build/atrament');
 
 const gameConfig = {
-  episodes: [
-    process.argv[2]
-  ]
+  storyFile: process.argv[2]
 };
 
 // Promise-based file loader, return file contents when resolved
@@ -44,8 +42,8 @@ atrament.registerFunctions({
 atrament.registerCommand('IMG', (url) => `<img src="${url}">`);
 atrament.registerCommand(
   'CLEAR',
-  (params, episode) => { episode.reset(); return false; },
-  ['episode']
+  (params, story) => { story.clearEpisode(); return false; },
+  ['story']
 );
 
 /*

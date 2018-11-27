@@ -3,9 +3,7 @@ const Atrament = require('../build/atrament');
 
 const gameConfig = {
   transcript: true,
-  episodes: [
-    process.argv[2]
-  ]
+  storyFile: process.argv[2]
 };
 
 // Promise-based file loader, return file contents when resolved

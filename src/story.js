@@ -14,18 +14,58 @@ import getScene from './scene';
 */
 
 class AtramentStory extends Story {
+  constructor(storyContent, inkObservers, inkFunctions) {
+    super(storyContent);
+    this.$episode = [];
+    this.$sceneId = -1;
+    inkObservers.attach(this);
+    inkFunctions.attach(this);
+  }
+
+  clearEpisode() {
+    this.$episode.splice(0);
+    this.$sceneId = -1;
+  }
+
+  getCurrentEpisode() {
+    return this.$episode;
+  }
+
+  getCurrentScene() {
+    return this.$episode[this.$episode.length - 1];
+  }
+
+  renderScene(cmdInstance) {
+    const scene = getScene(this, cmdInstance);
+    return this.updateEpisode(scene);
+  }
+
   // getters
-
-  getScene(cmdInstance) {
-    return getScene(this, cmdInstance);
+  updateEpisode(scene) {
+    // deactivate previous scene
+    if (this.$sceneId >= 0) {
+      this.$episode[this.$sceneId].isActive = false;
+    }
+    this.$sceneId += 1;
+    // append new scene
+    scene.isActive = true;
+    scene.id = this.$sceneId;
+    this.$episode.push(scene);
+    return scene;
   }
 
-  saveState() {
-    return this.state.toJson();
+  // get state snapshot
+  getState() {
+    return {
+      episode: this.$episode,
+      story: JSON.parse(this.state.toJson())
+    };
   }
 
-  loadState(jsonState) {
-    this.state.LoadJson(jsonState);
+  // restore
+  restoreState(state) {
+    this.$episode = state.episode;
+    this.state.LoadJson(JSON.stringify(state.story));
   }
 
   // get variable value

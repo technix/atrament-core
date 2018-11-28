@@ -42,8 +42,7 @@ atrament.registerFunctions({
 atrament.registerCommand('IMG', (url) => `<img src="${url}">`);
 atrament.registerCommand(
   'CLEAR',
-  (params, story) => { story.clearEpisode(); return false; },
-  ['story']
+  (params, story) => { story.clearEpisode(); return false; }
 );
 
 /*

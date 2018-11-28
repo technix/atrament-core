@@ -1,5 +1,5 @@
 import AtramentStory from './story';
-import Command from './command';
+import InkCommands from './ink/commands';
 import InkObservers from './ink/observers';
 import InkFunctions from './ink/functions';
 
@@ -16,8 +16,9 @@ function stub(id) {
   }
 */
 
-// Atrament.story.getCurrentEpisode();
-// Atrament.story.getCurrentScene();
+// atrament.story.getCurrentEpisode();
+// atrament.story.getCurrentScene();
+// atrament.story.getState();
 
 class Atrament {
   constructor(gameConfig) {
@@ -30,9 +31,8 @@ class Atrament {
     };
     this.inkObservers = new InkObservers();
     this.inkFunctions = new InkFunctions();
-    this.inkCommands = {};
+    this.inkCommands = new InkCommands();
     this.story = {};
-    this.command = {};
     this.transcript = [];
   }
 
@@ -60,14 +60,14 @@ class Atrament {
       'saveGame',
       {
         id: slotId,
-        data: this.getGameState()
+        data: this.story.getState()
       }
     );
   }
 
   // render scene
   renderScene() {
-    const scene = this.story.renderScene(this.command);
+    const scene = this.story.renderScene(this.inkCommands);
     if (this.game.transcript) {
       this.transcript.push(scene);
     }
@@ -105,19 +105,14 @@ class Atrament {
   }
 
   initEpisode(storyContent) {
-    // init episode
-    const story = new AtramentStory(storyContent, this.inkObservers, this.inkFunctions);
+    // init story
+    const story = new AtramentStory(storyContent);
+    // register observers
+    this.inkObservers.attach(story);
+    // register functions
+    this.inkFunctions.attach(story);
+    // expose story
     this.story = story;
-    // register commands with correct dependencies
-    this.command = new Command({story: this.story});
-    Object.keys(this.inkCommands).forEach((cmd) => {
-      const cmdObj = this.inkCommands[cmd];
-      this.command.register(cmd, cmdObj.callback, cmdObj.deps);
-    });
-  }
-
-  getGameState() {
-    return this.story.getState();
   }
 
   // register event handler
@@ -141,8 +136,8 @@ class Atrament {
   }
 
   // register Ink commands
-  registerCommand(cmd, callback, deps) {
-    this.inkCommands[cmd] = {callback, deps};
+  registerCommand(cmd, callback) {
+    this.inkCommands.register(cmd, callback);
   }
 
   debug() {

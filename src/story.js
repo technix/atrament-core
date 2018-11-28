@@ -14,12 +14,10 @@ import getScene from './scene';
 */
 
 class AtramentStory extends Story {
-  constructor(storyContent, inkObservers, inkFunctions) {
+  constructor(storyContent) {
     super(storyContent);
     this.$episode = [];
     this.$sceneId = -1;
-    inkObservers.attach(this);
-    inkFunctions.attach(this);
   }
 
   clearEpisode() {

@@ -27,7 +27,7 @@ function getScene(thisStory, cmdInstance) {
     const {currentText} = thisStory;
     if (currentText.indexOf('>>>') === 0) {
       // parse command
-      const output = cmdInstance.run(currentText);
+      const output = cmdInstance.run(currentText, thisStory);
       if (output) {
         scene.text.push(output);
       }

@@ -145,4 +145,4 @@ class Atrament {
   }
 }
 
-module.exports = Atrament;
+export default Atrament;

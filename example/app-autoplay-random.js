@@ -1,5 +1,5 @@
 const fs = require('fs');
-const Atrament = require('../build/atrament');
+const Atrament = require('../build/atrament').default;
 
 let atrament;
 let currentPlay = 1;

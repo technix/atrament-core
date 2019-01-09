@@ -1,6 +1,6 @@
 const fs = require('fs');
 const inquirer = require('inquirer'); // eslint-disable-line import/no-extraneous-dependencies
-const Atrament = require('../build/atrament');
+const Atrament = require('../build/atrament').default;
 
 const gameConfig = {
   storyFile: process.argv[2]

@@ -1,4 +1,4 @@
-import {Story} from 'inkjs/dist/ink-es2015';
+import {Story} from 'inkjs'; // eslint-disable-line import/no-extraneous-dependencies
 import getScene from './scene';
 
 /*

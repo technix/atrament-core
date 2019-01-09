@@ -1,6 +1,6 @@
 {
   "name": "atrament",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Atrament - text adventure engine",
   "main": "dist/atrament.js",
   "scripts": {

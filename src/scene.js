@@ -2,14 +2,20 @@
 function parseTags(tags) {
   const tagsObj = {};
   tags.forEach((item) => {
-    const line = item.split(':');
-    const key = line[0].trim();
-    let content = line.slice(1).join(':').trim();
-    const firstChar = content.substr(0, 1);
-    if (firstChar === '{' || firstChar === '[') {
-      content = JSON.parse(content); // this is JSON
+    let content = item.match(/\s*(\w+)\s*:\s*(.+?)\s*$/);
+    if (Array.isArray(content)) {
+      // tag is in "key: value" format
+      const [, key, value] = content;
+      const firstChar = value.substr(0, 1);
+      if (firstChar === '{' || firstChar === '[') {
+        content = JSON.parse(value); // this is JSON
+      } else {
+        content = value;
+      }
+      tagsObj[key] = content;
+    } else {
+      tagsObj[content] = true; // use tag as key name
     }
-    tagsObj[key] = content;
   });
   return tagsObj;
 }

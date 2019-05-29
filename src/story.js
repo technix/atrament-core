@@ -3,6 +3,7 @@ import getScene from './scene';
 
 /*
   * make choice:        story.ChooseChoiceIndex(choiceId)
+  * get tags:           story.currentTags
   * get global tags:    story.globalTags
   * get tags for knot:  story.TagsForContentAtPath(knot)
   * go to knot/stitch:  story.ChoosePathString(ref)
@@ -11,6 +12,11 @@ import getScene from './scene';
       story.ObserveVariable(varName, callback);
   * bind external function:
       story.BindExternalFunction(name, function_definition)
+  * call ink function:
+      story.EvaluateFunction(inkFunctionName, argsArray, returnTextOutput)
+      (if returnTextOutput is true, returns
+       {'returned': functionResult, 'output': functionTextOutput},
+       otherwise returns just functionResult.)
 */
 
 class AtramentStory extends Story {

@@ -11,7 +11,7 @@ const atrament = new Atrament(gameConfig);
 Initialize Atrament with game configuration.
 
 ```
-atrament.on(event, handlerFunction);
+atrament.event.subscribe(event, handlerFunction);
 ```
 Add event handler. Currently, the following events are available:
 * `loadStory`: called when ink.json story file is loaded. Handler function should return a Promise which returns file content at resolve.

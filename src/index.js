@@ -130,6 +130,11 @@ class Atrament {
     this.inkCommands.register(cmd, callback);
   }
 
+  // register Atrament event handler
+  on(event, handler) {
+    this.event.subscribe(event, handler);
+  }
+
   debug() {
     return this.story.state;
   }

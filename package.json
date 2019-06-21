@@ -2,7 +2,7 @@
   "name": "atrament",
   "version": "0.1.1",
   "description": "Atrament - text adventure engine",
-  "main": "dist/atrament.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dist": "webpack --mode production --config webpack.config.babel.js",
@@ -11,12 +11,14 @@
   },
   "author": "Serhii Mozhaiskyi (sergei.mozhaisky@gmail.com)",
   "license": "MIT",
+  "dependencies": {
+    "inkjs": "1.7.1"
+  },
   "devDependencies": {
     "@babel/core": "7.4.5",
     "@babel/preset-env": "7.4.5",
     "@babel/register": "7.4.4",
     "babel-loader": "8.0.6",
-    "inkjs": "1.7.1",
     "eslint": "5.16.0",
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.17.3",

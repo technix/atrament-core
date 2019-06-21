@@ -1,8 +1,8 @@
 import path from 'path';
 import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 
-export default (env, argv) => {
-  return {
+export default (env, argv) => (
+  {
     devtool: 'sourcemap',
     entry: {
       app: ['./src/index.js']
@@ -13,7 +13,7 @@ export default (env, argv) => {
       filename: 'atrament.js',
       library: 'Atrament',
       libraryTarget: 'umd',
-      globalObject: 'typeof self !== \'undefined\' ? self : this',
+      globalObject: 'typeof self !== \'undefined\' ? self : this'
     },
     module: {
       rules: [
@@ -37,5 +37,5 @@ export default (env, argv) => {
         })
       ]
     }
-  };
-};
+  }
+);

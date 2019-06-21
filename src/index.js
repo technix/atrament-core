@@ -105,11 +105,11 @@ class Atrament {
     // init story
     const story = new AtramentStory(storyContent);
     // register observers
-    this.inkObservers.apply((v, cb) => {
+    this.inkObservers.apply(([v, cb]) => {
       story.ObserveVariable(v, cb);
     });
     // register functions
-    this.inkFunctions.apply((name, fn) => {
+    this.inkFunctions.apply(([name, fn]) => {
       story.BindExternalFunction(name, fn);
     });
     // expose story

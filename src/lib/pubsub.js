@@ -4,7 +4,7 @@ class PubSub {
   }
 
   subscribeAll(eventList) {
-    Object.entries(eventList).forEach(this.subscribe.bind(this));
+    Object.entries(eventList).forEach((event) => this.subscribe(...event));
   }
 
   subscribe(event, handler) {

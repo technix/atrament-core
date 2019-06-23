@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import Atrament from '../src/index';
-import storyContent from './externalFunction.ink.json';
+import storyContent from './test.extfunction.ink.json';
 
 const fileLoaderMock = jest.fn();
 
@@ -11,7 +11,7 @@ function fileLoader(filename) {
   });
 }
 
-const storyFile = './externalFunction.ink.json';
+const storyFile = './test.extfunction.ink.json';
 let atrament;
 
 beforeEach(() => {

@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import Atrament from '../src/index';
-import storyContent from './example.ink.json';
+import storyContent from './test.example.ink.json';
 
 const fileLoaderMock = jest.fn();
 
@@ -19,7 +19,7 @@ function fileLoaderString(filename) {
 }
 
 
-const storyFile = './example.ink.json';
+const storyFile = './test.example.ink.json';
 let atrament;
 
 beforeEach(() => {
@@ -171,7 +171,7 @@ describe('story', () => {
     expect(testValueObserver).toHaveBeenCalledWith('testValue', 1999);
   });
 
-/*
+  /*
   test('call Ink functions', async () => {
     expect.assertions(2);
     await atrament.startGame();
@@ -185,7 +185,7 @@ describe('story', () => {
     const scene = atrament.renderScene();
     expect(scene.text[0]).toEqual('testValue=777\n');
   });
-*/
+  */
 
   describe('command', () => {
     test('not registered', async () => {

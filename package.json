@@ -4,6 +4,7 @@
   "description": "Atrament - text adventure engine",
   "main": "src/index.js",
   "scripts": {
+    "test:prepare": "node tools/convertAll.js __tests__",
     "test": "jest",
     "dist": "webpack --mode production --config webpack.config.babel.js",
     "build": "webpack --mode development --config webpack.config.babel.js",
@@ -23,6 +24,7 @@
     "eslint-config-airbnb-base": "13.1.0",
     "eslint-plugin-import": "2.17.3",
     "file-loader": "4.0.0",
+    "glob": "^7.1.4",
     "jest": "^24.8.0",
     "path": "0.12.7",
     "uglifyjs-webpack-plugin": "2.1.3",

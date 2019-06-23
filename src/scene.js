@@ -14,7 +14,7 @@ function parseTags(tags) {
       }
       tagsObj[key] = content;
     } else {
-      tagsObj[content] = true; // use tag as key name
+      tagsObj[item] = true; // use tag as key name
     }
   });
   return tagsObj;

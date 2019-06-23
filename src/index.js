@@ -51,7 +51,7 @@ class Atrament {
         return this.loadStoryFile();
       })
       .then(() => {
-        this.story.restoreState(gameState);
+        this.story.restoreState(gameState.data);
       });
   }
 

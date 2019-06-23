@@ -107,7 +107,7 @@ describe('story', () => {
 
   test('choices', async () => {
     let scene;
-    expect.assertions(4);
+    expect.assertions(6);
     await atrament.startGame();
     atrament.renderScene();
     await atrament.makeChoice(0);
@@ -116,6 +116,11 @@ describe('story', () => {
     expect(scene.choices[0]).toEqual({id: 0, choice: 'End script'});
     await atrament.makeChoice(0);
     scene = atrament.renderScene();
+    expect(scene.type).toEqual('final');
+    expect(scene.tags).toEqual({
+      scene: 'final',
+      customtag: true
+    });
     expect(scene.text[0]).toEqual('End\n');
     expect(scene.choices).toEqual([]); // empty choices - end of the game
   });

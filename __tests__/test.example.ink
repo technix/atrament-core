@@ -22,6 +22,7 @@ Intro paragraph 3 # p3: { "key1": 1, "key2": "alpha" }
 -
 + [End script]
 # scene: final
+# customtag
 End
 -> END
 

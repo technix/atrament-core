@@ -1,6 +1,6 @@
 import AtramentStory from './story';
-import InkCommands from './ink/commands';
-import PubSub from './lib/pubsub';
+import InkCommands from './commands';
+import PubSub from './pubsub';
 
 function stub(id) {
   return new Promise(() => {

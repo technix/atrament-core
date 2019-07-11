@@ -1,5 +1,5 @@
 import path from 'path';
-import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 
 export default (env, argv) => (
   {
@@ -26,15 +26,10 @@ export default (env, argv) => (
     },
     optimization: {
       minimizer: [
-        new UglifyJsPlugin({
+        new TerserPlugin({
           cache: true,
           parallel: true,
-          sourceMap: true,
-          uglifyOptions: {
-            mangle: {
-              reserved: ['Container']
-            }
-          }
+          sourceMap: true
         })
       ]
     }

@@ -2,26 +2,26 @@ import {Story} from 'inkjs';
 import getScene from './scene';
 
 /*
-  * make choice:        story.ChooseChoiceIndex(choiceId)
-  * get tags:           story.currentTags
-  * get global tags:    story.globalTags
-  * get tags for knot:  story.TagsForContentAtPath(knot)
-  * go to knot/stitch:  story.ChoosePathString(ref)
+  * make choice:        story.$ink.ChooseChoiceIndex(choiceId)
+  * get tags:           story.$ink.currentTags
+  * get global tags:    story.$ink.globalTags
+  * get tags for knot:  story.$ink.TagsForContentAtPath(knot)
+  * go to knot/stitch:  story.$ink.ChoosePathString(ref)
   * register observer variable:
       function callback(variableName:string, newValue) {}
-      story.ObserveVariable(varName, callback);
+      story.$ink.ObserveVariable(varName, callback);
   * bind external function:
-      story.BindExternalFunction(name, function_definition)
+      story.$ink.BindExternalFunction(name, function_definition)
   * call ink function:
-      story.EvaluateFunction(inkFunctionName, argsArray, returnTextOutput)
+      story.$ink.EvaluateFunction(inkFunctionName, argsArray, returnTextOutput)
       (if returnTextOutput is true, returns
        {'returned': functionResult, 'output': functionTextOutput},
        otherwise returns just functionResult.)
 */
 
-class AtramentStory extends Story {
+class AtramentStory {
   constructor(storyContent) {
-    super(storyContent);
+    this.$ink = new Story(storyContent);
     this.$episode = [];
     this.$sceneId = -1;
   }
@@ -44,6 +44,10 @@ class AtramentStory extends Story {
     return this.updateEpisode(scene);
   }
 
+  makeChoice(choiceId) {
+    return this.$ink.ChooseChoiceIndex(choiceId);
+  }
+
   // getters
   updateEpisode(scene) {
     // deactivate previous scene
@@ -62,24 +66,24 @@ class AtramentStory extends Story {
   getState() {
     return {
       episode: this.$episode,
-      story: JSON.parse(this.state.toJson())
+      story: JSON.parse(this.$ink.state.toJson())
     };
   }
 
   // restore
   restoreState(state) {
     this.$episode = state.episode;
-    this.state.LoadJson(JSON.stringify(state.story));
+    this.$ink.state.LoadJson(JSON.stringify(state.story));
   }
 
   // get variable value
   getVar(name) {
-    return this.variablesState[name];
+    return this.$ink.variablesState[name];
   }
 
   // get all global variable values
   getVars() {
-    const vState = this.variablesState;
+    const vState = this.$ink.variablesState;
     const vars = {};
     // eslint-disable-next-line no-underscore-dangle
     vState._globalVariables.forEach((v, k) => {
@@ -90,19 +94,24 @@ class AtramentStory extends Story {
 
   // set variable value
   setVar(name, value) {
-    this.variablesState[name] = value;
+    this.$ink.variablesState[name] = value;
   }
 
   // batch set variables values
   setVars(vars) {
     Object.keys(vars).forEach((k) => {
-      this.variablesState[k] = vars[k];
+      this.$ink.variablesState[k] = vars[k];
     });
   }
 
   // get visit count
   getVisitCount(ref) {
-    this.state.VisitCountAtPathString(ref);
+    this.$ink.state.VisitCountAtPathString(ref);
+  }
+
+  // evaluate function
+  evaluateFunction(...args) {
+    return this.$ink.EvaluateFunction(...args);
   }
 }
 

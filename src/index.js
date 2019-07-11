@@ -83,7 +83,7 @@ class Atrament {
       if (this.game.transcript) {
         this.transcript[this.transcript.length - 1].chosen = choiceId;
       }
-      this.story.ChooseChoiceIndex(choiceId); // eslint-disable-line new-cap
+      this.story.$ink.ChooseChoiceIndex(choiceId); // eslint-disable-line new-cap
       resolve();
     }).catch((error) => {
       this.event.publish('error', error);
@@ -106,11 +106,11 @@ class Atrament {
     const story = new AtramentStory(storyContent);
     // register observers
     this.inkObservers.apply(([v, cb]) => {
-      story.ObserveVariable(v, cb);
+      story.$ink.ObserveVariable(v, cb);
     });
     // register functions
     this.inkFunctions.apply(([name, fn]) => {
-      story.BindExternalFunction(name, fn);
+      story.$ink.BindExternalFunction(name, fn);
     });
     // expose story
     this.story = story;
@@ -137,7 +137,7 @@ class Atrament {
   }
 
   debug() {
-    return this.story.state;
+    return this.story.$ink.state;
   }
 }
 

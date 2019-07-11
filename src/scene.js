@@ -20,7 +20,8 @@ function parseTags(tags) {
   return tagsObj;
 }
 
-function getScene(thisStory, cmdInstance) {
+function getScene(atramentStory, cmdInstance) {
+  const inkStory = atramentStory.$ink;
   const scene = {
     type: 'text',
     content: [],
@@ -28,12 +29,12 @@ function getScene(thisStory, cmdInstance) {
     tags: {},
     choices: []
   };
-  while (thisStory.canContinue) {
-    thisStory.Continue();
-    const {currentText} = thisStory;
+  while (inkStory.canContinue) {
+    inkStory.Continue();
+    const {currentText} = inkStory;
     if (currentText.indexOf('>>>') === 0) {
       // parse command
-      const output = cmdInstance.run(currentText, thisStory);
+      const output = cmdInstance.run(currentText, atramentStory);
       if (output) {
         scene.text.push(output);
       }
@@ -42,7 +43,7 @@ function getScene(thisStory, cmdInstance) {
       scene.text.push(currentText); // eslint-disable-line new-cap
     }
     // add tags
-    const tags = parseTags(thisStory.currentTags);
+    const tags = parseTags(inkStory.currentTags);
     if (tags.scene) {
       scene.type = tags.scene;
     }
@@ -50,7 +51,7 @@ function getScene(thisStory, cmdInstance) {
     // save content - text along with tags
     scene.content.push({text: currentText, tags});
   }
-  thisStory.currentChoices.forEach((choice, id) => {
+  inkStory.currentChoices.forEach((choice, id) => {
     scene.choices.push({id, choice: choice.text});
   });
   return scene;

@@ -2,7 +2,7 @@
   "name": "atrament",
   "version": "0.2.0",
   "description": "Atrament - text adventure engine",
-  "main": "src/index.js",
+  "main": "dist/atrament.js",
   "scripts": {
     "test:prepare": "node tools/convertAll.js __tests__",
     "test": "jest",

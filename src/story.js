@@ -82,7 +82,7 @@ class AtramentStory extends Story {
     const vState = this.variablesState;
     const vars = {};
     // eslint-disable-next-line no-underscore-dangle
-    Object.keys(vState._globalVariables).forEach((k) => {
+    vState._globalVariables.forEach((v, k) => {
       vars[k] = vState[k];
     });
     return vars;

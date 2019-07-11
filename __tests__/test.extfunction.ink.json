@@ -1,1 +1,1 @@
-{"inkVersion":18,"root":[["^externalFn=","ev",{"VAR?":"testValue"},{"x()":"externalFn","exArgs":1},"out","/ev","\n","end",["done",{"#n":"g-0"}],null],"done",{"global decl":["ev",999,{"VAR=":"testValue"},"/ev","end",null],"#f":3}],"listDefs":{}}
+{"inkVersion":19,"root":[["^externalFn=","ev",{"VAR?":"testValue"},{"x()":"externalFn","exArgs":1},"out","/ev","\n","end",["done",{"#n":"g-0"}],null],"done",{"global decl":["ev",999,{"VAR=":"testValue"},"/ev","end",null]}],"listDefs":{}}

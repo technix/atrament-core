@@ -124,11 +124,30 @@ describe('playthrough', () => {
             threads: [
               {
                 callstack: [{exp: false, type: 0, temp: {$r: {'^->': '0.g-0.3.$r1'}}}],
-                threadIndex: 0,
+                threadIndex: 2,
                 previousContentObject: '0.g-0.3.8'
               }
             ],
-            threadCounter: 0
+            threadCounter: 2
+          },
+          choiceThreads: {
+            1: {
+              callstack: [
+                {
+                  cPath: '0.g-0.2',
+                  exp: false,
+                  idx: 8,
+                  temp: {
+                    $r: {
+                      '^->': '0.g-0.2.$r1'
+                    }
+                  },
+                  type: 0
+                }
+              ],
+              previousContentObject: '0.g-0.2.7',
+              threadIndex: 1
+            }
           },
           variablesState: {},
           evalStack: [],
@@ -138,14 +157,14 @@ describe('playthrough', () => {
               text: 'Choice 2a',
               index: 0,
               originalChoicePath: '0.g-0.2.8',
-              originalThreadIndex: 0,
+              originalThreadIndex: 1,
               targetPath: '0.g-0.c-2'
             },
             {
               text: 'Choice 2b',
               index: 1,
               originalChoicePath: '0.g-0.3.8',
-              originalThreadIndex: 0,
+              originalThreadIndex: 2,
               targetPath: '0.g-0.c-3'
             }
           ],
@@ -153,8 +172,9 @@ describe('playthrough', () => {
           turnIndices: {},
           turnIdx: 0,
           storySeed: expect.any(Number),
+          previousRandom: 0,
           inkSaveVersion: 8,
-          inkFormatVersion: 18
+          inkFormatVersion: 19
         }
       }
     };

@@ -19,6 +19,7 @@ export default (env, argv) => (
       rules: [
         {
           test: /\.js$/,
+          exclude: /node_modules/,
           loader: 'babel-loader?cacheDirectory'
         }
       ]

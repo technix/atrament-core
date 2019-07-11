@@ -8,7 +8,7 @@ module.exports = (api) => {
   };
   if (isTest) {
     // fix issue with Story constructor in class AtramentStory
-    presetEnv.exclude = ['@babel/plugin-transform-classes'];
+    // presetEnv.exclude = ['@babel/plugin-transform-classes'];
     presetEnv.targets = {node: 'current'};
   }
   return {

@@ -30,7 +30,7 @@ atrament.registerFunctions(functionsList);
 Register functions exposed to Ink story. Format for functionsList: `{functionName: handlerFunction, ...}`.
 
 ```
-atrament.registerCommand('CLEAR', (params, story) => { story.clear(); });
+atrament.registerCommand('CLEAR', (params, story) => { story.clearEpisode(); });
 ```
 Register Ink command. Commands in Ink are written as `>>> COMMAND` and can have parameters (`>>> IMG gfx/intro.png`). You can use 'story' object in your callback.
 
@@ -77,6 +77,6 @@ Get transcript output.
 
 # class AtramentStory
 
-Extends ink Story object.
+Initialises Story object, exposes it as `$ink` property.
 
 

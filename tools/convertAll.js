@@ -4,7 +4,7 @@ const fs = require('fs');
 const {spawn} = require('child_process');
 
 const inputDir = process.argv[2];
-const inklecate = path.resolve(__dirname, 'inklecate/inklecate_win.exe');
+const inklecate = path.resolve(__dirname, 'inklecate/inklecate.exe');
 
 glob(`${inputDir}/*.ink`, undefined, (er, files) => files.forEach((f) => convertFile(f)));
 

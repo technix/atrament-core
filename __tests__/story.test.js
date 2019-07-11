@@ -176,21 +176,15 @@ describe('story', () => {
     expect(testValueObserver).toHaveBeenCalledWith('testValue', 1999);
   });
 
-  /*
   test('call Ink functions', async () => {
-    expect.assertions(2);
+    expect.assertions(1);
     await atrament.startGame();
-    const result = atrament.story.EvaluateFunction('decreaseTestValue', 99, true);
-    expect(result).toBe({
-      returned: 'a',
-      output: 'o'
+    const result = atrament.story.evaluateFunction('testEvaluation', [99, 98], true);
+    expect(result).toEqual({
+      output: 'This is function output.\nTest values are 99 98\n',
+      returned: 'testValue = 99 - 98'
     });
-    atrament.renderScene();
-    await atrament.makeChoice(2);
-    const scene = atrament.renderScene();
-    expect(scene.text[0]).toEqual('testValue=777\n');
   });
-  */
 
   describe('command', () => {
     test('not registered', async () => {

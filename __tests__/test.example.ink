@@ -32,3 +32,10 @@ End
     - else:
     	~ testValue = testValue - x
     }
+
+=== function testEvaluation(x, y) ===
+   This is function output.
+   Test values are {x} {y}
+   ~ temp output = "" 
+   ~ output = "testValue = {x} - {y}"
+   ~ return output

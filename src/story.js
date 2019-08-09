@@ -24,6 +24,7 @@ class AtramentStory {
     this.$ink = new Story(storyContent);
     this.$episode = [];
     this.$sceneId = -1;
+    this.$extState = {};
   }
 
   clearEpisode() {
@@ -62,6 +63,7 @@ class AtramentStory {
   getState() {
     return {
       episode: this.$episode,
+      state: this.$extState,
       story: JSON.parse(this.$ink.state.toJson())
     };
   }
@@ -69,6 +71,7 @@ class AtramentStory {
   // restore
   restoreState(state) {
     this.$episode = state.episode;
+    this.$extState = state.state;
     this.$ink.state.LoadJson(JSON.stringify(state.story));
   }
 
@@ -108,6 +111,13 @@ class AtramentStory {
   // evaluate function
   evaluateFunction(...args) {
     return this.$ink.EvaluateFunction(...args);
+  }
+
+  updateExtStateWith(action) {
+    const diff = action(this.$extState, this);
+    if (diff) {
+      this.$extState = {...this.$extState, ...diff};
+    }
   }
 }
 

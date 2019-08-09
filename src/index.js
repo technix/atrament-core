@@ -136,6 +136,17 @@ class Atrament {
     this.event.subscribe(event, handler);
   }
 
+  onPhase(name, handler) {
+    this.event.subscribe(
+      `phase:${name}`,
+      () => this.story.updateExtStateWith(handler)
+    );
+  }
+
+  runPhase(name) {
+    this.event.publish(`phase:${name}`);
+  }
+
   debug() {
     return this.story.$ink.state;
   }

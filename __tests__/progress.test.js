@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import { cloneDeep } from 'lodash';
+import {cloneDeep} from 'lodash';
 import Atrament from '../src/index';
 import storyContent from './test.progress.ink.json';
 
@@ -142,6 +142,7 @@ describe('playthrough', () => {
             uuid: expect.any(String)
           }
         ],
+        state: {},
         story: {
           callstackThreads: {
             threads: [

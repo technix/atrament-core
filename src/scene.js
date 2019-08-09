@@ -1,3 +1,6 @@
+function uuid() {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
 
 function parseTags(tags) {
   const tagsObj = {};
@@ -48,11 +51,16 @@ function getScene(atramentStory, cmdInstance) {
       scene.type = tags.scene;
     }
     scene.tags = Object.assign({}, scene.tags, tags);
+    scene.uuid = uuid();
     // save content - text along with tags
     scene.content.push({text: currentText, tags});
   }
   inkStory.currentChoices.forEach((choice, id) => {
-    scene.choices.push({id, choice: choice.text});
+    scene.choices.push({
+      id,
+      choice: choice.text,
+      uuid: `${scene.uuid}:${uuid()}`
+    });
   });
   return scene;
 }

@@ -33,23 +33,28 @@ const expectedScene = {
   choices: [
     {
       choice: 'Choice',
-      id: 0
+      id: 0,
+      uuid: expect.any(String)
     },
     {
       choice: 'Command',
-      id: 1
+      id: 1,
+      uuid: expect.any(String)
     },
     {
       choice: 'testValues',
-      id: 2
+      id: 2,
+      uuid: expect.any(String)
     },
     {
       choice: 'testValue+1000',
-      id: 3
+      id: 3,
+      uuid: expect.any(String)
     },
     {
       choice: 'changeValue_function',
-      id: 4
+      id: 4,
+      uuid: expect.any(String)
     }
   ],
   content: [
@@ -67,6 +72,7 @@ const expectedScene = {
     }
   ],
   id: 0,
+  uuid: expect.any(String),
   isActive: true,
   tags: {
     p2: 'tag for paragraph 2',
@@ -113,7 +119,7 @@ describe('story', () => {
     await atrament.makeChoice(0);
     scene = atrament.renderScene();
     expect(scene.text[0]).toEqual('Selected choice\n');
-    expect(scene.choices[0]).toEqual({id: 0, choice: 'End script'});
+    expect(scene.choices[0]).toEqual({id: 0, choice: 'End script', uuid: expect.any(String)});
     await atrament.makeChoice(0);
     scene = atrament.renderScene();
     expect(scene.type).toEqual('final');

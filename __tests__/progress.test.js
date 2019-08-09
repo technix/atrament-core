@@ -1,6 +1,8 @@
 /* eslint-env jest */
+import { cloneDeep } from 'lodash';
 import Atrament from '../src/index';
 import storyContent from './test.progress.ink.json';
+
 
 const fileLoaderMock = jest.fn();
 
@@ -15,31 +17,43 @@ const storyFile = './test.progress.ink.json';
 
 const expectedEpisode = [
   {
-    choices: [{choice: 'Choice 1a', id: 0}, {choice: 'Choice 1b', id: 1}],
+    choices: [
+      {choice: 'Choice 1a', id: 0, uuid: expect.any(String)},
+      {choice: 'Choice 1b', id: 1, uuid: expect.any(String)}
+    ],
     content: [{tags: {}, text: 'P1\n'}],
     id: 0,
     isActive: false,
     tags: {},
     text: ['P1\n'],
-    type: 'text'
+    type: 'text',
+    uuid: expect.any(String)
   },
   {
-    choices: [{choice: 'Choice 2a', id: 0}, {choice: 'Choice 2b', id: 1}],
+    choices: [
+      {choice: 'Choice 2a', id: 0, uuid: expect.any(String)},
+      {choice: 'Choice 2b', id: 1, uuid: expect.any(String)}
+    ],
     content: [{tags: {}, text: 'Choice 1b\n'}, {tags: {}, text: 'P2\n'}],
     id: 1,
     isActive: false,
     tags: {},
     text: ['Choice 1b\n', 'P2\n'],
-    type: 'text'
+    type: 'text',
+    uuid: expect.any(String)
   },
   {
-    choices: [{choice: 'Choice 3a', id: 0}, {choice: 'Choice 3b', id: 1}],
+    choices: [
+      {choice: 'Choice 3a', id: 0, uuid: expect.any(String)},
+      {choice: 'Choice 3b', id: 1, uuid: expect.any(String)}
+    ],
     content: [{tags: {}, text: 'Choice 2a\n'}, {tags: {}, text: 'P3\n'}],
     id: 2,
     isActive: false,
     tags: {},
     text: ['Choice 2a\n', 'P3\n'],
-    type: 'text'
+    type: 'text',
+    uuid: expect.any(String)
   },
   {
     choices: [],
@@ -48,7 +62,8 @@ const expectedEpisode = [
     isActive: true,
     tags: {},
     text: ['Choice 3b\n', 'END\n'],
-    type: 'text'
+    type: 'text',
+    uuid: expect.any(String)
   }
 ];
 
@@ -85,7 +100,7 @@ describe('playthrough', () => {
     expect.assertions(2);
     await playGame(atrament);
     // deep copy
-    const expectedTranscript = JSON.parse(JSON.stringify(expectedEpisode));
+    const expectedTranscript = cloneDeep(expectedEpisode);
     // transcript has information about chosen choices
     expectedTranscript[0].chosen = 1;
     expectedTranscript[1].chosen = 0;
@@ -105,18 +120,26 @@ describe('playthrough', () => {
             content: [{text: 'P1\n', tags: {}}],
             text: ['P1\n'],
             tags: {},
-            choices: [{id: 0, choice: 'Choice 1a'}, {id: 1, choice: 'Choice 1b'}],
+            choices: [
+              {id: 0, choice: 'Choice 1a', uuid: expect.any(String)},
+              {id: 1, choice: 'Choice 1b', uuid: expect.any(String)}
+            ],
             isActive: false,
-            id: 0
+            id: 0,
+            uuid: expect.any(String)
           },
           {
             type: 'text',
             content: [{text: 'Choice 1b\n', tags: {}}, {text: 'P2\n', tags: {}}],
             text: ['Choice 1b\n', 'P2\n'],
             tags: {},
-            choices: [{id: 0, choice: 'Choice 2a'}, {id: 1, choice: 'Choice 2b'}],
+            choices: [
+              {id: 0, choice: 'Choice 2a', uuid: expect.any(String)},
+              {id: 1, choice: 'Choice 2b', uuid: expect.any(String)}
+            ],
             isActive: true,
-            id: 1
+            id: 1,
+            uuid: expect.any(String)
           }
         ],
         story: {

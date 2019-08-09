@@ -44,10 +44,6 @@ class AtramentStory {
     return this.updateEpisode(scene);
   }
 
-  makeChoice(choiceId) {
-    return this.$ink.ChooseChoiceIndex(choiceId);
-  }
-
   // getters
   updateEpisode(scene) {
     // deactivate previous scene

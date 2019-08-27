@@ -50,7 +50,7 @@ function getScene(atramentStory, cmdInstance) {
     if (tags.scene) {
       scene.type = tags.scene;
     }
-    scene.tags = Object.assign({}, scene.tags, tags);
+    scene.tags = {...scene.tags, ...tags};
     scene.uuid = uuid();
     // save content - text along with tags
     scene.content.push({text: currentText, tags});

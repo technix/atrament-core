@@ -30,7 +30,7 @@
     "file-loader": "5.0.2",
     "glob": "^7.1.6",
     "jest": "^25.1.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "path": "0.12.7",
     "terser-webpack-plugin": "^2.3.4",
     "webpack": "4.41.6",

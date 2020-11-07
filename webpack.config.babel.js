@@ -3,7 +3,7 @@ import TerserPlugin from 'terser-webpack-plugin';
 
 export default (env, argv) => (
   {
-    devtool: 'sourcemap',
+    devtool: 'source-map',
     entry: {
       app: ['./src/index.js']
     },
@@ -20,16 +20,19 @@ export default (env, argv) => (
         {
           test: /\.js$/,
           exclude: /node_modules/,
-          loader: 'babel-loader?cacheDirectory'
+          use: {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true
+            }
+          }
         }
       ]
     },
     optimization: {
       minimizer: [
         new TerserPlugin({
-          cache: true,
-          parallel: true,
-          sourceMap: true
+          parallel: true
         })
       ]
     }

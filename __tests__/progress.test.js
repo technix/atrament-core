@@ -152,10 +152,10 @@ describe('playthrough', () => {
                 previousContentObject: '0.g-0.3.8'
               }
             ],
-            threadCounter: 2
+            threadCounter: 4
           },
           choiceThreads: {
-            1: {
+            3: {
               callstack: [
                 {
                   cPath: '0.g-0.2',
@@ -170,7 +170,24 @@ describe('playthrough', () => {
                 }
               ],
               previousContentObject: '0.g-0.2.7',
-              threadIndex: 1
+              threadIndex: 3
+            },
+            4: {
+              callstack: [
+                {
+                  cPath: '0.g-0.3',
+                  exp: false,
+                  idx: 8,
+                  temp: {
+                    $r: {
+                      '^->': '0.g-0.3.$r1',
+                    }
+                  },
+                  type: 0
+                }
+              ],
+              previousContentObject: '0.g-0.3.7',
+              threadIndex: 4
             }
           },
           variablesState: {},
@@ -181,14 +198,14 @@ describe('playthrough', () => {
               text: 'Choice 2a',
               index: 0,
               originalChoicePath: '0.g-0.2.8',
-              originalThreadIndex: 1,
+              originalThreadIndex: 3,
               targetPath: '0.g-0.c-2'
             },
             {
               text: 'Choice 2b',
               index: 1,
               originalChoicePath: '0.g-0.3.8',
-              originalThreadIndex: 2,
+              originalThreadIndex: 4,
               targetPath: '0.g-0.c-3'
             }
           ],

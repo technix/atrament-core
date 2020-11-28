@@ -3,7 +3,7 @@ module.exports = (api) => {
   const isTest = api.env('test');
   const presetEnv = {
     targets: {
-      browsers: ['>0.25%', 'not ie 11', 'not op_mini all']
+      browsers: ['>0.5%', 'not ie 11', 'not op_mini all']
     }
   };
   if (isTest) {

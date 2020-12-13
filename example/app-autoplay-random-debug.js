@@ -32,9 +32,12 @@ function renderScene() {
     );
     const selected = Math.floor(Math.random() * choices.length);
     console.log('=>', choices[selected].name);
-    atrament.makeChoice(choices[selected].value)
-      .then(renderScene)
-      .catch(gameOver);
+    try {
+      atrament.makeChoice(choices[selected].value);
+      renderScene();
+    } catch (error) {
+      gameOver(error);
+    }
   } else {
     gameOver();
   }

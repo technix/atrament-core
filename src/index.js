@@ -79,15 +79,14 @@ class Atrament {
   }
 
   makeChoice(choiceId) {
-    return new Promise((resolve) => {
-      if (this.game.transcript) {
-        this.transcript[this.transcript.length - 1].chosen = choiceId;
-      }
+    if (this.game.transcript) {
+      this.transcript[this.transcript.length - 1].chosen = choiceId;
+    }
+    try {
       this.story.$ink.ChooseChoiceIndex(choiceId); // eslint-disable-line new-cap
-      resolve();
-    }).catch((error) => {
+    } catch (error) {
       this.event.publish('error', error);
-    });
+    }
   }
 
   loadStoryFile() {

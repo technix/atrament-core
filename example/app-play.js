@@ -73,9 +73,8 @@ function renderScene() {
       choices
     }
   ]).then((v) => {
-    atrament.makeChoice(v.choice)
-      .then(renderScene)
-      .catch(gameOver);
+    atrament.makeChoice(v.choice);
+    renderScene();
   });
 }
 

@@ -31,9 +31,12 @@ function renderScene() {
       (t) => ({name: t.choice, value: t.id})
     );
     const selected = Math.floor(Math.random() * choices.length);
-    atrament.makeChoice(choices[selected].value)
-      .then(renderScene)
-      .catch(gameOver);
+    try {
+      atrament.makeChoice(choices[selected].value)
+      renderScene();
+    } catch (error) {
+      gameOver(error);
+    }
   } else {
     gameOver();
   }

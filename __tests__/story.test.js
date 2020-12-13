@@ -116,11 +116,11 @@ describe('story', () => {
     expect.assertions(6);
     await atrament.startGame();
     atrament.renderScene();
-    await atrament.makeChoice(0);
+    atrament.makeChoice(0);
     scene = atrament.renderScene();
     expect(scene.text[0]).toEqual('Selected choice\n');
     expect(scene.choices[0]).toEqual({id: 0, choice: 'End script', uuid: expect.any(String)});
-    await atrament.makeChoice(0);
+    atrament.makeChoice(0);
     scene = atrament.renderScene();
     expect(scene.type).toEqual('final');
     expect(scene.tags).toEqual({
@@ -144,7 +144,7 @@ describe('story', () => {
     expect(testValue).toEqual(888);
     // check if variable is set
     atrament.renderScene();
-    await atrament.makeChoice(2);
+    atrament.makeChoice(2);
     const scene = atrament.renderScene();
     expect(scene.text[0]).toEqual('testValue=888\n');
   });
@@ -162,7 +162,7 @@ describe('story', () => {
     atrament.story.setVars({testValue: 777, otherTestValue: 333});
     // check if variable is set
     atrament.renderScene();
-    await atrament.makeChoice(2);
+    atrament.makeChoice(2);
     const scene = atrament.renderScene();
     expect(scene.text[0]).toEqual('testValue=777\n');
     expect(scene.text[1]).toEqual('otherTestValue=333\n');
@@ -176,7 +176,7 @@ describe('story', () => {
     });
     await atrament.startGame();
     atrament.renderScene();
-    await atrament.makeChoice(3);
+    atrament.makeChoice(3);
     atrament.renderScene();
     expect(testValueObserver).toHaveBeenCalledTimes(1);
     expect(testValueObserver).toHaveBeenCalledWith('testValue', 1999);
@@ -197,7 +197,7 @@ describe('story', () => {
       expect.assertions(2);
       await atrament.startGame();
       atrament.renderScene();
-      await atrament.makeChoice(1);
+      atrament.makeChoice(1);
       const scene = atrament.renderScene();
       expect(scene.text[0]).toBe('>>> TESTCOMMAND arg1 arg2\n');
       expect(scene.text[1]).toBe('testcommand\n');
@@ -209,7 +209,7 @@ describe('story', () => {
       atrament.registerCommand('TESTCOMMAND', testCommandCallback);
       await atrament.startGame();
       atrament.renderScene();
-      await atrament.makeChoice(1);
+      atrament.makeChoice(1);
       const scene = atrament.renderScene();
       expect(testCommandCallback).toHaveBeenCalledWith(
         ['arg1', 'arg2'],
@@ -224,7 +224,7 @@ describe('story', () => {
       atrament.registerCommand('TESTCOMMAND', (args) => `${args[0]}=${args[1]}\n`);
       await atrament.startGame();
       atrament.renderScene();
-      await atrament.makeChoice(1);
+      atrament.makeChoice(1);
       const scene = atrament.renderScene();
       expect(scene.text[0]).toBe('arg1=arg2\n');
       expect(scene.text[1]).toBe('testcommand\n');

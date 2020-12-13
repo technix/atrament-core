@@ -70,11 +70,11 @@ const expectedEpisode = [
 async function playGame(atrament) {
   await atrament.startGame();
   atrament.renderScene();
-  await atrament.makeChoice(1);
+  atrament.makeChoice(1);
   atrament.renderScene();
-  await atrament.makeChoice(0);
+  atrament.makeChoice(0);
   atrament.renderScene();
-  await atrament.makeChoice(1);
+  atrament.makeChoice(1);
   return atrament.renderScene();
 }
 
@@ -232,7 +232,7 @@ describe('playthrough', () => {
     atrament.on('saveGame', saveGame);
     await atrament.startGame();
     atrament.renderScene();
-    await atrament.makeChoice(1);
+    atrament.makeChoice(1);
     atrament.renderScene();
     const savedScene = atrament.story.getCurrentScene();
     const savedEpisode = atrament.story.getCurrentEpisode();

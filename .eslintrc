@@ -10,6 +10,7 @@
     "object-curly-spacing": ["error", "never"],
     "function-paren-newline": ["off"],
     "max-len": ["error", 120],
-    "no-param-reassign": ["error", { "props": false }]
+    "no-param-reassign": ["error", { "props": false }],
+    "no-multiple-empty-lines": ["off"]
   }
 }

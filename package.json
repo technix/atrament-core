@@ -4,7 +4,7 @@
   "description": "Atrament - text adventure engine",
   "main": "dist/atrament.js",
   "scripts": {
-    "test:prepare": "node tools/convertAll.js __tests__",
+    "pretest": "node tools/convertAll.js __tests__",
     "test": "jest",
     "dist": "webpack --mode production --config webpack.config.babel.js",
     "build": "webpack --mode development --config webpack.config.babel.js",

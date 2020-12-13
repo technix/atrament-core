@@ -32,7 +32,7 @@ function renderScene() {
     );
     const selected = Math.floor(Math.random() * choices.length);
     try {
-      atrament.makeChoice(choices[selected].value)
+      atrament.makeChoice(choices[selected].value);
       renderScene();
     } catch (error) {
       gameOver(error);

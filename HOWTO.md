@@ -15,7 +15,7 @@ atrament.on(event, handlerFunction);
 ```
 Add event handler. Currently, the following events are available:
 * `loadStory`: called when ink.json story file is loaded. Handler function should return a Promise which returns file content at resolve.
-* `saveGame`: called when game state is saved. Handler function receives object `{id: 'save id', data: saveDataObj}` and should return Promise which resolves when game is saved.
+* `saveGame`: called when game state is saved. Handler function receives object `{id: 'save id', data: saveDataObj}` and should return a Promise which resolves when game is saved.
 * `loadGame`: called when game state is loaded. Handler function should return a Promise which returns saved data as string.
 * `error`: called when error happens.
 
@@ -37,7 +37,7 @@ Register Ink command. Commands in Ink are written as `>>> COMMAND` and can have 
 ```
 atrament.startGame();
 ```
-Start game from first episode. Returns Promise.
+Start game from first episode. Returns a Promise.
 
 ```
 const scene = atrament.renderScene();
@@ -62,12 +62,12 @@ Make choice with give ID.
 ```
 atrament.saveGame(slotId);
 ```
-Emits `saveGame` event with given slot ID.
+Emits `saveGame` event with given slot ID. Returns a Promise.
 
 ```
 atrament.loadGame(slotId);
 ```
-Emits `loadGame` event with given slot ID. Should be used instead of `startGame` when you load a game.
+Emits `loadGame` event with given slot ID, returns a Promise. Should be used instead of `startGame` when you load a game.
 
 ```
 atrament.getTranscript();

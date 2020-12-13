@@ -26,6 +26,10 @@ Intro paragraph 3 # p3: { "key1": 1, "key2": "alpha" }
 End
 -> END
 
+=== gotoTarget
+Goto successful
+-> DONE
+
 === function decreaseTestValue(x) ===
     { testValue < x:
     	~ testValue = 0

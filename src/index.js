@@ -89,6 +89,10 @@ class Atrament {
     }
   }
 
+  goto(knot) {
+    this.story.$ink.ChoosePathString(knot);
+  }
+
   loadStoryFile() {
     return this.event.publish('loadStory', this.game.storyFile).then((data) => {
       let storyContent = data;

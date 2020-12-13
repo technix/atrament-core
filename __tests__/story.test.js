@@ -131,6 +131,15 @@ describe('story', () => {
     expect(scene.choices).toEqual([]); // empty choices - end of the game
   });
 
+  test('goto', async () => {
+    expect.assertions(2);
+    await atrament.startGame();
+    atrament.goto('gotoTarget');
+    const scene = atrament.renderScene();
+    expect(scene.text[0]).toEqual('Goto successful\n');
+    expect(scene.choices).toEqual([]);
+  });
+
   test('getVar/setVar', async () => {
     let testValue;
     expect.assertions(3);

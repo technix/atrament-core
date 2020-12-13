@@ -8,6 +8,7 @@ Atrament is a simple interface to Inkjs, which can be used as a core engine for 
 
 If you are looking for ready-to-use solution, take a look at Atrament-UI, HTML5 frontend to Atrament, based on Preact: https://github.com/technix/atrament-ui
 
+See classes and methods description in the [HOWTO](https://github.com/technix/atrament/blob/master/HOWTO.md) document.
 ## Example
 
 ```
@@ -48,9 +49,8 @@ function renderScene() {
       choices
     }
   ]).then((v) => {
-    atrament.makeChoice(v.choice)
-      .then(renderScene)
-      .catch(gameOver);
+    atrament.makeChoice(v.choice);
+    renderScene();
   });
 }
 
@@ -58,12 +58,6 @@ function gameOver() {
   console.log('END.');
 }
 ```
-
-## TODO
-- [ ] Checkpoints
-- [ ] Navigation between checkpoints
-- [x] Transcript
-- [ ] Unit test framework
 
 ## LICENSE
 Atrament is distributed under MIT license.

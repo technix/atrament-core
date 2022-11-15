@@ -110,7 +110,7 @@ describe('playthrough', () => {
     expect(atrament.story.getCurrentEpisode()).toEqual(expectedTranscript);
   });
 
-  test('save/load', async () => {
+  test.skip('save/load', async () => {
     const expectedGameContent = {
       id: 'test',
       data: {

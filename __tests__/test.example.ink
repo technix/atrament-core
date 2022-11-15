@@ -3,7 +3,8 @@ VAR otherTestValue = 123
 
 Intro paragraph 1
 Intro paragraph 2 # p2: tag for paragraph 2
-Intro paragraph 3 # p3: { "key1": 1, "key2": "alpha" }
+// we have to escape JSON structures in tags, since Ink has 'dynamic tags' now
+Intro paragraph 3 # p3: \{ "key1": 1, "key2": "alpha" \}
 
 + [Choice]
     Selected choice

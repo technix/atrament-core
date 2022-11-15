@@ -4,7 +4,7 @@ const fs = require('fs');
 const {spawn} = require('child_process');
 
 const inputDir = process.argv[2];
-const inklecate = path.resolve(__dirname, 'inklecate/inklecate.exe');
+const inkCompiler = path.resolve(__dirname, '../node_modules/inkjs', 'dist/inkjs-compiler.js');
 
 glob(`${inputDir}/*.ink`, undefined, (er, files) => files.forEach((f) => convertFile(f)));
 
@@ -12,7 +12,7 @@ glob(`${inputDir}/*.ink`, undefined, (er, files) => files.forEach((f) => convert
 function convertFile(inputFile) {
   const outputTemp = `${inputFile}.tmp.json`;
   const outputFile = `${inputFile}.json`;
-  const prc = spawn(inklecate, ['-o', outputTemp, inputFile]);
+  const prc = spawn('node', [inkCompiler, '-o', outputTemp, inputFile]);
 
   prc.on('close', () => {
     fs.readFile(outputTemp, 'utf-8', (err, data) => {

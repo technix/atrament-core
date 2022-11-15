@@ -17,7 +17,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "inkjs": "1.11.0"
+    "inkjs": "2.2.0"
   },
   "devDependencies": {
     "@babel/core": "7.14.2",

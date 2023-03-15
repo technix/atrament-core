@@ -33,7 +33,7 @@
     "lodash": "4.17.21",
     "path": "0.12.7",
     "terser-webpack-plugin": "5.3.6",
-    "webpack": "5.75.0",
+    "webpack": "5.76.0",
     "webpack-cli": "4.10.0"
   }
 }

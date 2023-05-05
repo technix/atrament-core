@@ -1,4 +1,4 @@
-const glob = require('glob'); // eslint-disable-line import/no-extraneous-dependencies
+const {globSync} = require('glob'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path');
 const fs = require('fs');
 const {spawn} = require('child_process');
@@ -6,8 +6,8 @@ const {spawn} = require('child_process');
 const inputDir = process.argv[2];
 const inkCompiler = path.resolve(__dirname, '../node_modules/inkjs', 'dist/inkjs-compiler.js');
 
-glob(`${inputDir}/*.ink`, undefined, (er, files) => files.forEach((f) => convertFile(f)));
-
+const inkFiles = globSync(`${inputDir}/*.ink`);
+inkFiles.forEach((f) => convertFile(f));
 
 function convertFile(inputFile) {
   const outputTemp = `${inputFile}.tmp.json`;

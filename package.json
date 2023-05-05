@@ -8,7 +8,7 @@
     "test": "jest",
     "dist": "webpack --mode production --config webpack.config.babel.js",
     "build": "webpack --mode development --config webpack.config.babel.js",
-    "lint": "./node_modules/.bin/eslint ./src/ --ext .js"
+    "lint": "eslint ./src/ --ext .js"
   },
   "author": "Serhii Mozhaiskyi (sergei.mozhaisky@gmail.com)",
   "repository": {
@@ -17,23 +17,23 @@
   },
   "license": "MIT",
   "dependencies": {
-    "inkjs": "2.2.0"
+    "inkjs": "2.2.1"
   },
   "devDependencies": {
-    "@babel/core": "7.20.2",
-    "@babel/preset-env": "7.20.2",
-    "@babel/register": "7.18.9",
-    "babel-loader": "9.1.0",
-    "eslint": "8.27.0",
+    "@babel/core": "7.21.8",
+    "@babel/preset-env": "7.21.5",
+    "@babel/register": "7.21.0",
+    "babel-loader": "9.1.2",
+    "eslint": "8.39.0",
     "eslint-config-airbnb-base": "15.0.0",
-    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-import": "2.27.5",
     "file-loader": "6.2.0",
-    "glob": "8.0.3",
-    "jest": "29.3.1",
+    "glob": "10.2.2",
+    "jest": "29.5.0",
     "lodash": "4.17.21",
     "path": "0.12.7",
-    "terser-webpack-plugin": "5.3.6",
-    "webpack": "5.75.0",
-    "webpack-cli": "4.10.0"
+    "terser-webpack-plugin": "5.3.7",
+    "webpack": "5.82.0",
+    "webpack-cli": "5.0.2"
   }
 }

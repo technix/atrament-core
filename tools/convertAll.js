@@ -14,6 +14,14 @@ function convertFile(inputFile) {
   const outputFile = `${inputFile}.json`;
   const prc = spawn('node', [inkCompiler, '-o', outputTemp, inputFile]);
 
+  prc.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`);
+  });
+
+  prc.stderr.on('data', (data) => {
+    console.log(`stderr: ${data}`);
+  });
+
   prc.on('close', () => {
     fs.readFile(outputTemp, 'utf-8', (err, data) => {
       if (err) {

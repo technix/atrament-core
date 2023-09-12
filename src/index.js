@@ -1,158 +1,40 @@
-import AtramentStory from './story';
-import InkCommands from './commands';
-import PubSub from './pubsub';
+import { interfaces, defineInterfaces } from './utils/interfaces';
+import { getConfig, setConfig } from './utils/config';
+import { emitter, emit } from './utils/emitter';
 
-function stub(id) {
-  return new Promise(() => {
-    throw new Error(`${id} is not implemented`);
-  });
-}
+import game from './components/game';
+import ink from './components/ink';
+import settings from './components/settings';
 
 /*
-  gameConfig: {
-    storyFile: 'filename.ink.json',
-    transcript: true
-  }
+Initialize engine:
+- save global config
+- initialize persistent storage
+- if persistent settings found: load settings
+- save settings to application state
+- initialize sound
 */
-
-// atrament.story.getCurrentEpisode();
-// atrament.story.getCurrentScene();
-// atrament.story.getState();
-
-class Atrament {
-  constructor(gameConfig) {
-    this.game = gameConfig;
-    this.event = new PubSub();
-    this.event.subscribeAll({
-      loadStory: () => stub('loadStory'),
-      loadGame: () => stub('loadGame'),
-      saveGame: () => stub('saveGame'),
-      error: () => stub('error')
-    });
-    this.inkObservers = new PubSub();
-    this.inkFunctions = new PubSub();
-    this.inkCommands = new InkCommands();
-    this.story = {};
-    this.transcript = [];
-  }
-
-  startGame() {
-    // load first episode
-    return this.loadStoryFile().then(() => {
-      this.story.clearEpisode();
-    });
-  }
-
-  loadGame(slotId) {
-    let gameState = {};
-    return this.event.publish('loadGame', slotId)
-      .then((data) => {
-        gameState = JSON.parse(data);
-        return this.loadStoryFile();
-      })
-      .then(() => {
-        this.story.restoreState(gameState.data);
-      });
-  }
-
-  saveGame(slotId) {
-    return this.event.publish(
-      'saveGame',
-      {
-        id: slotId,
-        data: this.story.getState()
-      }
-    );
-  }
-
-  // render scene
-  renderScene() {
-    const scene = this.story.renderScene(this.inkCommands);
-    if (this.game.transcript) {
-      this.transcript.push(scene);
-    }
-    return scene;
-  }
-
-  getTranscript() {
-    return this.transcript;
-  }
-
-  makeChoice(choiceId) {
-    if (this.game.transcript) {
-      this.transcript[this.transcript.length - 1].chosen = choiceId;
-    }
-    try {
-      this.story.$ink.ChooseChoiceIndex(choiceId); // eslint-disable-line new-cap
-    } catch (error) {
-      this.event.publish('error', error);
-    }
-  }
-
-  goto(knot) {
-    this.story.$ink.ChoosePathString(knot);
-  }
-
-  loadStoryFile() {
-    return this.event.publish('loadStory', this.game.storyFile).then((data) => {
-      let storyContent = data;
-      if (typeof data === 'string') {
-        const outputFileContent = data.replace('\uFEFF', '');
-        storyContent = JSON.parse(outputFileContent);
-      }
-      this.initEpisode(storyContent);
-    });
-  }
-
-  initEpisode(storyContent) {
-    // init story
-    const story = new AtramentStory(storyContent);
-    // register observers
-    this.inkObservers.apply(([v, cb]) => {
-      story.$ink.ObserveVariable(v, cb);
-    });
-    // register functions
-    this.inkFunctions.apply(([name, fn]) => {
-      story.$ink.BindExternalFunction(name, fn);
-    });
-    // expose story
-    this.story = story;
-  }
-
-  // register functions for ink story
-  registerFunctions(fnList) {
-    this.inkFunctions.subscribeAll(fnList);
-  }
-
-  // register observers for ink story variables
-  registerObservers(obList) {
-    this.inkObservers.subscribeAll(obList);
-  }
-
-  // register Ink commands
-  registerCommand(cmd, callback) {
-    this.inkCommands.register(cmd, callback);
-  }
-
-  // register Atrament event handler
-  on(event, handler) {
-    this.event.subscribe(event, handler);
-  }
-
-  onPhase(name, handler) {
-    this.event.subscribe(
-      `phase:${name}`,
-      () => this.story.updateExtStateWith(handler)
-    );
-  }
-
-  runPhase(name) {
-    this.event.publish(`phase:${name}`);
-  }
-
-  debug() {
-    return this.story.$ink.state;
-  }
+async function init(InkStory, cfg) {
+  emit('atrament/init');
+  const { persistent } = interfaces();
+  // save global configuration
+  setConfig(InkStory, cfg);
+  // initialize persistent storage
+  persistent.init(getConfig().applicationID);
+  // load app settings from storage
+  await settings.load();
 }
 
-export default Atrament;
+export default {
+  interfaces,
+  defineInterfaces,
+  init,
+  state: () => interfaces().state,
+  store: () => interfaces().state.store(),
+  on: (event, callback) => emitter.on(event, callback),
+  off: (event, callback) => emitter.off(event, callback),
+  // sub-objects
+  game,
+  ink,
+  settings
+};

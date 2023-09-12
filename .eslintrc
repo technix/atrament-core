@@ -2,15 +2,18 @@
   "extends": [
     "airbnb-base"
   ],
+  "parser": "@babel/eslint-parser",
   "rules": {
     "comma-dangle": ["error", "never"],
     "indent": ["error", 2],
     "no-use-before-define": ["error", { "functions": false, "classes": false }],
     "arrow-parens": ["error", "always"],
-    "object-curly-spacing": ["error", "never"],
+    "object-curly-spacing": ["error", "always"],
+    "object-curly-newline": ["off"],
     "function-paren-newline": ["off"],
     "max-len": ["error", 120],
     "no-param-reassign": ["error", { "props": false }],
-    "no-multiple-empty-lines": ["off"]
+    "no-multiple-empty-lines": ["off"],
+    "import/prefer-default-export": ["off"]
   }
 }

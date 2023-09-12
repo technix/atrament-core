@@ -1,0 +1,196 @@
+/* eslint-env jest */
+import { emit } from '../../src/utils/emitter';
+import { setConfig } from '../../src/utils/config';
+
+import ink from '../../src/components/ink';
+
+jest.mock('../../src/utils/emitter', () => ({
+  emit: jest.fn()
+}));
+
+const mockInkStoryInstance = {
+  content: '',
+  sceneCounter: 1,
+  globalTags: ['title: test story', 'autosave', 'single_scene', 'observe: var1'],
+  state: {
+    LoadJson: jest.fn(),
+    toJson: jest.fn(() => ({ inkstate: 'jsonStructure' }))
+  },
+  canContinue: true,
+  currentChoices: null,
+  Continue() {
+    this.currentText = `Paragraph ${this.sceneCounter}.`;
+    this.currentTags = ['HELLO', 'WORLD'];
+    this.sceneCounter += 1;
+    if (this.sceneCounter > 3) {
+      this.canContinue = false;
+      this.currentChoices = [
+        { text: 'Option 1' },
+        { text: 'Option 2' }
+      ];
+    }
+  },
+  ChooseChoiceIndex() {
+    this.currentChoices = null;
+    this.canContinue = true;
+  },
+  VisitCountAtPathString() {
+    return 5;
+  },
+  EvaluateFunction(a, b) {
+    return `result ${a + b}`;
+  },
+  variablesState: {
+    var1: 'var1-value'
+  },
+  ObserveVariable() {
+    return true;
+  },
+  ChoosePathString() {
+    return true;
+  }
+};
+
+const MockInkStory = jest.fn((content) => {
+  mockInkStoryInstance.content = content;
+  return mockInkStoryInstance;
+});
+
+const spyContinue = jest.spyOn(mockInkStoryInstance, 'Continue');
+const spyChooseChoiceIndex = jest.spyOn(mockInkStoryInstance, 'ChooseChoiceIndex');
+const spyVisitCountAtPathString = jest.spyOn(mockInkStoryInstance, 'VisitCountAtPathString');
+const spyEvaluateFunction = jest.spyOn(mockInkStoryInstance, 'EvaluateFunction');
+const spyObserveVariable = jest.spyOn(mockInkStoryInstance, 'ObserveVariable');
+const spyChoosePathString = jest.spyOn(mockInkStoryInstance, 'ChoosePathString');
+
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+describe('components/ink', () => {
+  test('initStory', () => {
+    const content = 'ink json';
+    setConfig(MockInkStory, {});
+    ink.initStory(content);
+    const story = ink.story();
+    expect(MockInkStory).toHaveBeenCalledWith(content);
+    expect(story).toEqual(mockInkStoryInstance);
+    expect(emit).toHaveBeenCalledWith('ink/initStory');
+  });
+
+  test('loadState', () => {
+    expect(mockInkStoryInstance.state.LoadJson).not.toHaveBeenCalled();
+    ink.loadState('saved-state');
+    expect(mockInkStoryInstance.state.LoadJson).toHaveBeenCalledWith('saved-state');
+  });
+
+  test('getState', () => {
+    expect(mockInkStoryInstance.state.toJson).not.toHaveBeenCalled();
+    const state = ink.getState('saved-state');
+    expect(state).toEqual({ inkstate: 'jsonStructure' });
+    expect(mockInkStoryInstance.state.toJson).toHaveBeenCalledTimes(1);
+  });
+
+  test('makeChoice', () => {
+    const choiceId = '1';
+    expect(spyChooseChoiceIndex).not.toHaveBeenCalled();
+    ink.makeChoice(choiceId);
+    expect(spyChooseChoiceIndex).toHaveBeenCalledWith(choiceId);
+    expect(emit).toHaveBeenCalledWith('ink/makeChoice', choiceId);
+  });
+
+  test('getVisitCount', () => {
+    expect(spyVisitCountAtPathString).not.toHaveBeenCalled();
+    const count = ink.getVisitCount('ref');
+    expect(count).toEqual(5);
+    expect(spyVisitCountAtPathString).toHaveBeenCalledWith('ref');
+    expect(emit).toHaveBeenCalledWith('ink/getVisitCount', { ref: 'ref', visitCount: 5 });
+  });
+
+  test('evaluateFunction', () => {
+    expect(spyEvaluateFunction).not.toHaveBeenCalled();
+    const result = ink.evaluateFunction(3, 4);
+    expect(result).toEqual('result 7');
+    expect(spyEvaluateFunction).toHaveBeenCalledWith(3, 4);
+    expect(emit).toHaveBeenCalledWith('ink/evaluateFunction', { args: [3, 4], result: 'result 7' });
+  });
+
+  test('getGlobalTags', () => {
+    const globaltags = ink.getGlobalTags();
+    const expectedGlobalTags = {
+      single_scene: true,
+      autosave: true,
+      observe: 'var1',
+      title: 'test story'
+    };
+    expect(globaltags).toEqual(expectedGlobalTags);
+    expect(emit).toHaveBeenCalledWith('ink/getGlobalTags', expectedGlobalTags);
+  });
+
+  test('getVariable', () => {
+    const expectedValue = mockInkStoryInstance.variablesState.var1;
+    const result = ink.getVariable('var1');
+    expect(result).toEqual(expectedValue);
+    expect(emit).toHaveBeenCalledWith('ink/getVariable', { name: 'var1', value: expectedValue });
+  });
+
+  test('setVariable', () => {
+    ink.setVariable('varTest', 10);
+    const expectedValue = mockInkStoryInstance.variablesState.varTest;
+    expect(expectedValue).toEqual(10);
+    expect(emit).toHaveBeenCalledWith('ink/setVariable', { name: 'varTest', value: 10 });
+  });
+
+  test('observeVariable', () => {
+    expect(spyObserveVariable).not.toHaveBeenCalled();
+    const handler = () => 'var-handler';
+    ink.observeVariable('var1', handler);
+    expect(spyObserveVariable).toHaveBeenCalledWith('var1', handler);
+  });
+
+  test('goTo', () => {
+    expect(spyChoosePathString).not.toHaveBeenCalled();
+    const knot = 'knotAddress';
+    ink.goTo(knot);
+    expect(spyChoosePathString).toHaveBeenCalledWith(knot);
+    expect(emit).toHaveBeenCalledWith('ink/goTo', knot);
+  });
+
+  test('getScene', () => {
+    expect(spyContinue).not.toHaveBeenCalled();
+    const expectedScene = {
+      content: [
+        {
+          text: 'Paragraph 1.',
+          tags: { HELLO: true, WORLD: true }
+        },
+        {
+          text: 'Paragraph 2.',
+          tags: { HELLO: true, WORLD: true }
+        },
+        {
+          text: 'Paragraph 3.',
+          tags: { HELLO: true, WORLD: true }
+        }
+      ],
+      text: [
+        'Paragraph 1.',
+        'Paragraph 2.',
+        'Paragraph 3.'
+      ],
+      tags: {
+        HELLO: true,
+        WORLD: true
+      },
+      choices: [
+        { id: 0, choice: 'Option 1', tags: undefined },
+        { id: 1, choice: 'Option 2', tags: undefined }
+      ]
+    };
+    const scene = ink.getScene();
+    expect(spyContinue).toHaveBeenCalledTimes(3);
+    expect(scene).toEqual(expectedScene);
+    expect(emit).toHaveBeenCalledWith('ink/getScene', scene);
+  });
+});

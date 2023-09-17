@@ -99,19 +99,37 @@ describe('components/game', () => {
     expect(emit).toHaveBeenCalledWith('game/loadInkFile', { uri: getAssetPath(inkFile) });
   });
 
-  test('cleanup', async () => {
-    // setup
-    mockState.setKey('scenes', ['aaa', 'bbb']);
-    mockState.setKey('vars', { aaa: 'bbb' });
-    mockState.setKey('metadata', { ccc: 'ddd' });
-    expect(playMusic).not.toHaveBeenCalled();
-    // run
-    game.cleanup();
-    // check
-    expect(playMusic).toHaveBeenCalledWith(false);
-    expect(mockState.get().scenes).toEqual([]);
-    expect(mockState.get().vars).toEqual({});
-    expect(mockState.get().metadata).toEqual({});
+
+  describe('cleanup', () => {
+    test('full', async () => {
+      // setup
+      mockState.setKey('scenes', ['aaa', 'bbb']);
+      mockState.setKey('vars', { aaa: 'bbb' });
+      mockState.setKey('metadata', { ccc: 'ddd' });
+      expect(playMusic).not.toHaveBeenCalled();
+      // run
+      game.cleanup();
+      // check
+      expect(playMusic).toHaveBeenCalledWith(false);
+      expect(mockState.get().scenes).toEqual([]);
+      expect(mockState.get().vars).toEqual({});
+      expect(mockState.get().metadata).toEqual({});
+    });
+
+    test('partial', async () => {
+      // setup
+      mockState.setKey('scenes', ['aaa', 'bbb']);
+      mockState.setKey('vars', { aaa: 'bbb' });
+      mockState.setKey('metadata', { ccc: 'ddd' });
+      expect(playMusic).not.toHaveBeenCalled();
+      // run
+      game.cleanup(true);
+      // check
+      expect(playMusic).toHaveBeenCalledWith(false);
+      expect(mockState.get().scenes).toEqual([]);
+      expect(mockState.get().vars).toEqual({});
+      expect(mockState.get().metadata).toEqual({ ccc: 'ddd' });
+    });
   });
 
 

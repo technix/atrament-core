@@ -62,8 +62,8 @@ async function initInkStory() {
 
 async function start(saveSlot) {
   emit('game/start', { saveSlot });
-  // cleanup
-  cleanup();
+  // partial cleanup
+  cleanup(true);
   // initialize ink story if it's not done yet
   if (!inkContentSource) {
     await initInkStory();
@@ -90,14 +90,17 @@ async function start(saveSlot) {
   }
 }
 
-function cleanup() {
+function cleanup(partial) {
   const { state } = interfaces();
   // stop all music
   playMusic(false);
   // reset state
   state.setKey('scenes', []);
   state.setKey('vars', {});
-  state.setKey('metadata', {});
+  // partial cleanup leaves metadata as-is
+  if (!partial) {
+    state.setKey('metadata', {});
+  }
 }
 
 async function canResume() {

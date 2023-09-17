@@ -136,9 +136,15 @@ Parameters:
 
 Load Ink file, specified on init stage.
 
+#### async atrament.game.initInkStory()
+
+If `loadInkFile` is not called yet, calls it first.
+Initializes Ink story, updates game metadata.
+
 #### async atrament.game.start(saveslot)
 
-Initializes Ink story, registers automated observers.
+If `initInkStory` is not called yet, calls it first.
+Reset game state, register automated variable observers.
 If `saveslot` is defined, load state from specified save.
 
 #### async atrament.game.resume()

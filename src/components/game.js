@@ -8,6 +8,7 @@ import { playMusic, playSound } from './sound';
 import { load, save, existSave, removeSave, listSaves } from './saves';
 
 let inkContent;
+let inkContentSource;
 const sceneProcessors = [];
 const autosaveSlot = '_autosave_';
 
@@ -22,6 +23,7 @@ function $getCheckpointName(id) {
 // ===========================================
 
 function init(pathToInkFile, inkFile) {
+  inkContentSource = false;
   interfaces().state.setKey('game', {
     $path: pathToInkFile,
     $file: inkFile,
@@ -42,23 +44,35 @@ async function loadInkFile() {
 }
 
 
-async function start(saveSlot) {
-  emit('game/start', { saveSlot });
-  // cleanup
-  cleanup();
-  // load content if not present
+async function initInkStory() {
+  const { state } = interfaces();
+  // load content if it's not loaded, or it's not for the same game
   if (!inkContent) {
     await loadInkFile();
   }
   // initialize InkJS
   ink.initStory(inkContent);
   // read global tags
-  const { state } = interfaces();
   const metadata = ink.getGlobalTags();
   state.setKey('metadata', metadata);
+  // update ink source
+  inkContentSource = true;
+  emit('game/initInkStory');
+}
+
+async function start(saveSlot) {
+  emit('game/start', { saveSlot });
+  // cleanup
+  cleanup();
+  // initialize ink story if it's not done yet
+  if (!inkContentSource) {
+    await initInkStory();
+  }
   // register variable observers
-  if (metadata.observe) {
-    metadata.observe.forEach((variable) => {
+  const { state } = interfaces();
+  const observers = state.get().metadata.observe;
+  if (observers) {
+    observers.forEach((variable) => {
       // save initial value to state
       state.setSubkey('vars', variable, ink.getVariable(variable));
       // register variable observer
@@ -202,6 +216,7 @@ function continueStory() {
 export default {
   init,
   loadInkFile,
+  initInkStory,
   start,
   resume,
   canResume,

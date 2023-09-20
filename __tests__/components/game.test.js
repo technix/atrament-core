@@ -100,36 +100,38 @@ describe('components/game', () => {
   });
 
 
-  describe('cleanup', () => {
-    test('full', async () => {
-      // setup
-      mockState.setKey('scenes', ['aaa', 'bbb']);
-      mockState.setKey('vars', { aaa: 'bbb' });
-      mockState.setKey('metadata', { ccc: 'ddd' });
-      expect(playMusic).not.toHaveBeenCalled();
-      // run
-      game.cleanup();
-      // check
-      expect(playMusic).toHaveBeenCalledWith(false);
-      expect(mockState.get().scenes).toEqual([]);
-      expect(mockState.get().vars).toEqual({});
-      expect(mockState.get().metadata).toEqual({});
-    });
+  test('clear', async () => {
+    // setup
+    mockState.setKey('scenes', ['aaa', 'bbb']);
+    mockState.setKey('vars', { aaa: 'bbb' });
+    mockState.setKey('metadata', { ccc: 'ddd' });
+    mockState.setKey('game', { ddd: 'eee' });
+    expect(playMusic).not.toHaveBeenCalled();
+    // run
+    game.clear();
+    // check
+    expect(playMusic).toHaveBeenCalledWith(false);
+    expect(mockState.get().scenes).toEqual([]);
+    expect(mockState.get().vars).toEqual({});
+    expect(mockState.get().metadata).toEqual({ ccc: 'ddd' });
+    expect(mockState.get().game).toEqual({ ddd: 'eee' });
+  });
 
-    test('partial', async () => {
-      // setup
-      mockState.setKey('scenes', ['aaa', 'bbb']);
-      mockState.setKey('vars', { aaa: 'bbb' });
-      mockState.setKey('metadata', { ccc: 'ddd' });
-      expect(playMusic).not.toHaveBeenCalled();
-      // run
-      game.cleanup(true);
-      // check
-      expect(playMusic).toHaveBeenCalledWith(false);
-      expect(mockState.get().scenes).toEqual([]);
-      expect(mockState.get().vars).toEqual({});
-      expect(mockState.get().metadata).toEqual({ ccc: 'ddd' });
-    });
+  test('reset', async () => {
+    // setup
+    mockState.setKey('scenes', ['aaa', 'bbb']);
+    mockState.setKey('vars', { aaa: 'bbb' });
+    mockState.setKey('metadata', { ccc: 'ddd' });
+    mockState.setKey('game', { ddd: 'eee' });
+    expect(playMusic).not.toHaveBeenCalled();
+    // run
+    game.reset();
+    // check
+    expect(playMusic).toHaveBeenCalledWith(false);
+    expect(mockState.get().scenes).toEqual([]);
+    expect(mockState.get().vars).toEqual({});
+    expect(mockState.get().metadata).toEqual({});
+    expect(mockState.get().game).toEqual({});
   });
 
 
@@ -160,6 +162,23 @@ describe('components/game', () => {
       expect(existSave).not.toHaveBeenCalled();
       expect(load).not.toHaveBeenCalled();
     });
+
+    test('start from beginning - reinit ink story', async () => {
+      // set
+      mockInkContent = '{"inkstory":"inkContent"}';
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      game.init(pathToInkFile, inkFile);
+      await game.initInkStory();
+      // run
+      await game.start();
+      // check
+      expect(ink.initStory).toHaveBeenCalledTimes(2); // run 2 times - first when initInkStory, then on start
+      expect(ink.initStory).toHaveBeenCalledWith({ inkstory: 'inkContent' });
+      expect(ink.observeVariable).not.toHaveBeenCalled();
+      expect(load).not.toHaveBeenCalled();
+    });
+
 
     test('ink content as string', async () => {
       // set
@@ -230,6 +249,24 @@ describe('components/game', () => {
       // run
       await game.start('existingsave');
       // check
+      expect(ink.initStory).toHaveBeenCalledTimes(1);
+      expect(existSave).toHaveBeenCalledTimes(1);
+      expect(existSave).toHaveBeenCalledWith('existingsave');
+      expect(load).toHaveBeenCalledTimes(1);
+      expect(load).toHaveBeenCalledWith('existingsave');
+    });
+
+    test('load from existing save - story is initialized', async () => {
+      // set
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      mockPersistent.set('existingsave', 'content');
+      game.init(pathToInkFile, inkFile);
+      await game.initInkStory();
+      // run
+      await game.start('existingsave');
+      // check
+      expect(ink.initStory).toHaveBeenCalledTimes(1);
       expect(existSave).toHaveBeenCalledTimes(1);
       expect(existSave).toHaveBeenCalledWith('existingsave');
       expect(load).toHaveBeenCalledTimes(1);

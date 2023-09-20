@@ -213,9 +213,13 @@ atrament.game.defineSceneProcessor(processCheckpoint);
 
 Returns full path to asset file (image, sound, music).
 
-#### atrament.game.cleanup()
+#### atrament.game.clear()
 
-Method to call at the game end. Stops music and clears state.
+Method to call at the game end. Stops music, clears `scenes` and `vars` in Atrament state.
+
+#### atrament.game.reset()
+
+Method to call at the game end. Calls `atrament.game.clear()`, then clears `metadata` and `game` in Atrament state.
 
 ### Ink methods
 

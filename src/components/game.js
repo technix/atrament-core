@@ -62,8 +62,8 @@ async function initInkStory() {
 
 async function start(saveSlot) {
   emit('game/start', { saveSlot });
-  // partial cleanup
-  cleanup(true);
+  // game state cleanup
+  clear();
   // initialize ink story:
   // - it it's not done yet
   // - if we start a new game
@@ -93,17 +93,21 @@ async function start(saveSlot) {
   }
 }
 
-function cleanup(partial) {
+function clear() {
   const { state } = interfaces();
   // stop all music
   playMusic(false);
   // reset state
   state.setKey('scenes', []);
   state.setKey('vars', {});
-  // partial cleanup leaves metadata as-is
-  if (!partial) {
-    state.setKey('metadata', {});
-  }
+}
+
+function reset() {
+  const { state } = interfaces();
+  clear();
+  // clean metadata and game
+  state.setKey('metadata', {});
+  state.setKey('game', {});
 }
 
 async function canResume() {
@@ -227,7 +231,8 @@ export default {
   resume,
   canResume,
   restart,
-  cleanup,
+  clear,
+  reset,
   continueStory,
   makeChoice: (id) => ink.makeChoice(id),
   getAssetPath,

@@ -94,6 +94,7 @@ async function start(saveSlot) {
 }
 
 function clear() {
+  emit('game/clear');
   const { state } = interfaces();
   // stop all music
   playMusic(false);
@@ -103,6 +104,7 @@ function clear() {
 }
 
 function reset() {
+  emit('game/reset');
   const { state } = interfaces();
   clear();
   // clean metadata and game

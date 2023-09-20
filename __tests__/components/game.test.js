@@ -102,6 +102,7 @@ describe('components/game', () => {
 
   test('clear', async () => {
     // setup
+    expect(emit).not.toHaveBeenCalled();
     mockState.setKey('scenes', ['aaa', 'bbb']);
     mockState.setKey('vars', { aaa: 'bbb' });
     mockState.setKey('metadata', { ccc: 'ddd' });
@@ -110,6 +111,7 @@ describe('components/game', () => {
     // run
     game.clear();
     // check
+    expect(emit).toHaveBeenCalledWith('game/clear');
     expect(playMusic).toHaveBeenCalledWith(false);
     expect(mockState.get().scenes).toEqual([]);
     expect(mockState.get().vars).toEqual({});
@@ -119,6 +121,7 @@ describe('components/game', () => {
 
   test('reset', async () => {
     // setup
+    expect(emit).not.toHaveBeenCalled();
     mockState.setKey('scenes', ['aaa', 'bbb']);
     mockState.setKey('vars', { aaa: 'bbb' });
     mockState.setKey('metadata', { ccc: 'ddd' });
@@ -127,6 +130,7 @@ describe('components/game', () => {
     // run
     game.reset();
     // check
+    expect(emit).toHaveBeenCalledWith('game/reset');
     expect(playMusic).toHaveBeenCalledWith(false);
     expect(mockState.get().scenes).toEqual([]);
     expect(mockState.get().vars).toEqual({});

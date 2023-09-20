@@ -10,13 +10,16 @@ const handlers = {
 async function load() {
   const { state, persistent } = interfaces();
   // load default values first
-  let settings = JSON.parse(JSON.stringify(getConfig().settings)); // TODO use deep copy here
+  const defaultSettings = JSON.parse(JSON.stringify(getConfig().settings)); // TODO use deep copy here
   // load values from save if exist
+  let savedSettings = {};
   const existSavedSettings = await persistent.exists('settings');
   if (existSavedSettings) {
-    settings = await persistent.get('settings');
+    savedSettings = await persistent.get('settings');
   }
   // save app settings to state
+  const settings = { ...defaultSettings, ...savedSettings };
+  console.log(defaultSettings, savedSettings);
   state.setKey('settings', settings);
   runHandlers();
   emit('settings/load', settings);

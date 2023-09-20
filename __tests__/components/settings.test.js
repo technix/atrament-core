@@ -36,7 +36,7 @@ beforeEach(() => {
   mockState.reset();
   mockPersistent.reset();
   jest.clearAllMocks();
-  setConfig(defaultConfig);
+  setConfig(null, defaultConfig);
 });
 
 
@@ -77,20 +77,48 @@ describe('components/settings', () => {
       expect(mockSound.setVolume).toHaveBeenCalledWith(5);
     });
 
-    test('settings from persistent', async () => {
+    test('settings from persistent - with new defaults', async () => {
+      const defaultConfig2 = {
+        applicationID: '!CHANGE_THIS',
+        settings: {
+          volume: 0,
+          mute: true,
+          fontFamily: 'System'
+        }
+      };
+      setConfig(null, defaultConfig2);
       const savedSettings = {
         mute: false,
         volume: 10,
         fullscreen: true,
         fontsize: 20
       };
+      const expectedSettings = {
+        ...savedSettings,
+        fontFamily: 'System'
+      };
       await mockPersistent.set('settings', savedSettings);
       await settings.load();
-      expect(mockState.get().settings).toEqual(savedSettings);
+      expect(mockState.get().settings).toEqual(expectedSettings);
       expect(mockSound.mute).toHaveBeenCalledWith(false);
       expect(mockSound.setVolume).toHaveBeenCalledWith(10);
-      expect(emit).toHaveBeenCalledWith('settings/load', savedSettings);
+      expect(emit).toHaveBeenCalledWith('settings/load', expectedSettings);
     });
+  });
+
+  test('settings from persistent', async () => {
+    const savedSettings = {
+      mute: false,
+      volume: 10,
+      fullscreen: true,
+      fontsize: 20
+    };
+    await mockPersistent.set('settings', savedSettings);
+    await settings.load();
+    expect(mockState.get().settings).toEqual(savedSettings);
+    expect(mockSound.mute).toHaveBeenCalledWith(false);
+    expect(mockSound.setVolume).toHaveBeenCalledWith(10);
+    expect(emit).toHaveBeenCalledWith('settings/load', savedSettings);
   });
 
   describe('save', () => {

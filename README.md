@@ -136,20 +136,28 @@ Parameters:
 - path: path to Ink file
 - file: Ink file name
 
+Event: `'game/init', { pathToInkFile: path, inkFile: file }`
+
 #### async atrament.game.loadInkFile()
 
 Load Ink file, specified on init stage.
+
+Event: `'game/loadInkFile', { uri: inkFileURI }`
 
 #### async atrament.game.initInkStory()
 
 If `loadInkFile` is not called yet, calls it first.
 Initializes Ink story, updates game metadata.
 
+Event: `'game/initInkStory'`
+
 #### async atrament.game.start(saveslot)
 
 If `initInkStory` is not called yet, calls it first.
 Reset game state, register automated variable observers.
 If `saveslot` is defined, load state from specified save.
+
+Event: `'game/start', { saveSlot: saveslot }`
 
 #### async atrament.game.resume()
 
@@ -158,9 +166,13 @@ Resume saved game:
 - if checkpoints exist, resume from newest checkpoint
 - otherwise, start new game
 
+Event: `'game/resume', { saveSlot: saveslot }`
+
 #### async atrament.game.canResume()
 
 Returns save slot name, if game can be resumed.
+
+Event: `'game/canResume', { saveSlot: saveslot }`
 
 #### async atrament.game.restart(saveslot)
 
@@ -168,21 +180,31 @@ Restart game from specified save slot (if `saveslot` is not defined, starts new 
 
 Note: this methods runs `atrament.game.continueStory()` to regenerate game content.
 
+Event: `'game/restart', { saveSlot: saveslot }`
+
 #### async atrament.game.load(saveslot)
 
 Load game state from specified save slot.
+
+Event: `'game/load', saveslot`
 
 #### async atrament.game.save(saveslot)
 
 Save game state to specified save slot.
 
+Event: `'game/save', saveslot`
+
 #### async atrament.game.listSaves()
 
 Returns array of all existing saves for active game.
 
+Event: `'game/listSaves', savesListArray`
+
 #### async atrament.game.removeSave(saveslot)
 
 Removes specified game slot.
+
+Event: `'game/removeSave', saveslot`
 
 #### async atrament.game.existSave(saveslot)
 
@@ -194,6 +216,10 @@ Returns `true` if specified save slot exists.
 - run scene processors
 - process tags
 - updates Atrament state with scene
+
+Event: `'game/continueStory'`
+
+Event for tag handling: `'game/handleTag', { [tagName]: tagValue }`
 
 #### atrament.game.makeChoice(id)
 
@@ -221,12 +247,21 @@ Returns full path to asset file (image, sound, music).
 
 Method to call at the game end. Stops music, clears `scenes` and `vars` in Atrame state.
 
+Event: `'game/clear'`
+
 #### atrament.game.reset()
 
 Method to call at the game end. Calls `atrament.game.clear()`, then clears `metadata` and `game` in Atrament state.
 
+Event: `'game/reset'`
+
 ### Ink methods
 
+#### atrament.ink.initStory()
+
+Initializes Ink story with loaded content.
+
+Event: `'ink/initStory'`
 #### atrament.ink.story()
 
 Returns current Story instance.
@@ -243,25 +278,37 @@ Returns current Ink state as JSON object.
 
 Wrapper for `Story.ChooseChoiceIndex`.
 
+Event: `'ink/makeChoice', { id: choiceId }`
+
 #### atrament.ink.getVisitCount(ref)
 
 Wrapper for `Story.VisitCountAtPathString`.
+
+Event: `'ink/getVisitCount', { ref: ref, visitCount: value }`
 
 #### atrament.ink.evaluateFunction(functionName, argsArray)
 
 Evaluates Ink function, returns result of evaluation. Wrapper for `Story.EvaluateFunction`.
 
+Event: `'ink/evaluateFunction', { function: functionName, args: argsArray, result: functionReturnValue }`
+
 #### atrament.ink.getGlobalTags()
 
 Returns parsed Ink global tags.
+
+Event: `'ink/getGlobalTags', { globalTags: globalTagsObject }`
 
 #### atrament.ink.getVariable(variableName)
 
 Returns value of specified Ink variable.
 
+Event: `'ink/getVariable', { name: variableName }`
+
 #### atrament.ink.setVariable(variableName, value)
 
 Sets value of specified Ink variable.
+
+Event: `'ink/setVariable', { name: variableName, value: value }`
 
 #### atrament.ink.observeVariable(variableName, observerFunction)
 
@@ -271,9 +318,13 @@ Registers observer for specified variable. Wrapper for `Story.ObserveVariable`.
 
 Go to specified Ink knot or stitch. Wrapper for `Story.ChoosePathString`.
 
+Event: `'ink/goTo', { knot: ref }`
+
 #### atrament.ink.getScene()
 
 Returns **Scene** object.
+
+Event: `'ink/getScene', { scene: sceneObject }`
 
 ### Settings methods
 
@@ -285,17 +336,25 @@ However, if you need to perform additional actions when setting is changed, you 
 
 Load settings from persistent storage to Atrament state.
 
+Event: `'settings/load'`
+
 #### async atrament.settings.save()
 
-Save settings from persistent storage.
+Save settings to persistent storage.
+
+Event: `'settings/save'`
 
 #### atrament.settings.get(parameter)
 
 Returns value of setting.
 
+Event: `'settings/get', { name: parameter }`
+
 #### atrament.settings.set(parameter, value)
 
 Sets value of setting.
+
+Event: `'settings/set', { name: parameter, value: value }`
 
 #### atrament.settings.toggle(parameter)
 

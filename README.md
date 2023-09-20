@@ -44,6 +44,10 @@ If you are looking for example of a web application based on Atrament, check out
 
 ## API Reference
 
+#### atrament.version
+
+Atrament version string. Read-only. 
+
 ### Base methods
 
 #### atrament.defineInterfaces()
@@ -215,7 +219,7 @@ Returns full path to asset file (image, sound, music).
 
 #### atrament.game.clear()
 
-Method to call at the game end. Stops music, clears `scenes` and `vars` in Atrament state.
+Method to call at the game end. Stops music, clears `scenes` and `vars` in Atrame state.
 
 #### atrament.game.reset()
 

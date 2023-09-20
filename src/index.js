@@ -1,6 +1,7 @@
 import { interfaces, defineInterfaces } from './utils/interfaces';
 import { getConfig, setConfig } from './utils/config';
 import { emitter, emit } from './utils/emitter';
+import packageInfo from '../package.json';
 
 import game from './components/game';
 import ink from './components/ink';
@@ -36,5 +37,8 @@ export default {
   // sub-objects
   game,
   ink,
-  settings
+  settings,
+  get version() {
+    return packageInfo.version;
+  }
 };

@@ -9,24 +9,36 @@ const defaultConfig = {
   }
 };
 
-afterAll(() => setConfig(null, defaultConfig));
+const Story = () => ({ inkStoryConstructor: true });
+
+afterAll(() => setConfig(Story, defaultConfig));
 
 describe('utils/config', () => {
+  test('no params', () => {
+    expect(() => {
+      setConfig();
+    }).toThrow('atrament.init: provide ink Story constructor as a first argument!');
+  });
+
   test('returns valid config', () => {
     const cfg = getConfig();
     expect(cfg).toEqual(defaultConfig);
   });
 
   test('no config provided', () => {
-    const inkStory = 'inkStory';
-    setConfig(inkStory);
+    setConfig(Story);
     const cfg = getConfig();
     expect(cfg).toEqual(defaultConfig);
   });
 
+  test('no valid Story constructor provided', () => {
+    expect(() => {
+      setConfig({ some: 'config' });
+    }).toThrow('atrament.init: Story is not a constructor!');
+  });
+
   test('sets config', () => {
-    const inkStory = 'inkStory';
-    setConfig(inkStory, {
+    setConfig(Story, {
       applicationID: 'jest-test',
       settings: {
         fullscreen: true
@@ -35,7 +47,7 @@ describe('utils/config', () => {
     const cfg = getConfig();
     expect(cfg).toEqual({
       applicationID: 'jest-test',
-      InkStory: 'inkStory',
+      InkStory: Story,
       settings: {
         fullscreen: true
       }

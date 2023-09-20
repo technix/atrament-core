@@ -44,10 +44,11 @@ jest.mock('../src/utils/emitter', () => ({
   }
 }));
 
+const Story = () => ({ inkStoryConstructor: true });
 
 beforeEach(() => {
   jest.clearAllMocks();
-  setConfig(null, {});
+  setConfig(Story, {});
 });
 
 describe('atrament', () => {
@@ -81,12 +82,11 @@ describe('atrament', () => {
     expect(settings.load).not.toHaveBeenCalled();
     expect(mockPersistent.init).not.toHaveBeenCalled();
     expect(getConfig()).toEqual({
-      InkStory: null,
+      InkStory: Story,
       applicationID: '!CHANGE_THIS',
       settings: { mute: true, volume: 0 }
     });
     // run
-    const Story = { inkStory: true };
     const cfg = { applicationID: 'TEST APP' };
     await atrament.init(Story, cfg);
     // check

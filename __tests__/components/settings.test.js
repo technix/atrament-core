@@ -31,12 +31,13 @@ const defaultConfig = {
   }
 };
 
+const Story = () => ({ inkStoryConstructor: true });
 
 beforeEach(() => {
   mockState.reset();
   mockPersistent.reset();
   jest.clearAllMocks();
-  setConfig(null, defaultConfig);
+  setConfig(Story, defaultConfig);
 });
 
 
@@ -57,7 +58,7 @@ describe('components/settings', () => {
     });
 
     test('settings from config', async () => {
-      setConfig(null, {
+      setConfig(Story, {
         applicationID: 'test-app',
         settings: {
           mute: false,
@@ -86,7 +87,7 @@ describe('components/settings', () => {
           fontFamily: 'System'
         }
       };
-      setConfig(null, defaultConfig2);
+      setConfig(Story, defaultConfig2);
       const savedSettings = {
         mute: false,
         volume: 10,

@@ -18,6 +18,10 @@ If you are looking for example of a web application based on Atrament, check out
 - All changes affect internal state
 
 
+## Installation
+
+```npm install @atrament/core```
+
 ## Tags handled by Atrament
 
 ### Global tags
@@ -502,5 +506,5 @@ Interface to sound management library.
 ## LICENSE
 
 Atrament is distributed under MIT license.
-Copyright (c) 2023 Serhii "techniX" Mozhaiskyi
 
+Copyright (c) 2023 Serhii "techniX" Mozhaiskyi

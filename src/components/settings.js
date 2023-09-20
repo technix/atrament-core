@@ -19,7 +19,6 @@ async function load() {
   }
   // save app settings to state
   const settings = { ...defaultSettings, ...savedSettings };
-  console.log(defaultSettings, savedSettings);
   state.setKey('settings', settings);
   runHandlers();
   emit('settings/load', settings);

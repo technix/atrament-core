@@ -37,8 +37,8 @@ const mockInkStoryInstance = {
   VisitCountAtPathString() {
     return 5;
   },
-  EvaluateFunction(a, b) {
-    return `result ${a + b}`;
+  EvaluateFunction(fn, args) {
+    return `${fn} result: ${args[0] + args[1]}`;
   },
   variablesState: {
     var1: 'var1-value'
@@ -110,10 +110,13 @@ describe('components/ink', () => {
 
   test('evaluateFunction', () => {
     expect(spyEvaluateFunction).not.toHaveBeenCalled();
-    const result = ink.evaluateFunction(3, 4);
-    expect(result).toEqual('result 7');
-    expect(spyEvaluateFunction).toHaveBeenCalledWith(3, 4);
-    expect(emit).toHaveBeenCalledWith('ink/evaluateFunction', { args: [3, 4], result: 'result 7' });
+    const result = ink.evaluateFunction('testfunction', [3, 4]);
+    expect(result).toEqual('testfunction result: 7');
+    expect(spyEvaluateFunction).toHaveBeenCalledWith('testfunction', [3, 4], undefined);
+    expect(emit).toHaveBeenCalledWith(
+      'ink/evaluateFunction',
+      { function: 'testfunction', args: [3, 4], result: 'testfunction result: 7' }
+    );
   });
 
   test('getGlobalTags', () => {

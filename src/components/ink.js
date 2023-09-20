@@ -53,9 +53,9 @@ export default {
     emit('ink/getVisitCount', { ref, visitCount });
     return visitCount;
   },
-  evaluateFunction: (...args) => {
-    const result = inkStory.EvaluateFunction(...args);
-    emit('ink/evaluateFunction', { args, result });
+  evaluateFunction: (fn, args, returnTextOutput) => {
+    const result = inkStory.EvaluateFunction(fn, args, returnTextOutput);
+    emit('ink/evaluateFunction', { function: fn, args, result });
     return result;
   },
   getGlobalTags: () => {

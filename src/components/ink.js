@@ -45,8 +45,8 @@ export default {
   loadState: (savedState) => inkStory.state.LoadJson(savedState),
   getState: () => inkStory.state.toJson(),
   makeChoice: (id) => {
-    emit('ink/makeChoice', id);
     inkStory.ChooseChoiceIndex(id);
+    emit('ink/makeChoice', id);
   },
   getVisitCount: (ref) => {
     const visitCount = inkStory.VisitCountAtPathString(ref);
@@ -69,13 +69,13 @@ export default {
     return value;
   },
   setVariable: (name, value) => {
-    emit('ink/setVariable', { name, value });
     inkStory.variablesState[name] = value;
+    emit('ink/setVariable', { name, value });
   },
   observeVariable: (variable, observer) => inkStory.ObserveVariable(variable, observer),
   goTo: (knot) => {
-    emit('ink/goTo', knot);
     inkStory.ChoosePathString(knot);
+    emit('ink/goTo', knot);
   },
   getScene
 };

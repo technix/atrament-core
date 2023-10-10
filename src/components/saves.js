@@ -15,7 +15,6 @@ export function $getSlotName(id) {
 
 
 export async function load(saveID) {
-  emit('game/load', saveID);
   const { persistent, state } = interfaces();
   const gameState = await persistent.get($getSlotName(saveID));
   state.setKey('scenes', gameState.scenes);
@@ -33,11 +32,11 @@ export async function load(saveID) {
   if (game.$currentMusic) {
     playMusic(game.$currentMusic);
   }
+  emit('game/load', saveID);
 }
 
 
 export async function save(saveID) {
-  emit('game/save', saveID);
   const { state, persistent } = interfaces();
   const atramentState = state.get();
   const gameState = {
@@ -48,6 +47,7 @@ export async function save(saveID) {
     scenes: atramentState.scenes
   };
   await persistent.set($getSlotName(saveID), gameState);
+  emit('game/save', saveID);
 }
 
 
@@ -58,8 +58,8 @@ export async function existSave(saveID) {
 
 
 export async function removeSave(saveID) {
-  emit('game/removeSave', saveID);
   await interfaces().persistent.remove($getSlotName(saveID));
+  emit('game/removeSave', saveID);
 }
 
 

@@ -61,7 +61,6 @@ async function initInkStory() {
 }
 
 async function start(saveSlot) {
-  emit('game/start', { saveSlot });
   // game state cleanup
   clear();
   // initialize ink story:
@@ -80,8 +79,8 @@ async function start(saveSlot) {
       state.setSubkey('vars', variable, ink.getVariable(variable));
       // register variable observer
       ink.observeVariable(variable, (name, value) => {
-        emit('ink/variableObserver', { name, value });
         state.setSubkey('vars', name, value);
+        emit('ink/variableObserver', { name, value });
       });
     });
   }
@@ -91,25 +90,26 @@ async function start(saveSlot) {
       await load(saveSlot);
     }
   }
+  emit('game/start', { saveSlot });
 }
 
 function clear() {
-  emit('game/clear');
   const { state } = interfaces();
   // stop all music
   playMusic(false);
   // reset state
   state.setKey('scenes', []);
   state.setKey('vars', {});
+  emit('game/clear');
 }
 
 function reset() {
-  emit('game/reset');
   const { state } = interfaces();
   clear();
   // clean metadata and game
   state.setKey('metadata', {});
   state.setKey('game', {});
+  emit('game/reset');
 }
 
 async function canResume() {
@@ -157,8 +157,8 @@ const tagHandlers = {
 function $processTags(list, tags) {
   list.forEach((tag) => {
     if (tag in tags && tag in tagHandlers) {
-      emit('game/handletag', { [tag]: tags[tag] });
       tagHandlers[tag](tags[tag]);
+      emit('game/handletag', { [tag]: tags[tag] });
     }
   });
 }
@@ -170,7 +170,6 @@ function defineSceneProcessor(fn) {
 
 
 function continueStory() {
-  emit('game/continueStory');
   const { state } = interfaces();
   // get next scene
   const scene = ink.getScene();
@@ -222,6 +221,7 @@ function continueStory() {
   if (metadata.autosave !== false) {
     save(autosaveSlot);
   }
+  emit('game/continueStory');
 }
 
 

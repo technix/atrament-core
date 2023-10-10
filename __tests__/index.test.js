@@ -25,11 +25,13 @@ const mockPersistent = {
   init: jest.fn()
 };
 
+const mockInterfaces = {
+  state: mockState,
+  persistent: mockPersistent
+};
+
 jest.mock('../src/utils/interfaces', () => ({
-  interfaces: jest.fn(() => ({
-    state: mockState,
-    persistent: mockPersistent
-  }))
+  interfaces: jest.fn(() => mockInterfaces)
 }));
 
 jest.mock('../src/components/settings', () => ({
@@ -57,13 +59,18 @@ describe('atrament', () => {
     expect(atramentVersion).toEqual(packageInfo.version);
   });
 
+  test('returns interfaces', () => {
+    const atramentInterfaces = atrament.interfaces;
+    expect(atramentInterfaces).toEqual(mockInterfaces);
+  });
+
   test('returns state', () => {
-    const atramentState = atrament.state();
+    const atramentState = atrament.state;
     expect(atramentState).toEqual(mockState);
   });
 
   test('returns store', () => {
-    const atramentState = atrament.store();
+    const atramentState = atrament.store;
     expect(atramentState).toEqual(mockStateStore);
   });
 

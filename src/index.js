@@ -27,11 +27,17 @@ async function init(InkStory, cfg) {
 }
 
 export default {
-  interfaces,
+  get interfaces() {
+    return interfaces();
+  },
   defineInterfaces,
   init,
-  state: () => interfaces().state,
-  store: () => interfaces().state.store(),
+  get state() {
+    return interfaces().state;
+  },
+  get store() {
+    return interfaces().state.store();
+  },
   on: (event, callback) => emitter.on(event, callback),
   off: (event, callback) => emitter.off(event, callback),
   // sub-objects

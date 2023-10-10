@@ -107,28 +107,28 @@ atrament.on('*', (event, args) => { ... });
 
 Unsubscribe listener from specific Atrament event.
 
-#### atrament.state()
+#### atrament.state
 
 Returns Atrament state interface. Can be used to operate state directly:
 
 ```
-atrament.state().setSubkey('game', 'checkpoint', true);
+atrament.state.setSubkey('game', 'checkpoint', true);
 ```
 
-#### atrament.store()
+#### atrament.store
 
 Return raw store object. Can be used in hooks, for example:
 
 ```
-const gamestate = useStore(atrament.store());
+const gamestate = useStore(atrament.store);
 ```
 
-#### atrament.interfaces()
+#### atrament.interfaces
 
 Returns raw interface objects. Can be used to operate with them directly.
 
 ```
-const { state, persistent } = atrament.interfaces();
+const { state, persistent } = atrament.interfaces;
 ```
 
 ### Game methods

@@ -6,7 +6,6 @@ import { emit } from '../../src/utils/emitter';
 import hashCode from '../../src/utils/hashcode';
 
 import ink from '../../src/components/ink';
-import getAssetPath from '../../src/components/assetpath';
 import { playMusic, playSound } from '../../src/components/sound';
 import { load, save, existSave, removeSave, listSaves } from '../../src/components/saves';
 
@@ -15,14 +14,15 @@ import game from '../../src/components/game';
 let mockGlobalTags;
 let mockScene;
 let mockInkContent;
+const mockInitLoader = jest.fn();
 const mockLoader = jest.fn(() => mockInkContent);
 let mockObserver;
+
+const mockGetAssetPath = jest.fn((file) => `${mockState.get().game.$path}/${file}`);
 
 jest.mock('../../src/utils/emitter', () => ({
   emit: jest.fn()
 }));
-
-jest.mock('../../src/components/assetpath', () => jest.fn((file) => `${mockState.get().game.$path}/${file}`));
 
 jest.mock('../../src/components/ink', () => ({
   initStory: jest.fn(),
@@ -57,7 +57,9 @@ jest.mock('../../src/utils/interfaces', () => ({
     state: mockState,
     persistent: mockPersistent,
     loader: {
-      load: mockLoader
+      init: mockInitLoader,
+      load: mockLoader,
+      getAssetPath: mockGetAssetPath
     }
   }))
 }));
@@ -85,6 +87,7 @@ describe('components/game', () => {
       $file: inkFile,
       gameUUID: hashCode(`${pathToInkFile}|${inkFile}`)
     });
+    expect(mockInitLoader).toHaveBeenCalledWith(pathToInkFile, inkFile);
     expect(emit).toHaveBeenCalledWith('game/init', { pathToInkFile, inkFile });
   });
 
@@ -95,8 +98,8 @@ describe('components/game', () => {
     expect(mockLoader).not.toHaveBeenCalled();
     emit.mockClear();
     await game.loadInkFile();
-    expect(mockLoader).toHaveBeenCalledWith(getAssetPath(inkFile));
-    expect(emit).toHaveBeenCalledWith('game/loadInkFile', { uri: getAssetPath(inkFile) });
+    expect(mockLoader).toHaveBeenCalledWith(mockGetAssetPath(inkFile));
+    expect(emit).toHaveBeenCalledWith('game/loadInkFile', { uri: mockGetAssetPath(inkFile) });
   });
 
 
@@ -288,8 +291,8 @@ describe('components/game', () => {
       // run
       await game.start();
       // check
-      expect(mockLoader).toHaveBeenCalledWith(getAssetPath(inkFile));
-      expect(emit).toHaveBeenCalledWith('game/loadInkFile', { uri: getAssetPath(inkFile) });
+      expect(mockLoader).toHaveBeenCalledWith(mockGetAssetPath(inkFile));
+      expect(emit).toHaveBeenCalledWith('game/loadInkFile', { uri: mockGetAssetPath(inkFile) });
     });
   });
 
@@ -531,9 +534,9 @@ describe('components/game', () => {
 
   test('getAssetPath', () => {
     const asset = 'aaa';
-    expect(getAssetPath).not.toHaveBeenCalled();
+    expect(mockGetAssetPath).not.toHaveBeenCalled();
     game.getAssetPath(asset);
-    expect(getAssetPath).toHaveBeenCalledWith(asset);
+    expect(mockGetAssetPath).toHaveBeenCalledWith(asset);
   });
 
   test('makeChoice', () => {

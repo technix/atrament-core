@@ -3,7 +3,6 @@ import { emit } from '../utils/emitter';
 import hashCode from '../utils/hashcode';
 
 import ink from './ink';
-import getAssetPath from './assetpath';
 import { playMusic, playSound } from './sound';
 import { load, save, existSave, removeSave, listSaves } from './saves';
 
@@ -24,6 +23,7 @@ function $getCheckpointName(id) {
 
 function init(pathToInkFile, inkFile) {
   inkContentSource = false;
+  interfaces().loader.init(pathToInkFile, inkFile);
   interfaces().state.setKey('game', {
     $path: pathToInkFile,
     $file: inkFile,
@@ -35,7 +35,7 @@ function init(pathToInkFile, inkFile) {
 
 async function loadInkFile() {
   const { game } = interfaces().state.get();
-  const uri = getAssetPath(game.$file);
+  const uri = interfaces().loader.getAssetPath(game.$file);
   inkContent = await interfaces().loader.load(uri);
   if (typeof inkContent === 'string') {
     inkContent = JSON.parse(inkContent.replace('\uFEFF', ''));
@@ -237,7 +237,7 @@ export default {
   reset,
   continueStory,
   makeChoice: (id) => ink.makeChoice(id),
-  getAssetPath,
+  getAssetPath: (path) => interfaces().loader.getAssetPath(path),
   defineSceneProcessor,
   save,
   load,

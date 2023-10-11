@@ -6,8 +6,6 @@ const mockPlayMusic = jest.fn();
 const mockStopMusic = jest.fn();
 const mockSetSubkey = jest.fn();
 
-jest.mock('../../src/components/assetpath', () => jest.fn((file) => `/assets/${file}`));
-
 jest.mock('../../src/utils/interfaces', () => ({
   interfaces: jest.fn(() => ({
     state: {
@@ -17,6 +15,9 @@ jest.mock('../../src/utils/interfaces', () => ({
       playSound: mockPlaySound,
       playMusic: mockPlayMusic,
       stopMusic: mockStopMusic
+    },
+    loader: {
+      getAssetPath: (file) => `/assets/${file}`
     }
   }))
 }));

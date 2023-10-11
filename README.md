@@ -139,6 +139,7 @@ Initialize game object. Required to perform operations with saves.
 Parameters:
 - path: path to Ink file
 - file: Ink file name
+- gameID: optional. If provided, Atrament will use given ID for save management. Otherwise, it will be generated based on path and filename.
 
 Event: `'game/init', { pathToInkFile: path, inkFile: file }`
 
@@ -146,7 +147,7 @@ Event: `'game/init', { pathToInkFile: path, inkFile: file }`
 
 Load Ink file, specified on init stage.
 
-Event: `'game/loadInkFile', { uri: inkFileURI }`
+Event: `'game/loadInkFile', inkFilename`
 
 #### async atrament.game.initInkStory()
 
@@ -449,12 +450,13 @@ Please note that `metadata` and `vars` from Atrament state are not included in t
 There are four interfaces in `atrament-core`. Their implementation is not included, so developers can use `atrament-core` with the libraries they like. 
 
 ### loader
-
-Implements async function `load` to load content of Ink file. Takes full path as a parameter.
+Interface to file operations. Function `init` will be called first, taking path to the game as a parameter. Function `getAssetPath` should return full path of given file. Async function `loadInk` should return content of a given Ink file, located in the folder defined at the initialization time.
 
 ```
 {
-    async load(uri)
+    init(path)
+    getAssetPath(filename)
+    async loadInk(uri)
 }
 ```
 

@@ -21,13 +21,13 @@ function $getCheckpointName(id) {
 
 // ===========================================
 
-function init(pathToInkFile, inkFile) {
+function init(pathToInkFile, inkFile, gameID) {
   inkContentSource = false;
-  interfaces().loader.init(pathToInkFile, inkFile);
+  interfaces().loader.init(pathToInkFile);
   interfaces().state.setKey('game', {
     $path: pathToInkFile,
     $file: inkFile,
-    gameUUID: hashCode(`${pathToInkFile}|${inkFile}`)
+    gameUUID: gameID || hashCode(`${pathToInkFile}|${inkFile}`)
   });
   emit('game/init', { pathToInkFile, inkFile });
 }
@@ -35,12 +35,11 @@ function init(pathToInkFile, inkFile) {
 
 async function loadInkFile() {
   const { game } = interfaces().state.get();
-  const uri = interfaces().loader.getAssetPath(game.$file);
-  inkContent = await interfaces().loader.load(uri);
+  inkContent = await interfaces().loader.loadInk(game.$file);
   if (typeof inkContent === 'string') {
     inkContent = JSON.parse(inkContent.replace('\uFEFF', ''));
   }
-  emit('game/loadInkFile', { uri });
+  emit('game/loadInkFile', game.$file);
 }
 
 

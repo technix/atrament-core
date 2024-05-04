@@ -395,16 +395,18 @@ atrament.set('fullscreen', true);
   content: [],
   text: [],
   tags: {},
-  choices: [] 
+  choices: [].
+  uuid: Number
 }
 ```
 
 | Key | Description                |
 | :-------- | :------------------------- |
 | `content` | Array of Ink paragraphs: `{text: '', tags: {}}` |
-| `text` | Array of Ink paragraphs |
-| `tags` | All tags from all paragraphs of this scene |
+| `text` | Array of all story text from all paragraphs of this scene |
+| `tags` | Array of all tags from all paragraphs of this scene |
 | `choices` | Array of choice objects: `{ id: 0, choice: 'Choice Text', tags: []}` |
+| `uuid` | Unique ID of the scene (`Date.now()`) |
 
 
 ## State structure

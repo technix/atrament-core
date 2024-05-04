@@ -205,10 +205,12 @@ function continueStory() {
 
   const { metadata } = state.get();
   if (metadata.single_scene) {
-    state.setKey('scenes', []);
+    // put single scene to state
+    state.setKey('scenes', [scene]);
+  } else {
+    // add scene to state
+    state.appendKey('scenes', scene);
   }
-  // save scene to store
-  state.appendKey('scenes', scene);
 
   // handle game saves
   $processTags(

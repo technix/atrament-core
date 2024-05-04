@@ -1,11 +1,13 @@
 import { interfaces, defineInterfaces } from './utils/interfaces';
 import { getConfig, setConfig } from './utils/config';
 import { emitter, emit } from './utils/emitter';
-import packageInfo from '../package.json';
 
 import game from './components/game';
 import ink from './components/ink';
 import settings from './components/settings';
+
+// @atrament/core version
+const version = '1.1.0';
 
 /*
 Initialize engine:
@@ -44,7 +46,5 @@ export default {
   game,
   ink,
   settings,
-  get version() {
-    return packageInfo.version;
-  }
+  version
 };

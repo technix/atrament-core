@@ -59,7 +59,7 @@ Atrament version string. Read-only.
 Defines interface modules for:
 - **loader**: ink file loader
 - **persistent**: persistent storage
-- **sound**: sound control 
+- **sound**: sound control (optional)
 - **state**: state management
 
 Interfaces should be defined **before** calling any other methods.

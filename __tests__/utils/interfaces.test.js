@@ -4,7 +4,16 @@ import { interfaces, defineInterfaces } from '../../src/utils/interfaces';
 const defaultInterfaces = {
   loader: null,
   persistent: null,
-  sound: null,
+  sound: {
+    init: expect.any(Function),
+    mute: expect.any(Function),
+    isMuted: expect.any(Function),
+    setVolume: expect.any(Function),
+    getVolume: expect.any(Function),
+    playSound: expect.any(Function),
+    playMusic: expect.any(Function),
+    stopMusic: expect.any(Function)
+  },
   state: null
 };
 
@@ -22,7 +31,7 @@ describe('utils/interfaces', () => {
     expect(i).toEqual({
       loader: 'loaderInterface',
       persistent: 'persistentInterface',
-      sound: null,
+      sound: defaultInterfaces.sound,
       state: null
     });
   });
@@ -38,7 +47,7 @@ describe('utils/interfaces', () => {
     expect(i).toEqual({
       loader: null,
       persistent: 'persistentInterface',
-      sound: null,
+      sound: defaultInterfaces.sound,
       state: null
     });
   });

@@ -59,17 +59,7 @@ async function initInkStory() {
   emit('game/initInkStory');
 }
 
-async function start(saveSlot) {
-  // game state cleanup
-  clear();
-  // initialize ink story:
-  // - it it's not done yet
-  // - if we start a new game
-  // TODO: write test for '!saveSlot' behavior
-  if (!inkContentSource || !saveSlot) {
-    await initInkStory();
-  }
-  // register variable observers
+function $registerObservers() {
   const { state } = interfaces();
   const observers = state.get().metadata.observe;
   if (observers) {
@@ -83,6 +73,20 @@ async function start(saveSlot) {
       });
     });
   }
+}
+
+async function start(saveSlot) {
+  // game state cleanup
+  clear();
+  // initialize ink story:
+  // - it it's not done yet
+  // - if we start a new game
+  // TODO: write test for '!saveSlot' behavior
+  if (!inkContentSource || !saveSlot) {
+    await initInkStory();
+  }
+  // register variable observers
+  $registerObservers();
   // load saved game, if present
   if (saveSlot) {
     if (await existSave(saveSlot)) {

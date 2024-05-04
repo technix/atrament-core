@@ -8,6 +8,8 @@ jest.mock('../../src/utils/emitter', () => ({
   emit: jest.fn()
 }));
 
+jest.useFakeTimers();
+
 const mockInkStoryInstance = {
   content: '',
   sceneCounter: 1,
@@ -189,7 +191,8 @@ describe('components/ink', () => {
       choices: [
         { id: 0, choice: 'Option 1', tags: undefined },
         { id: 1, choice: 'Option 2', tags: undefined }
-      ]
+      ],
+      uuid: jest.now() // equivalent to Date.now()
     };
     const scene = ink.getScene();
     expect(spyContinue).toHaveBeenCalledTimes(3);

@@ -16,7 +16,8 @@ function getScene() {
     content: [],
     text: [],
     tags: {},
-    choices: []
+    choices: [],
+    uuid: Date.now()
   };
   while (inkStory.canContinue) {
     inkStory.Continue();

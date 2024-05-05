@@ -133,7 +133,7 @@ const { state, persistent } = atrament.interfaces;
 
 ### Game methods
 
-#### atrament.game.init(path, file)
+#### async atrament.game.init(path, file, gameID)
 
 Initialize game object. Required to perform operations with saves.
 Parameters:
@@ -456,9 +456,9 @@ Interface to file operations. Function `init` will be called first, taking path 
 
 ```
 {
-    init(path)
+    async init(path)
     getAssetPath(filename)
-    async loadInk(uri)
+    async loadInk(filename)
 }
 ```
 

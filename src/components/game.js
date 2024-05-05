@@ -21,9 +21,9 @@ function $getCheckpointName(id) {
 
 // ===========================================
 
-function init(pathToInkFile, inkFile, gameID) {
+async function init(pathToInkFile, inkFile, gameID) {
   inkContentSource = false;
-  interfaces().loader.init(pathToInkFile);
+  await interfaces().loader.init(pathToInkFile);
   interfaces().state.setKey('game', {
     $path: pathToInkFile,
     $file: inkFile,

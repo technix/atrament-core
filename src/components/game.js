@@ -3,7 +3,6 @@ import { emit } from '../utils/emitter';
 import hashCode from '../utils/hashcode';
 
 import ink from './ink';
-import getAssetPath from './assetpath';
 import { playMusic, playSound } from './sound';
 import { load, save, existSave, removeSave, listSaves } from './saves';
 
@@ -22,12 +21,13 @@ function $getCheckpointName(id) {
 
 // ===========================================
 
-function init(pathToInkFile, inkFile) {
+async function init(pathToInkFile, inkFile, gameID) {
   inkContentSource = false;
+  await interfaces().loader.init(pathToInkFile);
   interfaces().state.setKey('game', {
     $path: pathToInkFile,
     $file: inkFile,
-    gameUUID: hashCode(`${pathToInkFile}|${inkFile}`)
+    gameUUID: gameID || hashCode(`${pathToInkFile}|${inkFile}`)
   });
   emit('game/init', { pathToInkFile, inkFile });
 }
@@ -35,12 +35,11 @@ function init(pathToInkFile, inkFile) {
 
 async function loadInkFile() {
   const { game } = interfaces().state.get();
-  const uri = getAssetPath(game.$file);
-  inkContent = await interfaces().loader.load(uri);
+  inkContent = await interfaces().loader.loadInk(game.$file);
   if (typeof inkContent === 'string') {
     inkContent = JSON.parse(inkContent.replace('\uFEFF', ''));
   }
-  emit('game/loadInkFile', { uri });
+  emit('game/loadInkFile', game.$file);
 }
 
 
@@ -60,17 +59,7 @@ async function initInkStory() {
   emit('game/initInkStory');
 }
 
-async function start(saveSlot) {
-  // game state cleanup
-  clear();
-  // initialize ink story:
-  // - it it's not done yet
-  // - if we start a new game
-  // TODO: write test for '!saveSlot' behavior
-  if (!inkContentSource || !saveSlot) {
-    await initInkStory();
-  }
-  // register variable observers
+function $registerObservers() {
   const { state } = interfaces();
   const observers = state.get().metadata.observe;
   if (observers) {
@@ -84,6 +73,20 @@ async function start(saveSlot) {
       });
     });
   }
+}
+
+async function start(saveSlot) {
+  // game state cleanup
+  clear();
+  // initialize ink story:
+  // - it it's not done yet
+  // - if we start a new game
+  // TODO: write test for '!saveSlot' behavior
+  if (!inkContentSource || !saveSlot) {
+    await initInkStory();
+  }
+  // register variable observers
+  $registerObservers();
   // load saved game, if present
   if (saveSlot) {
     if (await existSave(saveSlot)) {
@@ -206,10 +209,12 @@ function continueStory() {
 
   const { metadata } = state.get();
   if (metadata.single_scene) {
-    state.setKey('scenes', []);
+    // put single scene to state
+    state.setKey('scenes', [scene]);
+  } else {
+    // add scene to state
+    state.appendKey('scenes', scene);
   }
-  // save scene to store
-  state.appendKey('scenes', scene);
 
   // handle game saves
   $processTags(
@@ -237,7 +242,7 @@ export default {
   reset,
   continueStory,
   makeChoice: (id) => ink.makeChoice(id),
-  getAssetPath,
+  getAssetPath: (path) => interfaces().loader.getAssetPath(path),
   defineSceneProcessor,
   save,
   load,

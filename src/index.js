@@ -1,11 +1,13 @@
 import { interfaces, defineInterfaces } from './utils/interfaces';
 import { getConfig, setConfig } from './utils/config';
 import { emitter, emit } from './utils/emitter';
-import packageInfo from '../package.json';
 
 import game from './components/game';
 import ink from './components/ink';
 import settings from './components/settings';
+
+// @atrament/core version
+const version = '1.1.0';
 
 /*
 Initialize engine:
@@ -27,18 +29,22 @@ async function init(InkStory, cfg) {
 }
 
 export default {
-  interfaces,
+  get interfaces() {
+    return interfaces();
+  },
   defineInterfaces,
   init,
-  state: () => interfaces().state,
-  store: () => interfaces().state.store(),
+  get state() {
+    return interfaces().state;
+  },
+  get store() {
+    return interfaces().state.store();
+  },
   on: (event, callback) => emitter.on(event, callback),
   off: (event, callback) => emitter.off(event, callback),
   // sub-objects
   game,
   ink,
   settings,
-  get version() {
-    return packageInfo.version;
-  }
+  version
 };

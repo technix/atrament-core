@@ -1,7 +1,16 @@
 const $interfaces = {
   loader: null,
   persistent: null,
-  sound: null,
+  sound: {
+    init: () => {},
+    mute: () => {},
+    isMuted: () => {},
+    setVolume: () => {},
+    getVolume: () => {},
+    playSound: () => {},
+    playMusic: () => {},
+    stopMusic: () => {}
+  },
   state: null
 };
 

@@ -59,7 +59,7 @@ Atrament version string. Read-only.
 Defines interface modules for:
 - **loader**: ink file loader
 - **persistent**: persistent storage
-- **sound**: sound control 
+- **sound**: sound control (optional)
 - **state**: state management
 
 Interfaces should be defined **before** calling any other methods.
@@ -107,38 +107,39 @@ atrament.on('*', (event, args) => { ... });
 
 Unsubscribe listener from specific Atrament event.
 
-#### atrament.state()
+#### atrament.state
 
 Returns Atrament state interface. Can be used to operate state directly:
 
 ```
-atrament.state().setSubkey('game', 'checkpoint', true);
+atrament.state.setSubkey('game', 'checkpoint', true);
 ```
 
-#### atrament.store()
+#### atrament.store
 
 Return raw store object. Can be used in hooks, for example:
 
 ```
-const gamestate = useStore(atrament.store());
+const gamestate = useStore(atrament.store);
 ```
 
-#### atrament.interfaces()
+#### atrament.interfaces
 
 Returns raw interface objects. Can be used to operate with them directly.
 
 ```
-const { state, persistent } = atrament.interfaces();
+const { state, persistent } = atrament.interfaces;
 ```
 
 ### Game methods
 
-#### atrament.game.init(path, file)
+#### async atrament.game.init(path, file, gameID)
 
 Initialize game object. Required to perform operations with saves.
 Parameters:
 - path: path to Ink file
 - file: Ink file name
+- gameID: optional. If provided, Atrament will use given ID for save management. Otherwise, it will be generated based on path and filename.
 
 Event: `'game/init', { pathToInkFile: path, inkFile: file }`
 
@@ -146,7 +147,7 @@ Event: `'game/init', { pathToInkFile: path, inkFile: file }`
 
 Load Ink file, specified on init stage.
 
-Event: `'game/loadInkFile', { uri: inkFileURI }`
+Event: `'game/loadInkFile', inkFilename`
 
 #### async atrament.game.initInkStory()
 
@@ -394,16 +395,18 @@ atrament.set('fullscreen', true);
   content: [],
   text: [],
   tags: {},
-  choices: [] 
+  choices: [].
+  uuid: Number
 }
 ```
 
 | Key | Description                |
 | :-------- | :------------------------- |
 | `content` | Array of Ink paragraphs: `{text: '', tags: {}}` |
-| `text` | Array of Ink paragraphs |
-| `tags` | All tags from all paragraphs of this scene |
+| `text` | Array of all story text from all paragraphs of this scene |
+| `tags` | Array of all tags from all paragraphs of this scene |
 | `choices` | Array of choice objects: `{ id: 0, choice: 'Choice Text', tags: []}` |
+| `uuid` | Unique ID of the scene (`Date.now()`) |
 
 
 ## State structure
@@ -449,12 +452,13 @@ Please note that `metadata` and `vars` from Atrament state are not included in t
 There are four interfaces in `atrament-core`. Their implementation is not included, so developers can use `atrament-core` with the libraries they like. 
 
 ### loader
-
-Implements async function `load` to load content of Ink file. Takes full path as a parameter.
+Interface to file operations. Function `init` will be called first, taking path to the game as a parameter. Function `getAssetPath` should return full path of given file. Async function `loadInk` should return content of a given Ink file, located in the folder defined at the initialization time.
 
 ```
 {
-    async load(uri)
+    async init(path)
+    getAssetPath(filename)
+    async loadInk(filename)
 }
 ```
 

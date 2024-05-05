@@ -1,16 +1,15 @@
 import { interfaces } from '../utils/interfaces';
-import getAssetPath from './assetpath';
 
 export function playMusic(file) {
-  const { sound, state } = interfaces();
+  const { sound, state, loader } = interfaces();
   sound.stopMusic();
   if (file) {
-    sound.playMusic(getAssetPath(file));
+    sound.playMusic(loader.getAssetPath(file));
   }
   state.setSubkey('game', '$currentMusic', file);
 }
 
 export function playSound(file) {
-  const { sound } = interfaces();
-  sound.playSound(getAssetPath(file));
+  const { sound, loader } = interfaces();
+  sound.playSound(loader.getAssetPath(file));
 }

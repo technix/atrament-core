@@ -6,7 +6,6 @@ import { emit } from '../../src/utils/emitter';
 import hashCode from '../../src/utils/hashcode';
 
 import ink from '../../src/components/ink';
-import getAssetPath from '../../src/components/assetpath';
 import { playMusic, playSound } from '../../src/components/sound';
 import { load, save, existSave, removeSave, listSaves } from '../../src/components/saves';
 
@@ -15,14 +14,15 @@ import game from '../../src/components/game';
 let mockGlobalTags;
 let mockScene;
 let mockInkContent;
-const mockLoader = jest.fn(() => mockInkContent);
+const mockInitLoader = jest.fn(() => Promise.resolve());
+const mockLoader = jest.fn(() => Promise.resolve(mockInkContent));
 let mockObserver;
+
+const mockGetAssetPath = jest.fn((file) => `${mockState.get().game.$path}/${file}`);
 
 jest.mock('../../src/utils/emitter', () => ({
   emit: jest.fn()
 }));
-
-jest.mock('../../src/components/assetpath', () => jest.fn((file) => `${mockState.get().game.$path}/${file}`));
 
 jest.mock('../../src/components/ink', () => ({
   initStory: jest.fn(),
@@ -57,7 +57,9 @@ jest.mock('../../src/utils/interfaces', () => ({
     state: mockState,
     persistent: mockPersistent,
     loader: {
-      load: mockLoader
+      init: mockInitLoader,
+      loadInk: mockLoader,
+      getAssetPath: mockGetAssetPath
     }
   }))
 }));
@@ -73,30 +75,43 @@ beforeEach(() => {
 });
 
 describe('components/game', () => {
-  /* describe('makeChoice', () => {
-  }); */
-  test('init', () => {
-    const pathToInkFile = '/some/directory';
-    const inkFile = 'game.ink.json';
-    expect(emit).not.toHaveBeenCalled();
-    game.init(pathToInkFile, inkFile);
-    expect(mockState.get().game).toEqual({
-      $path: pathToInkFile,
-      $file: inkFile,
-      gameUUID: hashCode(`${pathToInkFile}|${inkFile}`)
+  describe('init', () => {
+    test('default', async () => {
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      expect(emit).not.toHaveBeenCalled();
+      await game.init(pathToInkFile, inkFile);
+      expect(mockState.get().game).toEqual({
+        $path: pathToInkFile,
+        $file: inkFile,
+        gameUUID: hashCode(`${pathToInkFile}|${inkFile}`)
+      });
+      expect(mockInitLoader).toHaveBeenCalledWith(pathToInkFile);
+      expect(emit).toHaveBeenCalledWith('game/init', { pathToInkFile, inkFile });
     });
-    expect(emit).toHaveBeenCalledWith('game/init', { pathToInkFile, inkFile });
+
+    test('init - custom game UUID', async () => {
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      expect(emit).not.toHaveBeenCalled();
+      await game.init(pathToInkFile, inkFile, 'customUUID');
+      expect(mockState.get().game).toEqual({
+        $path: pathToInkFile,
+        $file: inkFile,
+        gameUUID: 'customUUID'
+      });
+    });
   });
 
   test('loadInkFile', async () => {
     const pathToInkFile = '/some/directory';
     const inkFile = 'game.ink.json';
-    game.init(pathToInkFile, inkFile);
+    await game.init(pathToInkFile, inkFile);
     expect(mockLoader).not.toHaveBeenCalled();
     emit.mockClear();
     await game.loadInkFile();
-    expect(mockLoader).toHaveBeenCalledWith(getAssetPath(inkFile));
-    expect(emit).toHaveBeenCalledWith('game/loadInkFile', { uri: getAssetPath(inkFile) });
+    expect(mockLoader).toHaveBeenCalledWith(inkFile);
+    expect(emit).toHaveBeenCalledWith('game/loadInkFile', inkFile);
   });
 
 
@@ -149,7 +164,7 @@ describe('components/game', () => {
       mockState.setKey('metadata', { ccc: 'ddd' });
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      game.init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       await game.loadInkFile();
       // run
       await game.start();
@@ -172,7 +187,7 @@ describe('components/game', () => {
       mockInkContent = '{"inkstory":"inkContent"}';
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      game.init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       await game.initInkStory();
       // run
       await game.start();
@@ -189,7 +204,7 @@ describe('components/game', () => {
       mockInkContent = '{"inkstory":"inkContent"}';
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      game.init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       await game.loadInkFile();
       // run
       await game.start();
@@ -205,7 +220,7 @@ describe('components/game', () => {
       mockGlobalTags = { observe: ['var1', 'var2'] };
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      game.init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       await game.loadInkFile();
       // run
       await game.start();
@@ -233,7 +248,7 @@ describe('components/game', () => {
       // set
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      game.init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       await game.loadInkFile();
       // run
       await game.start('somesave');
@@ -248,7 +263,7 @@ describe('components/game', () => {
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
       mockPersistent.set('existingsave', 'content');
-      game.init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       await game.loadInkFile();
       // run
       await game.start('existingsave');
@@ -265,7 +280,7 @@ describe('components/game', () => {
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
       mockPersistent.set('existingsave', 'content');
-      game.init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       await game.initInkStory();
       // run
       await game.start('existingsave');
@@ -281,15 +296,15 @@ describe('components/game', () => {
       // set
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      game.init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       mockInkContent = null; // reset ink content
       await game.loadInkFile();
       mockLoader.mockClear();
       // run
       await game.start();
       // check
-      expect(mockLoader).toHaveBeenCalledWith(getAssetPath(inkFile));
-      expect(emit).toHaveBeenCalledWith('game/loadInkFile', { uri: getAssetPath(inkFile) });
+      expect(mockLoader).toHaveBeenCalledWith(inkFile);
+      expect(emit).toHaveBeenCalledWith('game/loadInkFile', inkFile);
     });
   });
 
@@ -341,10 +356,10 @@ describe('components/game', () => {
   });
 
   describe('resume', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      game.init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
     });
 
     test('cannot resume - start again', async () => {
@@ -367,8 +382,8 @@ describe('components/game', () => {
   describe('continueStory', () => {
     const pathToInkFile = '/some/directory';
     const inkFile = 'game.ink.json';
-    beforeEach(() => {
-      game.init(pathToInkFile, inkFile);
+    beforeEach(async () => {
+      await game.init(pathToInkFile, inkFile);
     });
 
     test('scene with empty content', () => {
@@ -531,9 +546,9 @@ describe('components/game', () => {
 
   test('getAssetPath', () => {
     const asset = 'aaa';
-    expect(getAssetPath).not.toHaveBeenCalled();
+    expect(mockGetAssetPath).not.toHaveBeenCalled();
     game.getAssetPath(asset);
-    expect(getAssetPath).toHaveBeenCalledWith(asset);
+    expect(mockGetAssetPath).toHaveBeenCalledWith(asset);
   });
 
   test('makeChoice', () => {

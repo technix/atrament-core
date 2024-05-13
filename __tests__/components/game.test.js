@@ -6,7 +6,7 @@ import { emit } from '../../src/utils/emitter';
 import hashCode from '../../src/utils/hashcode';
 
 import ink from '../../src/components/ink';
-import { playMusic, playSound } from '../../src/components/sound';
+import { playMusic, stopMusic, playSound, stopSound } from '../../src/components/sound';
 import { load, save, existSave, removeSave, listSaves } from '../../src/components/saves';
 
 import game from '../../src/components/game';
@@ -35,7 +35,9 @@ jest.mock('../../src/components/ink', () => ({
 
 jest.mock('../../src/components/sound', () => ({
   playMusic: jest.fn(),
-  playSound: jest.fn()
+  stopMusic: jest.fn(),
+  playSound: jest.fn(),
+  stopSound: jest.fn()
 }));
 
 jest.mock('../../src/components/saves', () => ({
@@ -447,6 +449,27 @@ describe('components/game', () => {
         expect(mockState.get().scenes).toEqual([sceneClear]);
       });
 
+      test('AUDIO - start', () => {
+        const soundFile = 'sound.mp3';
+        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { AUDIO: soundFile } };
+        expect(playSound).not.toHaveBeenCalled();
+        game.continueStory();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIO: soundFile });
+        expect(playSound).toHaveBeenCalledWith(soundFile);
+        expect(playMusic).not.toHaveBeenCalled();
+      });
+
+      test('AUDIO - stop', () => {
+        const soundFile = false;
+        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { AUDIO: soundFile } };
+        expect(stopSound).not.toHaveBeenCalled();
+        game.continueStory();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIO: soundFile });
+        expect(stopSound).toHaveBeenCalledTimes(1);
+        expect(stopSound).toHaveBeenCalledWith();
+        expect(stopMusic).not.toHaveBeenCalled();
+      });
+
       test('AUDIOLOOP - start', () => {
         const musicFile = 'music.mp3';
         mockScene = { content: ['aaa'], text: ['aaaa'], tags: { AUDIOLOOP: musicFile } };
@@ -460,51 +483,77 @@ describe('components/game', () => {
       test('AUDIOLOOP - stop', () => {
         const musicFile = false;
         mockScene = { content: ['aaa'], text: ['aaaa'], tags: { AUDIOLOOP: musicFile } };
-        expect(playMusic).not.toHaveBeenCalled();
+        expect(stopMusic).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIOLOOP: musicFile });
-        expect(playMusic).toHaveBeenCalledWith(false);
-        expect(playSound).not.toHaveBeenCalled();
+        expect(stopMusic).toHaveBeenCalledTimes(1);
+        expect(stopMusic).toHaveBeenCalledWith();
+        expect(stopSound).not.toHaveBeenCalled();
       });
 
-      test('MUSIC - start', () => {
+      test('PLAY_SOUND', () => {
+        const soundFile = 'sound.mp3';
+        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { PLAY_SOUND: soundFile } };
+        expect(playSound).not.toHaveBeenCalled();
+        game.continueStory();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { PLAY_SOUND: soundFile });
+        expect(playSound).toHaveBeenCalledTimes(1);
+        expect(playSound).toHaveBeenCalledWith(soundFile);
+        expect(playMusic).not.toHaveBeenCalled();
+      });
+
+
+      test('STOP_SOUND', () => {
+        const soundFile = 'sound.mp3';
+        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { STOP_SOUND: soundFile } };
+        expect(stopSound).not.toHaveBeenCalled();
+        game.continueStory();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_SOUND: soundFile });
+        expect(stopSound).toHaveBeenCalledTimes(1);
+        expect(stopSound).toHaveBeenCalledWith(soundFile);
+        expect(stopMusic).not.toHaveBeenCalled();
+      });
+
+      test('STOP_SOUND - all', () => {
+        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { STOP_SOUND: true } };
+        expect(stopSound).not.toHaveBeenCalled();
+        game.continueStory();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_SOUND: true });
+        expect(stopSound).toHaveBeenCalledTimes(1);
+        expect(stopSound).toHaveBeenCalledWith();
+        expect(stopMusic).not.toHaveBeenCalled();
+      });
+
+      test('PLAY_MUSIC', () => {
         const musicFile = 'music.mp3';
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { MUSIC: musicFile } };
+        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { PLAY_MUSIC: musicFile } };
         expect(playMusic).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { MUSIC: musicFile });
+        expect(emit).toHaveBeenCalledWith('game/handletag', { PLAY_MUSIC: musicFile });
+        expect(playMusic).toHaveBeenCalledTimes(1);
         expect(playMusic).toHaveBeenCalledWith(musicFile);
         expect(playSound).not.toHaveBeenCalled();
       });
 
-      test('MUSIC - stop', () => {
-        const musicFile = false;
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { MUSIC: musicFile } };
-        expect(playMusic).not.toHaveBeenCalled();
+      test('STOP_MUSIC', () => {
+        const musicFile = 'music.mp3';
+        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { STOP_MUSIC: musicFile } };
+        expect(stopMusic).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { MUSIC: musicFile });
-        expect(playMusic).toHaveBeenCalledWith(false);
-        expect(playSound).not.toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_MUSIC: musicFile });
+        expect(stopMusic).toHaveBeenCalledTimes(1);
+        expect(stopMusic).toHaveBeenCalledWith(musicFile);
+        expect(stopSound).not.toHaveBeenCalled();
       });
 
-      test('AUDIO', () => {
-        const soundFile = 'sound.mp3';
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { AUDIO: soundFile } };
-        expect(playSound).not.toHaveBeenCalled();
+      test('STOP_MUSIC - all', () => {
+        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { STOP_MUSIC: true } };
+        expect(stopMusic).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIO: soundFile });
-        expect(playSound).toHaveBeenCalledWith(soundFile);
-        expect(playMusic).not.toHaveBeenCalled();
-      });
-
-      test('SOUND', () => {
-        const soundFile = 'sound.mp3';
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { SOUND: soundFile } };
-        expect(playSound).not.toHaveBeenCalled();
-        game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { SOUND: soundFile });
-        expect(playSound).toHaveBeenCalledWith(soundFile);
-        expect(playMusic).not.toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_MUSIC: true });
+        expect(stopMusic).toHaveBeenCalledTimes(1);
+        expect(stopMusic).toHaveBeenCalledWith();
+        expect(stopSound).not.toHaveBeenCalled();
       });
 
       test('CHECKPOINT - default', () => {

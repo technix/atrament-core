@@ -3,7 +3,7 @@ import { emit } from '../utils/emitter';
 import hashCode from '../utils/hashcode';
 
 import ink from './ink';
-import { playMusic, playSound } from './sound';
+import { playSound, stopSound, playMusic, stopMusic } from './sound';
 import { load, save, existSave, removeSave, listSaves } from './saves';
 
 let inkContent;
@@ -147,10 +147,12 @@ async function restart(saveSlot) {
 
 const tagHandlers = {
   CLEAR: () => interfaces().state.setKey('scenes', []),
-  AUDIOLOOP: playMusic,
-  MUSIC: playMusic,
-  AUDIO: playSound,
-  SOUND: playSound,
+  AUDIO: (v) => (v ? playSound(v) : stopSound()),
+  AUDIOLOOP: (v) => (v ? playMusic(v) : stopMusic()),
+  PLAY_SOUND: playSound,
+  STOP_SOUND: (v) => (v === true ? stopSound() : stopSound(v)),
+  PLAY_MUSIC: playMusic,
+  STOP_MUSIC: (v) => (v === true ? stopMusic() : stopMusic(v)),
   CHECKPOINT: (v) => {
     save($getCheckpointName(v));
   },
@@ -203,7 +205,7 @@ function continueStory() {
 
   // tags to do pre-render actions
   $processTags(
-    ['CLEAR', 'AUDIOLOOP', 'MUSIC', 'AUDIO', 'SOUND'],
+    ['CLEAR', 'STOP_SOUND', 'STOP_MUSIC', 'PLAY_SOUND', 'PLAY_MUSIC', 'AUDIO', 'AUDIOLOOP'],
     tags
   );
 

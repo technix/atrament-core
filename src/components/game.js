@@ -99,7 +99,7 @@ async function start(saveSlot) {
 function clear() {
   const { state } = interfaces();
   // stop all music
-  playMusic(false);
+  stopMusic();
   // reset state
   state.setKey('scenes', []);
   state.setKey('vars', {});

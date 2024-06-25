@@ -124,12 +124,12 @@ describe('components/game', () => {
     mockState.setKey('vars', { aaa: 'bbb' });
     mockState.setKey('metadata', { ccc: 'ddd' });
     mockState.setKey('game', { ddd: 'eee' });
-    expect(playMusic).not.toHaveBeenCalled();
+    expect(stopMusic).not.toHaveBeenCalled();
     // run
     game.clear();
     // check
     expect(emit).toHaveBeenCalledWith('game/clear');
-    expect(playMusic).toHaveBeenCalledWith(false);
+    expect(stopMusic).toHaveBeenCalledTimes(1);
     expect(mockState.get().scenes).toEqual([]);
     expect(mockState.get().vars).toEqual({});
     expect(mockState.get().metadata).toEqual({ ccc: 'ddd' });
@@ -143,12 +143,12 @@ describe('components/game', () => {
     mockState.setKey('vars', { aaa: 'bbb' });
     mockState.setKey('metadata', { ccc: 'ddd' });
     mockState.setKey('game', { ddd: 'eee' });
-    expect(playMusic).not.toHaveBeenCalled();
+    expect(stopMusic).not.toHaveBeenCalled();
     // run
     game.reset();
     // check
     expect(emit).toHaveBeenCalledWith('game/reset');
-    expect(playMusic).toHaveBeenCalledWith(false);
+    expect(stopMusic).toHaveBeenCalledTimes(1);
     expect(mockState.get().scenes).toEqual([]);
     expect(mockState.get().vars).toEqual({});
     expect(mockState.get().metadata).toEqual({});
@@ -174,8 +174,7 @@ describe('components/game', () => {
       expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: undefined });
       expect(ink.initStory).toHaveBeenCalledTimes(1);
       expect(ink.initStory).toHaveBeenCalledWith(mockInkContent);
-      expect(playMusic).toHaveBeenCalledTimes(1);
-      expect(playMusic).toHaveBeenCalledWith(false);
+      expect(stopMusic).toHaveBeenCalledTimes(1);
       expect(mockState.get().scenes).toEqual([]);
       expect(mockState.get().vars).toEqual({});
       expect(mockState.get().metadata).toEqual(mockGlobalTags);

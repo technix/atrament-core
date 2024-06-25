@@ -7,7 +7,7 @@ import ink from './components/ink';
 import settings from './components/settings';
 
 // @atrament/core version
-const version = '1.2.0';
+const version = '1.2.2';
 
 /*
 Initialize engine:

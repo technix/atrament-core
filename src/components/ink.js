@@ -33,7 +33,7 @@ function getScene() {
     scene.choices.push({
       id,
       choice: choice.text,
-      tags: choice.tags
+      tags: parseTags(choice.tags)
     });
   });
   emit('ink/getScene', scene);

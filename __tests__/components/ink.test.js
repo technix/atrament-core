@@ -28,7 +28,7 @@ const mockInkStoryInstance = {
       this.canContinue = false;
       this.currentChoices = [
         { text: 'Option 1' },
-        { text: 'Option 2' }
+        { text: 'Option 2', tags: ['CHOICE', 'TEST: optional'] }
       ];
     }
   },
@@ -189,8 +189,8 @@ describe('components/ink', () => {
         WORLD: true
       },
       choices: [
-        { id: 0, choice: 'Option 1', tags: undefined },
-        { id: 1, choice: 'Option 2', tags: undefined }
+        { id: 0, choice: 'Option 1', tags: {} },
+        { id: 1, choice: 'Option 2', tags: { CHOICE: true, TEST: 'optional' } }
       ],
       uuid: jest.now() // equivalent to Date.now()
     };

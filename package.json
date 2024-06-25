@@ -1,6 +1,6 @@
 {
   "name": "@atrament/core",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Atrament, a text game engine - core module",
   "main": "src/index.js",
   "files": [

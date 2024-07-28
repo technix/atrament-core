@@ -37,12 +37,12 @@ If you are looking for example of a web application based on Atrament, check out
 | :-------- | :------------------------- |
 | `# CLEAR` | Clear scenes list before saving current scene to Atrament state. |
 | `# AUDIO: sound.mp3` | Play sound (once). |
-| `# AUDIOLOOP: music.mp3` | Play background music (looped). |
-| `# AUDIOLOOP: false` | Stop playing music. |
+| `# AUDIOLOOP: music.mp3` | Play background music (looped). There can be only one background music track. |
+| `# AUDIOLOOP: false` | Stop playing all background music. |
 | `# PLAY_SOUND: sound.mp3` | Play sound (once). |
 | `# STOP_SOUND: sound.mp3` | Stop playing specific sound. |
 | `# STOP_SOUND` | Stop playing all sounds. |
-| `# PLAY_MUSIC: music.mp3` | Play background music (looped). |
+| `# PLAY_MUSIC: music.mp3` | Play background music (looped). There can be multiple background music tracks, played simultaneously. |
 | `# STOP_MUSIC: music.mp3` | Stop playing specific background music. |
 | `# STOP_MUSIC` | Stop playing all background music. |
 | `# CHECKPOINT` | Save game to 'default' checkpoint. |

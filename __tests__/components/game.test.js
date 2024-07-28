@@ -469,6 +469,17 @@ describe('components/game', () => {
         expect(stopMusic).not.toHaveBeenCalled();
       });
 
+      test('AUDIO - start multiple files', () => {
+        const soundFile1 = 'sound.mp3';
+        const soundFile2 = 'sound.mp3';
+        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { AUDIO: [soundFile1, soundFile2] } };
+        expect(playSound).not.toHaveBeenCalled();
+        game.continueStory();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIO: [soundFile1, soundFile2] });
+        expect(playSound).toHaveBeenCalledWith([soundFile1, soundFile2]);
+        expect(playMusic).not.toHaveBeenCalled();
+      });
+
       test('AUDIOLOOP - start', () => {
         const musicFile = 'music.mp3';
         mockScene = { content: ['aaa'], text: ['aaaa'], tags: { AUDIOLOOP: musicFile } };

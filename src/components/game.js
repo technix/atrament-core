@@ -3,7 +3,7 @@ import { emit } from '../utils/emitter';
 import hashCode from '../utils/hashcode';
 
 import ink from './ink';
-import { playSound, stopSound, playMusic, stopMusic } from './sound';
+import { playSound, stopSound, playMusic, playSingleMusic, stopMusic } from './sound';
 import { load, save, existSave, removeSave, listSaves } from './saves';
 
 let inkContent;
@@ -148,7 +148,7 @@ async function restart(saveSlot) {
 const tagHandlers = {
   CLEAR: () => interfaces().state.setKey('scenes', []),
   AUDIO: (v) => (v ? playSound(v) : stopSound()),
-  AUDIOLOOP: (v) => (v ? playMusic(v) : stopMusic()),
+  AUDIOLOOP: (v) => (v ? playSingleMusic(v) : stopMusic()),
   PLAY_SOUND: playSound,
   STOP_SOUND: (v) => (v === true ? stopSound() : stopSound(v)),
   PLAY_MUSIC: playMusic,

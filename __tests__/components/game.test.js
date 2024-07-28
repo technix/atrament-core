@@ -6,7 +6,7 @@ import { emit } from '../../src/utils/emitter';
 import hashCode from '../../src/utils/hashcode';
 
 import ink from '../../src/components/ink';
-import { playMusic, stopMusic, playSound, stopSound } from '../../src/components/sound';
+import { playMusic, stopMusic, playSound, playSingleMusic, stopSound } from '../../src/components/sound';
 import { load, save, existSave, removeSave, listSaves } from '../../src/components/saves';
 
 import game from '../../src/components/game';
@@ -37,6 +37,7 @@ jest.mock('../../src/components/sound', () => ({
   playMusic: jest.fn(),
   stopMusic: jest.fn(),
   playSound: jest.fn(),
+  playSingleMusic: jest.fn(),
   stopSound: jest.fn()
 }));
 
@@ -483,10 +484,10 @@ describe('components/game', () => {
       test('AUDIOLOOP - start', () => {
         const musicFile = 'music.mp3';
         mockScene = { content: ['aaa'], text: ['aaaa'], tags: { AUDIOLOOP: musicFile } };
-        expect(playMusic).not.toHaveBeenCalled();
+        expect(playSingleMusic).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIOLOOP: musicFile });
-        expect(playMusic).toHaveBeenCalledWith(musicFile);
+        expect(playSingleMusic).toHaveBeenCalledWith(musicFile);
         expect(playSound).not.toHaveBeenCalled();
       });
 

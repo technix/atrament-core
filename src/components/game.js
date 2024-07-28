@@ -250,5 +250,7 @@ export default {
   load,
   listSaves,
   removeSave,
-  existSave
+  existSave,
+  getAutosaveSlot: () => autosaveSlot,
+  getCheckpointSlot: (id) => $getCheckpointName(id)
 };

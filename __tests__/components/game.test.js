@@ -642,4 +642,16 @@ describe('components/game', () => {
     expect(existSave).toHaveBeenCalledTimes(1);
     expect(x).toBe(false);
   });
+
+  test('getAutosaveSlot', async () => {
+    expect(game.getAutosaveSlot()).toEqual('_autosave_');
+  });
+
+  test('getCheckpointSlot - default', async () => {
+    expect(game.getCheckpointSlot()).toEqual('checkpoint/_default_');
+  });
+
+  test('getCheckpointSlot - by id', async () => {
+    expect(game.getCheckpointSlot('scene1')).toEqual('checkpoint/scene1');
+  });
 });

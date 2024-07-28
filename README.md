@@ -223,6 +223,14 @@ Event: `'game/removeSave', saveslot`
 
 Returns `true` if specified save slot exists.
 
+#### atrament.game.getAutosaveSlot()
+
+Returns autosave slot name.
+
+#### atrament.game.getCheckpointSlot(id)
+
+Returns checkpoint slot name for given ID. If ID is not provided, returns default checkpoint slot name.
+
 #### atrament.game.continueStory()
 
 - gets Ink scene content

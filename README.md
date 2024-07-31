@@ -4,7 +4,7 @@
 
 If you need a ready to use library for web applications, check out [atrament-web](https://github.com/technix/atrament-web).
 
-If you are looking for example of a web application based on Atrament, check out [atrament-preact-ui](https://github.com/technix/atrament-preact-ui).
+If you are looking for example of a web application based on Atrament, check out [atrament-web-ui](https://github.com/technix/atrament-web-ui).
 
 ## Features
 

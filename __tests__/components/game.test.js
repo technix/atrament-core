@@ -30,7 +30,8 @@ jest.mock('../../src/components/ink', () => ({
   getVariable: jest.fn((v) => `${v}-value`),
   observeVariable: jest.fn((v, handler) => { mockObserver = handler; }),
   getScene: jest.fn(() => JSON.parse(JSON.stringify(mockScene))),
-  makeChoice: jest.fn()
+  makeChoice: jest.fn(),
+  resetStory: jest.fn()
 }));
 
 jest.mock('../../src/components/sound', () => ({
@@ -107,12 +108,14 @@ describe('components/game', () => {
   });
 
   test('loadInkFile', async () => {
+    mockInkContent = '{"data":"ink content"}';
     const pathToInkFile = '/some/directory';
     const inkFile = 'game.ink.json';
     await game.init(pathToInkFile, inkFile);
     expect(mockLoader).not.toHaveBeenCalled();
     emit.mockClear();
-    await game.loadInkFile();
+    const inkContent = await game.loadInkFile();
+    expect(inkContent).toEqual({ data: 'ink content' });
     expect(mockLoader).toHaveBeenCalledWith(inkFile);
     expect(emit).toHaveBeenCalledWith('game/loadInkFile', inkFile);
   });
@@ -126,6 +129,7 @@ describe('components/game', () => {
     mockState.setKey('metadata', { ccc: 'ddd' });
     mockState.setKey('game', { ddd: 'eee' });
     expect(stopMusic).not.toHaveBeenCalled();
+    expect(ink.resetStory).not.toHaveBeenCalled();
     // run
     game.clear();
     // check
@@ -135,6 +139,7 @@ describe('components/game', () => {
     expect(mockState.get().vars).toEqual({});
     expect(mockState.get().metadata).toEqual({ ccc: 'ddd' });
     expect(mockState.get().game).toEqual({ ddd: 'eee' });
+    expect(ink.resetStory).toHaveBeenCalledTimes(1);
   });
 
   test('reset', async () => {
@@ -158,6 +163,13 @@ describe('components/game', () => {
 
 
   describe('start', () => {
+    beforeEach(async () => {
+      // reset
+      await game.init(null, null, 'NONEXISTENT');
+      await game.initInkStory();
+      jest.clearAllMocks();
+    });
+
     test('default', async () => {
       // set
       mockInkContent = { inkstory: 'inkContent' };
@@ -168,7 +180,7 @@ describe('components/game', () => {
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
       await game.init(pathToInkFile, inkFile);
-      await game.loadInkFile();
+      await game.initInkStory();
       // run
       await game.start();
       // check
@@ -184,46 +196,13 @@ describe('components/game', () => {
       expect(load).not.toHaveBeenCalled();
     });
 
-    test('start from beginning - reinit ink story', async () => {
-      // set
-      mockInkContent = '{"inkstory":"inkContent"}';
-      const pathToInkFile = '/some/directory';
-      const inkFile = 'game.ink.json';
-      await game.init(pathToInkFile, inkFile);
-      await game.initInkStory();
-      // run
-      await game.start();
-      // check
-      expect(ink.initStory).toHaveBeenCalledTimes(2); // run 2 times - first when initInkStory, then on start
-      expect(ink.initStory).toHaveBeenCalledWith({ inkstory: 'inkContent' });
-      expect(ink.observeVariable).not.toHaveBeenCalled();
-      expect(load).not.toHaveBeenCalled();
-    });
-
-
-    test('ink content as string', async () => {
-      // set
-      mockInkContent = '{"inkstory":"inkContent"}';
-      const pathToInkFile = '/some/directory';
-      const inkFile = 'game.ink.json';
-      await game.init(pathToInkFile, inkFile);
-      await game.loadInkFile();
-      // run
-      await game.start();
-      // check
-      expect(ink.initStory).toHaveBeenCalledTimes(1);
-      expect(ink.initStory).toHaveBeenCalledWith({ inkstory: 'inkContent' });
-      expect(ink.observeVariable).not.toHaveBeenCalled();
-      expect(load).not.toHaveBeenCalled();
-    });
-
     test('restore observers', async () => {
       // set
       mockGlobalTags = { observe: ['var1', 'var2'] };
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
       await game.init(pathToInkFile, inkFile);
-      await game.loadInkFile();
+      await game.initInkStory();
       // run
       await game.start();
       // check
@@ -251,7 +230,7 @@ describe('components/game', () => {
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
       await game.init(pathToInkFile, inkFile);
-      await game.loadInkFile();
+      await game.initInkStory();
       // run
       await game.start('somesave');
       // check
@@ -266,7 +245,7 @@ describe('components/game', () => {
       const inkFile = 'game.ink.json';
       mockPersistent.set('existingsave', 'content');
       await game.init(pathToInkFile, inkFile);
-      await game.loadInkFile();
+      await game.initInkStory();
       // run
       await game.start('existingsave');
       // check
@@ -307,6 +286,44 @@ describe('components/game', () => {
       // check
       expect(mockLoader).toHaveBeenCalledWith(inkFile);
       expect(emit).toHaveBeenCalledWith('game/loadInkFile', inkFile);
+    });
+  });
+
+  describe('start of the same story', () => {
+    beforeEach(async () => {
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      await game.init(pathToInkFile, inkFile);
+    });
+
+    test('start from beginning - same ink story', async () => {
+      // set
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      await game.init(pathToInkFile, inkFile);
+      await game.initInkStory();
+      // run
+      await game.start();
+      // check
+      expect(ink.initStory).not.toHaveBeenCalled(); // this story is already initialized
+      expect(ink.observeVariable).not.toHaveBeenCalled();
+      expect(load).not.toHaveBeenCalled();
+    });
+
+    test('other story + ink content as string', async () => {
+      // set
+      mockInkContent = '{"inkstory":"inkContent"}';
+      const pathToInkFile = '/some/directory2';
+      const inkFile = 'game2.ink.json';
+      await game.init(pathToInkFile, inkFile);
+      await game.loadInkFile();
+      // run
+      await game.start();
+      // check
+      expect(ink.initStory).toHaveBeenCalledTimes(1);
+      expect(ink.initStory).toHaveBeenCalledWith({ inkstory: 'inkContent' });
+      expect(ink.observeVariable).not.toHaveBeenCalled();
+      expect(load).not.toHaveBeenCalled();
     });
   });
 
@@ -365,19 +382,58 @@ describe('components/game', () => {
     });
 
     test('cannot resume - start again', async () => {
+      expect(ink.resetStory).not.toHaveBeenCalled();
       await game.resume();
       expect(emit).toHaveBeenCalledWith('game/resume', { saveSlot: undefined });
       expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: undefined });
       expect(load).not.toHaveBeenCalled();
+      expect(ink.resetStory).toHaveBeenCalledTimes(1);
     });
 
     test('can resume - start from save', async () => {
+      expect(ink.resetStory).not.toHaveBeenCalled();
       const saveID = '_autosave_';
       mockPersistent.set(saveID, 'autosave_content');
       await game.resume();
       expect(emit).toHaveBeenCalledWith('game/resume', { saveSlot: saveID });
       expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: saveID });
       expect(load).toHaveBeenCalledWith(saveID);
+      expect(ink.resetStory).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('restart', () => {
+    beforeEach(async () => {
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      await game.init(pathToInkFile, inkFile);
+      mockScene = { content: ['aaa'], text: ['aaaa'], tags: [] };
+    });
+
+    test('save slot is not set', async () => {
+      expect(ink.resetStory).not.toHaveBeenCalled();
+      expect(ink.getScene).not.toHaveBeenCalled();
+      const saveID = '_autosave_';
+      mockPersistent.set(saveID, 'autosave_content');
+      await game.restart();
+      expect(emit).toHaveBeenCalledWith('game/restart', { saveSlot: undefined });
+      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: undefined });
+      expect(load).not.toHaveBeenCalled();
+      expect(ink.resetStory).toHaveBeenCalledTimes(1);
+      expect(ink.getScene).toHaveBeenCalledTimes(1);
+    });
+
+    test('save slot is set', async () => {
+      expect(ink.resetStory).not.toHaveBeenCalled();
+      expect(ink.getScene).not.toHaveBeenCalled();
+      const saveID = '_autosave_';
+      mockPersistent.set(saveID, 'autosave_content');
+      await game.restart(saveID);
+      expect(emit).toHaveBeenCalledWith('game/restart', { saveSlot: saveID });
+      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: saveID });
+      expect(load).toHaveBeenCalledWith(saveID);
+      expect(ink.resetStory).toHaveBeenCalledTimes(1);
+      expect(ink.getScene).toHaveBeenCalledTimes(1);
     });
   });
 

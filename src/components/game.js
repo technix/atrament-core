@@ -6,6 +6,8 @@ import ink from './ink';
 import { playSound, stopSound, playMusic, playSingleMusic, stopMusic } from './sound';
 import { load, save, existSave, removeSave, listSaves } from './saves';
 
+import internalSceneProcessors from '../utils/scene-processors';
+
 let expectedInkScriptUUID = null;
 let currentInkScriptUUID = null;
 
@@ -187,6 +189,7 @@ function continueStory() {
     return;
   }
   // run scene processors
+  internalSceneProcessors.forEach((p) => p(scene));
   sceneProcessors.forEach((p) => p(scene));
   // process tags
   const { tags } = scene;

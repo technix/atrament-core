@@ -51,8 +51,14 @@ If you are looking for example of a web application based on Atrament, check out
 | `# RESTART` | Start game from beginning. |
 | `# RESTART_FROM_CHECKPOINT` | Restart game from latest checkpoint. |
 | `# RESTART_FROM_CHECKPOINT: checkpointName` | Restart game from named checkpoint. |
+| `# IMAGE: picture.jpg` | Adds image to the `images` attribute of the scene and paragraph. Can be used to preload image files for the scene. |
 
 Note: For sound effects, please use either AUDIO/AUDIOLOOP or PLAY_SOUND/PLAY_MUSIC/STOP_SOUND/STOP_MUSIC tags. Combining them may lead to unexpected side effects.
+
+### Choice tags
+| Tag | Description                |
+| :-------- | :------------------------- |
+| `# UNCLICKABLE` | Alternative names: `#DISABLED`, `#INACTIVE`.<br>Sets `disabled: true` attribute to the choice. |
 
 ## API Reference
 
@@ -404,17 +410,19 @@ atrament.set('fullscreen', true);
   content: [],
   text: [],
   tags: {},
-  choices: [].
+  choices: [],
+  images: [],
   uuid: Number
 }
 ```
 
 | Key | Description                |
 | :-------- | :------------------------- |
-| `content` | Array of Ink paragraphs: `{text: '', tags: {}}` |
+| `content` | Array of Ink paragraphs: `{text: '', tags: {}, images: []}` |
 | `text` | Array of all story text from all paragraphs of this scene |
 | `tags` | Array of all tags from all paragraphs of this scene |
-| `choices` | Array of choice objects: `{ id: 0, choice: 'Choice Text', tags: []}` |
+| `choices` | Array of choice objects: `{ id: 0, choice: 'Choice Text', tags: {}}` |
+| `images` | Array of all images from all paragraphs of this scene |
 | `uuid` | Unique ID of the scene (`Date.now()`) |
 
 

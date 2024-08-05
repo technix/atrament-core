@@ -6,8 +6,9 @@ import ink from './ink';
 import { playSound, stopSound, playMusic, playSingleMusic, stopMusic } from './sound';
 import { load, save, existSave, removeSave, listSaves } from './saves';
 
-let inkContent;
-let inkContentSource;
+let expectedInkScriptUUID = null;
+let currentInkScriptUUID = null;
+
 const sceneProcessors = [];
 const autosaveSlot = '_autosave_';
 
@@ -22,40 +23,39 @@ function $getCheckpointName(id) {
 // ===========================================
 
 async function init(pathToInkFile, inkFile, gameID) {
-  inkContentSource = false;
   await interfaces().loader.init(pathToInkFile);
-  interfaces().state.setKey('game', {
+  const gameObj = {
     $path: pathToInkFile,
     $file: inkFile,
     gameUUID: gameID || hashCode(`${pathToInkFile}|${inkFile}`)
-  });
+  };
+  interfaces().state.setKey('game', gameObj);
+  expectedInkScriptUUID = gameObj.gameUUID; // expecting to load content with this UUID
   emit('game/init', { pathToInkFile, inkFile });
 }
 
-
 async function loadInkFile() {
   const { game } = interfaces().state.get();
-  inkContent = await interfaces().loader.loadInk(game.$file);
+  let inkContent = await interfaces().loader.loadInk(game.$file);
   if (typeof inkContent === 'string') {
     inkContent = JSON.parse(inkContent.replace('\uFEFF', ''));
   }
   emit('game/loadInkFile', game.$file);
+  return inkContent;
 }
-
 
 async function initInkStory() {
   const { state } = interfaces();
-  // load content if it's not loaded, or it's not for the same game
-  if (!inkContent) {
-    await loadInkFile();
+  if (currentInkScriptUUID !== expectedInkScriptUUID) {
+    // ink content is not from the same game, reload
+    const inkContent = await loadInkFile();
+    // initialize InkJS
+    ink.initStory(inkContent);
+    currentInkScriptUUID = expectedInkScriptUUID;
   }
-  // initialize InkJS
-  ink.initStory(inkContent);
   // read global tags
   const metadata = ink.getGlobalTags();
   state.setKey('metadata', metadata);
-  // update ink source
-  inkContentSource = true;
   emit('game/initInkStory');
 }
 
@@ -76,15 +76,9 @@ function $registerObservers() {
 }
 
 async function start(saveSlot) {
-  // game state cleanup
-  clear();
-  // initialize ink story:
-  // - it it's not done yet
-  // - if we start a new game
-  // TODO: write test for '!saveSlot' behavior
-  if (!inkContentSource || !saveSlot) {
-    await initInkStory();
-  }
+  stopMusic(); // stop all music
+  $clearGameState(); // game state cleanup
+  await initInkStory();
   // register variable observers
   $registerObservers();
   // load saved game, if present
@@ -96,13 +90,17 @@ async function start(saveSlot) {
   emit('game/start', { saveSlot });
 }
 
-function clear() {
+function $clearGameState() {
   const { state } = interfaces();
-  // stop all music
-  stopMusic();
   // reset state
   state.setKey('scenes', []);
   state.setKey('vars', {});
+}
+
+function clear() {
+  stopMusic(); // stop all music
+  $clearGameState();
+  ink.resetStory(); // reset ink story state
   emit('game/clear');
 }
 
@@ -134,12 +132,14 @@ async function canResume() {
 async function resume() {
   const saveSlot = await canResume();
   emit('game/resume', { saveSlot });
+  ink.resetStory(); // reset ink story state
   await start(saveSlot);
 }
 
 
 async function restart(saveSlot) {
   emit('game/restart', { saveSlot });
+  ink.resetStory(); // reset ink story state
   await start(saveSlot);
   continueStory();
 }

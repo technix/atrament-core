@@ -124,7 +124,7 @@ describe('components/game', () => {
   test('clear', async () => {
     // setup
     expect(emit).not.toHaveBeenCalled();
-    mockState.setKey('scenes', ['aaa', 'bbb']);
+    mockState.setKey('scenes', [{ text: 'aaa' }, { text: 'aaa' }]);
     mockState.setKey('vars', { aaa: 'bbb' });
     mockState.setKey('metadata', { ccc: 'ddd' });
     mockState.setKey('game', { ddd: 'eee' });
@@ -145,7 +145,7 @@ describe('components/game', () => {
   test('reset', async () => {
     // setup
     expect(emit).not.toHaveBeenCalled();
-    mockState.setKey('scenes', ['aaa', 'bbb']);
+    mockState.setKey('scenes', [{ text: 'aaa' }, { text: 'aaa' }]);
     mockState.setKey('vars', { aaa: 'bbb' });
     mockState.setKey('metadata', { ccc: 'ddd' });
     mockState.setKey('game', { ddd: 'eee' });
@@ -174,7 +174,7 @@ describe('components/game', () => {
       // set
       mockInkContent = { inkstory: 'inkContent' };
       mockGlobalTags = { globaltag1: true, globaltag2: true };
-      mockState.setKey('scenes', ['aaa', 'bbb']);
+      mockState.setKey('scenes', [{ text: 'aaa' }, { text: 'aaa' }]);
       mockState.setKey('vars', { aaa: 'bbb' });
       mockState.setKey('metadata', { ccc: 'ddd' });
       const pathToInkFile = '/some/directory';
@@ -407,7 +407,7 @@ describe('components/game', () => {
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
       await game.init(pathToInkFile, inkFile);
-      mockScene = { content: ['aaa'], text: ['aaaa'], tags: [] };
+      mockScene = { content: [{ text: 'aaa' }], text: ['aaaa'], tags: {}, choices: [] };
     });
 
     test('save slot is not set', async () => {
@@ -440,8 +440,16 @@ describe('components/game', () => {
   describe('continueStory', () => {
     const pathToInkFile = '/some/directory';
     const inkFile = 'game.ink.json';
+    const processedMockScene = {
+      content: [{ text: 'aaa', images: [] }],
+      text: ['aaaa'],
+      tags: {},
+      choices: [],
+      images: []
+    };
     beforeEach(async () => {
       await game.init(pathToInkFile, inkFile);
+      mockScene = { content: [{ text: 'aaa' }], text: ['aaaa'], tags: {}, choices: [] };
     });
 
     test('scene with empty content', () => {
@@ -451,63 +459,68 @@ describe('components/game', () => {
     });
 
     test('scene basics', () => {
-      mockScene = { content: ['aaa'], text: ['aaaa'], tags: [] };
+      mockScene = { content: [{ text: 'aaa' }], text: ['aaaa'], tags: {}, choices: [] };
       game.continueStory();
       expect(emit).toHaveBeenCalledWith('game/continueStory');
-      expect(mockState.get().scenes).toEqual([mockScene]);
+      expect(mockState.get().scenes).toEqual([processedMockScene]);
       game.continueStory();
-      expect(mockState.get().scenes).toEqual([mockScene, mockScene]);
+      expect(mockState.get().scenes).toEqual([processedMockScene, processedMockScene]);
       expect(save).toHaveBeenCalledWith('_autosave_'); // autosave by default
     });
 
     test('scene - single scene', () => {
       mockState.setKey('metadata', { single_scene: true });
-      mockScene = { content: ['aaa'], text: ['aaaa'], tags: [] };
+      mockScene = { content: [{ text: 'aaa' }], text: ['aaaa'], tags: {}, choices: [] };
       game.continueStory();
       expect(emit).toHaveBeenCalledWith('game/continueStory');
-      expect(mockState.get().scenes).toEqual([mockScene]);
+      expect(mockState.get().scenes).toEqual([processedMockScene]);
       game.continueStory();
-      expect(mockState.get().scenes).toEqual([mockScene]);
+      expect(mockState.get().scenes).toEqual([processedMockScene]);
     });
 
     test('scene - autosave mode', () => {
       mockState.setKey('metadata', { autosave: true });
-      mockScene = { content: ['aaa'], text: ['aaaa'], tags: [] };
+      mockScene = { content: [{ text: 'aaa' }], text: ['aaaa'], tags: {}, choices: [] };
       expect(save).not.toHaveBeenCalled();
       game.continueStory();
       expect(emit).toHaveBeenCalledWith('game/continueStory');
-      expect(mockState.get().scenes).toEqual([mockScene]);
+      expect(mockState.get().scenes).toEqual([processedMockScene]);
       expect(save).toHaveBeenCalledWith('_autosave_');
     });
 
     test('scene - autosave disabled', () => {
       mockState.setKey('metadata', { autosave: false });
-      mockScene = { content: ['aaa'], text: ['aaaa'], tags: [] };
+      mockScene = { content: [{ text: 'aaa' }], text: ['aaaa'], tags: {}, choices: [] };
       expect(save).not.toHaveBeenCalled();
       game.continueStory();
       expect(emit).toHaveBeenCalledWith('game/continueStory');
-      expect(mockState.get().scenes).toEqual([mockScene]);
+      expect(mockState.get().scenes).toEqual([processedMockScene]);
       expect(save).not.toHaveBeenCalled();
     });
 
     describe('tags', () => {
+      let sampleScene;
+      let processedSampleScene;
+      beforeEach(() => {
+        sampleScene = { content: [{ text: 'aaa' }], text: ['aaaa'], tags: {}, choices: [] };
+        processedSampleScene = { ...sampleScene, content: [{ text: 'aaa', images: [] }], images: [] };
+      });
+
       test('CLEAR', () => {
-        const scene1 = { content: ['aaa'], text: ['aaaa'], tags: {} };
-        const sceneClear = { content: ['aaa'], text: ['aaaa'], tags: { CLEAR: true } };
-        mockScene = scene1;
+        mockScene = { ...sampleScene };
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/continueStory');
-        expect(mockState.get().scenes).toEqual([scene1]);
+        expect(mockState.get().scenes).toEqual([processedSampleScene]);
         game.continueStory();
-        expect(mockState.get().scenes).toEqual([scene1, scene1]);
-        mockScene = sceneClear;
+        expect(mockState.get().scenes).toEqual([processedSampleScene, processedSampleScene]);
+        mockScene = { ...sampleScene, tags: { CLEAR: true } };
         game.continueStory();
-        expect(mockState.get().scenes).toEqual([sceneClear]);
+        expect(mockState.get().scenes).toEqual([{ ...processedSampleScene, tags: { CLEAR: true } }]);
       });
 
       test('AUDIO - start', () => {
         const soundFile = 'sound.mp3';
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { AUDIO: soundFile } };
+        mockScene = { ...sampleScene, tags: { AUDIO: soundFile } };
         expect(playSound).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIO: soundFile });
@@ -517,7 +530,7 @@ describe('components/game', () => {
 
       test('AUDIO - stop', () => {
         const soundFile = false;
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { AUDIO: soundFile } };
+        mockScene = { ...sampleScene, tags: { AUDIO: soundFile } };
         expect(stopSound).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIO: soundFile });
@@ -529,7 +542,7 @@ describe('components/game', () => {
       test('AUDIO - start multiple files', () => {
         const soundFile1 = 'sound.mp3';
         const soundFile2 = 'sound.mp3';
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { AUDIO: [soundFile1, soundFile2] } };
+        mockScene = { ...sampleScene, tags: { AUDIO: [soundFile1, soundFile2] } };
         expect(playSound).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIO: [soundFile1, soundFile2] });
@@ -539,7 +552,7 @@ describe('components/game', () => {
 
       test('AUDIOLOOP - start', () => {
         const musicFile = 'music.mp3';
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { AUDIOLOOP: musicFile } };
+        mockScene = { ...sampleScene, tags: { AUDIOLOOP: musicFile } };
         expect(playSingleMusic).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIOLOOP: musicFile });
@@ -549,7 +562,7 @@ describe('components/game', () => {
 
       test('AUDIOLOOP - stop', () => {
         const musicFile = false;
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { AUDIOLOOP: musicFile } };
+        mockScene = { ...sampleScene, tags: { AUDIOLOOP: musicFile } };
         expect(stopMusic).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIOLOOP: musicFile });
@@ -560,7 +573,7 @@ describe('components/game', () => {
 
       test('PLAY_SOUND', () => {
         const soundFile = 'sound.mp3';
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { PLAY_SOUND: soundFile } };
+        mockScene = { ...sampleScene, tags: { PLAY_SOUND: soundFile } };
         expect(playSound).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { PLAY_SOUND: soundFile });
@@ -572,7 +585,7 @@ describe('components/game', () => {
 
       test('STOP_SOUND', () => {
         const soundFile = 'sound.mp3';
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { STOP_SOUND: soundFile } };
+        mockScene = { ...sampleScene, tags: { STOP_SOUND: soundFile } };
         expect(stopSound).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_SOUND: soundFile });
@@ -582,7 +595,7 @@ describe('components/game', () => {
       });
 
       test('STOP_SOUND - all', () => {
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { STOP_SOUND: true } };
+        mockScene = { ...sampleScene, tags: { STOP_SOUND: true } };
         expect(stopSound).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_SOUND: true });
@@ -593,7 +606,7 @@ describe('components/game', () => {
 
       test('PLAY_MUSIC', () => {
         const musicFile = 'music.mp3';
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { PLAY_MUSIC: musicFile } };
+        mockScene = { ...sampleScene, tags: { PLAY_MUSIC: musicFile } };
         expect(playMusic).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { PLAY_MUSIC: musicFile });
@@ -604,7 +617,7 @@ describe('components/game', () => {
 
       test('STOP_MUSIC', () => {
         const musicFile = 'music.mp3';
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { STOP_MUSIC: musicFile } };
+        mockScene = { ...sampleScene, tags: { STOP_MUSIC: musicFile } };
         expect(stopMusic).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_MUSIC: musicFile });
@@ -614,7 +627,7 @@ describe('components/game', () => {
       });
 
       test('STOP_MUSIC - all', () => {
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { STOP_MUSIC: true } };
+        mockScene = { ...sampleScene, tags: { STOP_MUSIC: true } };
         expect(stopMusic).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_MUSIC: true });
@@ -624,7 +637,7 @@ describe('components/game', () => {
       });
 
       test('CHECKPOINT - default', () => {
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { CHECKPOINT: true } };
+        mockScene = { ...sampleScene, tags: { CHECKPOINT: true } };
         expect(save).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { CHECKPOINT: true });
@@ -632,7 +645,7 @@ describe('components/game', () => {
       });
 
       test('CHECKPOINT - named', () => {
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { CHECKPOINT: 'point1' } };
+        mockScene = { ...sampleScene, tags: { CHECKPOINT: 'point1' } };
         expect(save).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { CHECKPOINT: 'point1' });
@@ -640,7 +653,7 @@ describe('components/game', () => {
       });
 
       test('SAVEGAME', () => {
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { SAVEGAME: 'point2' } };
+        mockScene = { ...sampleScene, tags: { SAVEGAME: 'point2' } };
         expect(save).not.toHaveBeenCalled();
         game.continueStory();
         expect(emit).toHaveBeenCalledWith('game/handletag', { SAVEGAME: 'point2' });
@@ -648,9 +661,9 @@ describe('components/game', () => {
       });
 
       test('custom scene processor', () => {
-        mockScene = { content: ['aaa'], text: ['aaaa'], tags: { CUSTOMTAG: 'test' } };
-        const targetScene = { content: ['aaa', 'test'], text: ['aaaa'], tags: { CUSTOMTAG: 'test' } };
-        const mockProcessor = jest.fn((s) => s.content.push(s.tags.CUSTOMTAG));
+        mockScene = { ...sampleScene, tags: { CUSTOMTAG: 'test' } };
+        const targetScene = { ...processedSampleScene, tags: { CUSTOMTAG: 'test' }, customtag: 'test' };
+        const mockProcessor = jest.fn((s) => { s.customtag = s.tags.CUSTOMTAG; });
         game.defineSceneProcessor(mockProcessor);
         game.continueStory();
         expect(emit).not.toHaveBeenCalledWith('game/handletag', expect.any(Object));

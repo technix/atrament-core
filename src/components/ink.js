@@ -10,6 +10,15 @@ function initStory(content) {
   emit('ink/initStory');
 }
 
+function resetStory() {
+  let success = false;
+  if (inkStory) {
+    inkStory.ResetState();
+    success = true;
+  }
+  emit('ink/resetStory', success);
+}
+
 // get scene from ink
 function getScene() {
   const scene = {
@@ -42,6 +51,7 @@ function getScene() {
 
 export default {
   initStory,
+  resetStory,
   story: () => inkStory,
   loadState: (savedState) => inkStory.state.LoadJson(savedState),
   getState: () => inkStory.state.toJson(),

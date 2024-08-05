@@ -50,6 +50,9 @@ const mockInkStoryInstance = {
   },
   ChoosePathString() {
     return true;
+  },
+  ResetState() {
+    return true;
   }
 };
 
@@ -64,6 +67,7 @@ const spyVisitCountAtPathString = jest.spyOn(mockInkStoryInstance, 'VisitCountAt
 const spyEvaluateFunction = jest.spyOn(mockInkStoryInstance, 'EvaluateFunction');
 const spyObserveVariable = jest.spyOn(mockInkStoryInstance, 'ObserveVariable');
 const spyChoosePathString = jest.spyOn(mockInkStoryInstance, 'ChoosePathString');
+const spyResetState = jest.spyOn(mockInkStoryInstance, 'ResetState');
 
 
 beforeEach(() => {
@@ -79,6 +83,13 @@ describe('components/ink', () => {
     expect(MockInkStory).toHaveBeenCalledWith(content);
     expect(story).toEqual(mockInkStoryInstance);
     expect(emit).toHaveBeenCalledWith('ink/initStory');
+  });
+
+  test('resetStory', () => {
+    expect(spyResetState).toHaveBeenCalledTimes(0);
+    ink.resetStory();
+    expect(spyResetState).toHaveBeenCalledTimes(1);
+    expect(emit).toHaveBeenCalledWith('ink/resetStory', true);
   });
 
   test('loadState', () => {

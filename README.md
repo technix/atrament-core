@@ -163,6 +163,12 @@ Load Ink file and initialize Ink Story object. Then updates game metadata and in
 
 Event: `'game/initInkStory'`
 
+#### atrament.game.getSaveSlotKey({ name, type })
+
+Returns save slot identifier for given save name and type.
+Possible save types: `atrament.game.SAVE_GAME`, `atrament.game.SAVE_CHECKPOINT`, `atrament.game.SAVE_AUTOSAVE`. For autosaves, `name` parameter should be omitted.
+Returned value can be used as a `saveslot` parameter.
+
 #### async atrament.game.start(saveslot)
 
 If game is started for the first time, or initialized game is not the same as current one - call `initInkStory` first.
@@ -182,7 +188,7 @@ Event: `'game/resume', { saveSlot: saveslot }`
 
 #### async atrament.game.canResume()
 
-Returns save slot name, if game can be resumed.
+Returns save slot identifier, if game can be resumed.
 
 Event: `'game/canResume', { saveSlot: saveslot }`
 
@@ -196,15 +202,27 @@ Event: `'game/restart', { saveSlot: saveslot }`
 
 #### async atrament.game.load(saveslot)
 
-Load game state from specified save slot.
+Load game state from specified save slot. 
 
 Event: `'game/load', saveslot`
 
-#### async atrament.game.save(saveslot)
+#### async atrament.game.saveGame(name)
 
-Save game state to specified save slot.
+Save game state to save slot.
 
-Event: `'game/save', saveslot`
+Event: `'game/save', { type: 'game', name }`
+
+#### async atrament.game.saveCheckpoint(name)
+
+Save game state to checkpoint.
+
+Event: `'game/save', { type: 'checkpoint', name }`
+
+#### async atrament.game.saveAutosave()
+
+Save game state to autosave slot.
+
+Event: `'game/save', { type: 'autosave' }`
 
 #### async atrament.game.listSaves()
 
@@ -221,14 +239,6 @@ Event: `'game/removeSave', saveslot`
 #### async atrament.game.existSave(saveslot)
 
 Returns `true` if specified save slot exists.
-
-#### atrament.game.getAutosaveSlot()
-
-Returns autosave slot name.
-
-#### atrament.game.getCheckpointSlot(id)
-
-Returns checkpoint slot name for given ID. If ID is not provided, returns default checkpoint slot name.
 
 #### atrament.game.continueStory()
 

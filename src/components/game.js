@@ -4,7 +4,17 @@ import hashCode from '../utils/hashcode';
 
 import ink from './ink';
 import { playSound, stopSound, playMusic, playSingleMusic, stopMusic } from './sound';
-import { load, save, existSave, removeSave, listSaves } from './saves';
+import {
+  getSaveSlotKey,
+  load,
+  save,
+  existSave,
+  removeSave,
+  listSaves,
+  SAVE_GAME,
+  SAVE_AUTOSAVE,
+  SAVE_CHECKPOINT
+} from './saves';
 
 import internalSceneProcessors from '../utils/scene-processors';
 
@@ -12,15 +22,6 @@ let expectedInkScriptUUID = null;
 let currentInkScriptUUID = null;
 
 const sceneProcessors = [];
-const autosaveSlot = '_autosave_';
-
-function $getCheckpointName(id) {
-  let saveId = id;
-  if (typeof id === 'boolean' || !id) {
-    saveId = '_default_';
-  }
-  return `checkpoint/${saveId}`;
-}
 
 function $iterateObservers(observerHandler) {
   const { state } = interfaces();
@@ -124,12 +125,13 @@ function reset() {
 }
 
 async function canResume() {
-  let saveSlot;
+  let saveSlot = null;
+  const autosaveSlot = getSaveSlotKey({ type: SAVE_AUTOSAVE });
   if (await existSave(autosaveSlot)) {
     saveSlot = autosaveSlot;
   } else {
     const saves = await listSaves();
-    const checkpoints = saves.filter((k) => k.id.includes('checkpoint/'));
+    const checkpoints = saves.filter((k) => k.type === SAVE_CHECKPOINT);
     if (checkpoints.length) {
       saveSlot = checkpoints.sort((a, b) => b.date - a.date)[0].id;
     }
@@ -155,6 +157,21 @@ async function restart(saveSlot) {
 }
 
 
+async function saveGame(name) {
+  await save({ type: SAVE_GAME, name });
+}
+
+
+async function saveCheckpoint(name) {
+  await save({ type: SAVE_CHECKPOINT, name });
+}
+
+
+async function saveAutosave() {
+  await save({ type: SAVE_AUTOSAVE });
+}
+
+
 const tagHandlers = {
   CLEAR: () => interfaces().state.setKey('scenes', []),
   AUDIO: (v) => (v ? playSound(v) : stopSound()),
@@ -163,10 +180,8 @@ const tagHandlers = {
   STOP_SOUND: (v) => (v === true ? stopSound() : stopSound(v)),
   PLAY_MUSIC: playMusic,
   STOP_MUSIC: (v) => (v === true ? stopMusic() : stopMusic(v)),
-  CHECKPOINT: (v) => {
-    save($getCheckpointName(v));
-  },
-  SAVEGAME: (v) => save(v)
+  CHECKPOINT: (v) => saveCheckpoint(v),
+  SAVEGAME: (v) => saveGame(v)
 };
 
 function $processTags(list, tags) {
@@ -210,7 +225,7 @@ function continueStory() {
 
   // RESTART_FROM_CHECKPOINT
   if (tags.RESTART_FROM_CHECKPOINT) {
-    restart($getCheckpointName(tags.RESTART_FROM_CHECKPOINT));
+    restart(getSaveSlotKey({ type: 'checkpoint', name: tags.RESTART_FROM_CHECKPOINT }));
     return;
   }
 
@@ -237,7 +252,7 @@ function continueStory() {
 
   // if autosave mode is not disabled
   if (metadata.autosave !== false) {
-    save(autosaveSlot);
+    saveAutosave();
   }
   emit('game/continueStory');
 }
@@ -257,11 +272,15 @@ export default {
   makeChoice: (id) => ink.makeChoice(id),
   getAssetPath: (path) => interfaces().loader.getAssetPath(path),
   defineSceneProcessor,
-  save,
+  getSaveSlotKey,
+  SAVE_GAME,
+  SAVE_AUTOSAVE,
+  SAVE_CHECKPOINT,
+  saveGame,
+  saveCheckpoint,
+  saveAutosave,
   load,
   listSaves,
   removeSave,
-  existSave,
-  getAutosaveSlot: () => autosaveSlot,
-  getCheckpointSlot: (id) => $getCheckpointName(id)
+  existSave
 };

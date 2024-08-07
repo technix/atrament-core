@@ -2,6 +2,9 @@ import ink from './ink';
 import { interfaces } from '../utils/interfaces';
 import { emit } from '../utils/emitter';
 
+export const SAVE_GAME = 'game';
+export const SAVE_AUTOSAVE = 'autosave';
+export const SAVE_CHECKPOINT = 'checkpoint';
 
 function savePrefix() {
   const { $gameUUID, $sessionID } = interfaces().state.get().game;
@@ -16,13 +19,17 @@ function savePrefix() {
 export function getSaveSlotKey({ name, type }) {
   return [
     savePrefix(),
-    type || '',
-    name
+    typeof type === 'string' ? type : '',
+    typeof name === 'string' ? name : ''
   ].join('/');
 }
 
 
-export async function load(saveSlotKey) {
+export async function load(s) {
+  let saveSlotKey = s;
+  if (typeof s === 'object') {
+    saveSlotKey = getSaveSlotKey(s);
+  }
   const { persistent, state } = interfaces();
   const gameState = await persistent.get(saveSlotKey);
   state.setKey('scenes', gameState.scenes);
@@ -69,6 +76,7 @@ export async function listSaves() {
     saves.map(
       async (key) => {
         const saveData = await persistent.get(key);
+        saveData.id = key;
         delete saveData.state;
         delete saveData.scenes;
         return saveData;

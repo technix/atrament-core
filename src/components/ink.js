@@ -88,5 +88,11 @@ export default {
     inkStory.ChoosePathString(knot);
     emit('ink/goTo', knot);
   },
+  onError: (callback) => {
+    inkStory.onError = (error) => {
+      emit('ink/onError', error);
+      callback(error);
+    };
+  },
   getScene
 };

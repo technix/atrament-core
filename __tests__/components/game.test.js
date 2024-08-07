@@ -202,14 +202,18 @@ describe('components/game', () => {
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
       await game.init(pathToInkFile, inkFile);
-      await game.initInkStory();
+      expect(mockState.get().vars).toEqual({});
       // run
-      await game.start();
-      // check
+      await game.initInkStory();
+      // expect observers to be registered, but values are not set yet
       expect(mockState.get().metadata).toEqual(mockGlobalTags);
       expect(ink.observeVariable).toHaveBeenCalledTimes(2);
       expect(ink.observeVariable).toHaveBeenCalledWith('var1', expect.any(Function));
       expect(ink.observeVariable).toHaveBeenCalledWith('var2', expect.any(Function));
+      expect(mockState.get().vars).toEqual({});
+      // run
+      await game.start();
+      // check
       expect(mockState.get().vars).toEqual({
         var1: 'var1-value',
         var2: 'var2-value'

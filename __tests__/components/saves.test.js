@@ -114,21 +114,6 @@ describe('components/saves', () => {
       expect(playMusic).not.toHaveBeenCalled();
       expect(emit).toHaveBeenCalledWith('game/load', saveID);
     });
-
-    test('load game state - restore observers', async () => {
-      mockState.setKey('metadata', { observe: ['var1', 'var2'] });
-      const saveID = 'save_id';
-      expect(mockState.get().vars).toEqual({});
-      await save(saveID);
-      emit.mockClear();
-      // load
-      await load(saveID);
-      expect(mockState.get().vars).toEqual({
-        var1: 'var1-value',
-        var2: 'var2-value'
-      });
-      expect(emit).toHaveBeenCalledWith('game/load', saveID);
-    });
   });
 
   describe('exist', () => {

@@ -447,7 +447,7 @@ atrament.set('fullscreen', true);
 | Key | Description                |
 | :-------- | :------------------------- |
 | `settings` | Single level key-value store for application settings |
-| `game` | Single level game-specific data. Atrament populates the following keys: *$pathToInkFile, $inkFile, gameUUID* |
+| `game` | Single level game-specific data. Atrament populates the following keys: *$pathToInkFile, $inkFile, $gameUUID* |
 | `metadata` | Data loaded from Ink file global tags |
 | `scenes` | Array of game scenes |
 | `vars` | Names and values of auto-observed variables |

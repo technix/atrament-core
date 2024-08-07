@@ -38,10 +38,10 @@ async function init(pathToInkFile, inkFile, gameID) {
   const gameObj = {
     $path: pathToInkFile,
     $file: inkFile,
-    gameUUID: gameID || hashCode(`${pathToInkFile}|${inkFile}`)
+    $gameUUID: gameID || hashCode(`${pathToInkFile}|${inkFile}`)
   };
   interfaces().state.setKey('game', gameObj);
-  expectedInkScriptUUID = gameObj.gameUUID; // expecting to load content with this UUID
+  expectedInkScriptUUID = gameObj.$gameUUID; // expecting to load content with this UUID
   emit('game/init', { pathToInkFile, inkFile });
 }
 

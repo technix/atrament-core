@@ -2,6 +2,8 @@ import ink from './ink';
 import { interfaces } from '../utils/interfaces';
 import { emit } from '../utils/emitter';
 
+import { validSession } from './sessions';
+
 export const SAVE_GAME = 'game';
 export const SAVE_AUTOSAVE = 'autosave';
 export const SAVE_CHECKPOINT = 'checkpoint';
@@ -10,7 +12,7 @@ function savePrefix() {
   const { $gameUUID, $sessionID } = interfaces().state.get().game;
   return [
     $gameUUID,
-    $sessionID || '',
+    validSession($sessionID),
     'save'
   ].join('/');
 }

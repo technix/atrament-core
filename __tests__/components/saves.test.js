@@ -3,6 +3,7 @@ import mockPersistent from '../../__mocks__/persistent';
 import mockState from '../../__mocks__/state';
 
 import { emit } from '../../src/utils/emitter';
+import { setSession } from '../../src/components/sessions';
 import ink from '../../src/components/ink';
 import {
   getSaveSlotKey,
@@ -206,6 +207,51 @@ describe('components/saves', () => {
         date: 1691539200000
       }]);
       expect(emit).toHaveBeenCalledWith('game/listSaves', savesList);
+    });
+
+    test('list saves for specific session', async () => {
+      mockState.setSubkey('game', '$gameUUID', 'UUID1');
+      await save({ type: 'game', name: 'game1_save1' });
+      await save({ type: 'checkpoint', name: 'game1_save2' });
+      setSession('session1');
+      await save({ type: 'game', name: 'game1_session1_save1' });
+      await save({ type: 'checkpoint', name: 'game1_session1_save2' });
+      setSession('session2');
+      await save({ type: 'game', name: 'game1_session2_save1' });
+      await save({ type: 'checkpoint', name: 'game1_session2_save2' });
+      let savesList;
+      // check saves for default session
+      setSession('');
+      savesList = await listSaves();
+      expect(savesList).toEqual([{
+        id: getSaveSlotKey({ type: 'game', name: 'game1_save1' }),
+        name: 'game1_save1',
+        type: 'game',
+        game: { $gameUUID: 'UUID1' },
+        date: 1691539200000
+      }, {
+        id: getSaveSlotKey({ type: 'checkpoint', name: 'game1_save2' }),
+        name: 'game1_save2',
+        type: 'checkpoint',
+        game: { $gameUUID: 'UUID1' },
+        date: 1691539200000
+      }]);
+      // check saves for session1
+      setSession('session1');
+      savesList = await listSaves();
+      expect(savesList).toEqual([{
+        id: getSaveSlotKey({ type: 'game', name: 'game1_session1_save1' }),
+        name: 'game1_session1_save1',
+        type: 'game',
+        game: { $gameUUID: 'UUID1', $sessionID: 'session1' },
+        date: 1691539200000
+      }, {
+        id: getSaveSlotKey({ type: 'checkpoint', name: 'game1_session1_save2' }),
+        name: 'game1_session1_save2',
+        type: 'checkpoint',
+        game: { $gameUUID: 'UUID1', $sessionID: 'session1' },
+        date: 1691539200000
+      }]);
     });
   });
 });

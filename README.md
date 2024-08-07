@@ -285,6 +285,29 @@ Method to call at the game end. Calls `atrament.game.clear()`, then clears `meta
 
 Event: `'game/reset'`
 
+#### atrament.game.getSession()
+
+Returns current game session.
+
+#### atrament.game.setSession(sessionID)
+
+Sets current game session. If set to empty value, returns to default session.
+
+Event: `'game/setSession', sessionID`
+
+#### async atrament.game.getSessions()
+
+Returns list of existing sessions in a `{ sessionName: numberOfSaves, ... }` format.
+
+Event: `'game/getSessions', sessionList`
+
+#### async atrament.game.deleteSession(sessionID)
+
+Delete all saves for a given session.
+
+Event: `'game/deleteSession', sessionID`
+
+
 ### Ink methods
 
 #### atrament.ink.initStory()

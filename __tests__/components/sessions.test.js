@@ -16,7 +16,7 @@ jest.mock('../../src/utils/emitter', () => ({
 }));
 
 jest.mock('../../src/components/ink', () => ({
-  getState: jest.fn(() => ({ inkjson: 'content' })),
+  getState: jest.fn(() => ({ inkjson: 'content' }))
 }));
 
 jest.mock('../../src/utils/interfaces', () => ({

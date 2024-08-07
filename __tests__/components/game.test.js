@@ -208,6 +208,36 @@ describe('components/game', () => {
       expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: undefined });
     });
 
+    test('restore single observer', async () => {
+      // set
+      mockGlobalTags = { observe: 'var1' };
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      await game.init(pathToInkFile, inkFile);
+      expect(mockState.get().vars).toEqual({});
+      // run
+      await game.initInkStory();
+      // expect observers to be registered, but values are not set yet
+      expect(mockState.get().metadata).toEqual(mockGlobalTags);
+      expect(ink.observeVariable).toHaveBeenCalledTimes(1);
+      expect(ink.observeVariable).toHaveBeenCalledWith('var1', expect.any(Function));
+      expect(mockState.get().vars).toEqual({});
+      // run
+      await game.start();
+      // check
+      expect(mockState.get().vars).toEqual({
+        var1: 'var1-value'
+      });
+      expect(load).not.toHaveBeenCalled();
+      // check observers
+      emit.mockClear();
+      mockObserver('var1', 50);
+      expect(mockState.get().vars).toEqual({
+        var1: 50
+      });
+      expect(emit).toHaveBeenCalledWith('ink/variableObserver', { name: 'var1', value: 50 });
+    });
+
     test('restore observers', async () => {
       // set
       mockGlobalTags = { observe: ['var1', 'var2'] };

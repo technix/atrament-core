@@ -26,8 +26,11 @@ const sceneProcessors = [];
 
 function $iterateObservers(observerHandler) {
   const { state } = interfaces();
-  const observers = state.get().metadata.observe;
+  let observers = state.get().metadata.observe;
   if (observers) {
+    if (!Array.isArray(observers)) {
+      observers = [observers];
+    }
     observers.forEach(observerHandler);
   }
 }

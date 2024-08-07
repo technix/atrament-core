@@ -1,5 +1,4 @@
 import ink from './ink';
-import { playMusic } from './sound';
 import { interfaces } from '../utils/interfaces';
 import { emit } from '../utils/emitter';
 
@@ -20,12 +19,6 @@ export async function load(saveID) {
   state.setKey('scenes', gameState.scenes);
   state.setKey('game', gameState.game);
   ink.loadState(gameState.state);
-  // restore observed variables
-  const { game } = state.get();
-  // restore music
-  if (game.$currentMusic) {
-    playMusic(game.$currentMusic);
-  }
   emit('game/load', saveID);
 }
 

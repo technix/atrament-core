@@ -43,7 +43,15 @@ jest.mock('../../src/components/sound', () => ({
 }));
 
 jest.mock('../../src/components/saves', () => ({
-  load: jest.fn(),
+  load: jest.fn(async (gameSaveId) => {
+    const exists = await mockPersistent.exists(gameSaveId);
+    if (exists) {
+      const saveContent = await mockPersistent.get(gameSaveId);
+      if (saveContent.game) {
+        mockState.setKey('game', saveContent.game);
+      }
+    }
+  }),
   save: jest.fn(),
   existSave: jest.fn((saveID) => Promise.resolve(mockPersistent.exists(saveID))),
   removeSave: jest.fn(),
@@ -290,6 +298,38 @@ describe('components/game', () => {
       // check
       expect(mockLoader).toHaveBeenCalledWith(inkFile);
       expect(emit).toHaveBeenCalledWith('game/loadInkFile', inkFile);
+    });
+
+    test('load game state - restore music', async () => {
+      // set
+      const saveID = 'test_save_id';
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      mockPersistent.set(saveID, { game: { $currentMusic: 'music.mp3' } });
+      await game.init(pathToInkFile, inkFile);
+      await game.initInkStory();
+      // run
+      expect(playMusic).not.toHaveBeenCalled();
+      await game.start(saveID);
+      // check
+      expect(playMusic).toHaveBeenCalledWith('music.mp3');
+      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: saveID });
+    });
+
+    test('load game state - restore music - false', async () => {
+      // set
+      const saveID = 'test_save_id';
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      mockPersistent.set(saveID, { game: { $currentMusic: false } });
+      await game.init(pathToInkFile, inkFile);
+      await game.initInkStory();
+      // run
+      expect(playMusic).not.toHaveBeenCalled();
+      await game.start(saveID);
+      // check
+      expect(playMusic).not.toHaveBeenCalled();
+      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: saveID });
     });
   });
 

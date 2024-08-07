@@ -140,7 +140,7 @@ describe('components/sound', () => {
     playMusic(['sound/test.mp3', 'sound/test2.mp3']);
     stopMusic();
     expect(mockStopMusic).toHaveBeenCalledTimes(1);
-    expect(mockStopMusic).toHaveBeenCalledWith(null);
+    expect(mockStopMusic).toHaveBeenCalledWith();
     expect(mockState.get().game.$currentMusic).toEqual([]);
   });
 });

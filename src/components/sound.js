@@ -1,22 +1,27 @@
 import { interfaces } from '../utils/interfaces';
 
+function toArray(v) {
+  return Array.isArray(v) ? v : [v];
+}
+
 export function playSound(snd) {
   const { sound, loader } = interfaces();
-  const soundQueue = Array.isArray(snd) ? snd : [snd];
-  soundQueue.forEach((file) => sound.playSound(loader.getAssetPath(file)));
+  toArray(snd).forEach(
+    (file) => sound.playSound(loader.getAssetPath(file))
+  );
 }
 
 export function stopSound(snd) {
   const { sound, loader } = interfaces();
-  const soundQueue = Array.isArray(snd) ? snd : [snd];
-  soundQueue.forEach((file) => sound.stopSound(file ? loader.getAssetPath(file) : null));
+  toArray(snd).forEach(
+    (file) => sound.stopSound(file ? loader.getAssetPath(file) : null)
+  );
 }
 
 export function playMusic(mus) {
   const { sound, state, loader } = interfaces();
-  const musicQueue = Array.isArray(mus) ? mus : [mus];
   const currentMusic = state.get().game.$currentMusic || [];
-  musicQueue.forEach((file) => {
+  toArray(mus).forEach((file) => {
     sound.playMusic(loader.getAssetPath(file));
     currentMusic.push(file);
   });
@@ -25,22 +30,21 @@ export function playMusic(mus) {
 
 export function playSingleMusic(mus) {
   const { sound, state, loader } = interfaces();
-  const musicQueue = Array.isArray(mus) ? mus : [mus];
   sound.stopMusic();
-  const file = musicQueue.pop();
+  const file = toArray(mus).pop();
   sound.playMusic(loader.getAssetPath(file));
   state.setSubkey('game', '$currentMusic', [file]);
 }
 
 export function stopMusic(mus) {
   const { sound, state, loader } = interfaces();
-  const musicQueue = Array.isArray(mus) ? mus : [mus];
   let currentMusic = state.get().game.$currentMusic || [];
-  musicQueue.forEach((file) => {
-    sound.stopMusic(file ? loader.getAssetPath(file) : null);
+  toArray(mus).forEach((file) => {
     if (file) {
+      sound.stopMusic(loader.getAssetPath(file));
       currentMusic = currentMusic.filter((m) => m !== file);
     } else {
+      sound.stopMusic();
       currentMusic = [];
     }
   });

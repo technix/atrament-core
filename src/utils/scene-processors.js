@@ -1,15 +1,19 @@
-function sceneListImages(scene) {
-  scene.images = [];
+function $processTag(scene, tag, store) {
+  if (!scene[store]) {
+    scene[store] = [];
+  }
   scene.content = scene.content.map((paragraph) => {
-    paragraph.images = [];
-    const imageTag = paragraph.tags?.IMAGE;
-    if (imageTag) {
-      if (Array.isArray(imageTag)) {
-        scene.images = [...scene.images, ...imageTag];
-        paragraph.images = imageTag;
+    if (!paragraph[store]) {
+      paragraph[store] = [];
+    }
+    const processedTag = paragraph.tags?.[tag];
+    if (processedTag) {
+      if (Array.isArray(processedTag)) {
+        scene[store] = [...scene[store], ...processedTag];
+        paragraph[store] = processedTag;
       } else {
-        scene.images.push(imageTag);
-        paragraph.images = [imageTag];
+        scene[store].push(processedTag);
+        paragraph[store] = [processedTag];
       }
     }
     return paragraph;
@@ -26,6 +30,10 @@ function tagDisabledChoices(scene) {
 }
 
 export default [
-  sceneListImages,
+  (scene) => $processTag(scene, 'IMAGE', 'images'),
+  (scene) => $processTag(scene, 'AUDIO', 'sounds'),
+  (scene) => $processTag(scene, 'PLAY_SOUND', 'sounds'),
+  (scene) => $processTag(scene, 'AUDIOLOOP', 'music'),
+  (scene) => $processTag(scene, 'PLAY_MUSIC', 'music'),
   tagDisabledChoices
 ];

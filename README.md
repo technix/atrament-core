@@ -29,6 +29,7 @@ If you are looking for example of a web application based on Atrament, check out
 | Tag | Description                |
 | :-------- | :------------------------- |
 | `# observe: varName` | Register variable observer for `varName` Ink variable. Variable value is available in `vars` section of Atrament state. |
+| `# persist: varName` | Save this variable value to persistent storage, restore before game starts. |
 | `# autosave: false` | Disables autosaves. |
 | `# single_scene` | Store only last scene in Atrament state. |
 

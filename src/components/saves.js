@@ -8,19 +8,19 @@ export const SAVE_GAME = 'game';
 export const SAVE_AUTOSAVE = 'autosave';
 export const SAVE_CHECKPOINT = 'checkpoint';
 
-function savePrefix() {
+export function persistentPrefix(section) {
   const { $gameUUID, $sessionID } = interfaces().state.get().game;
   return [
     $gameUUID,
     validSession($sessionID),
-    'save'
+    section
   ].join('/');
 }
 
 
 export function getSaveSlotKey({ name, type }) {
   return [
-    savePrefix(),
+    persistentPrefix('save'),
     [SAVE_GAME, SAVE_AUTOSAVE, SAVE_CHECKPOINT].includes(type) ? type : SAVE_GAME,
     typeof name === 'string' || typeof name === 'number' ? name : ''
   ].join('/');
@@ -73,7 +73,7 @@ export async function removeSave(saveSlotKey) {
 export async function listSaves() {
   const { persistent } = interfaces();
   const keys = await persistent.keys();
-  const saves = keys.filter((k) => k.includes(savePrefix()));
+  const saves = keys.filter((k) => k.includes(persistentPrefix('save')));
   const savesList = await Promise.all(
     saves.map(
       async (key) => {

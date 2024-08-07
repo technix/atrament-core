@@ -16,7 +16,8 @@ import {
   SAVE_AUTOSAVE,
   SAVE_CHECKPOINT,
   SAVE_GAME,
-  getSaveSlotKey
+  getSaveSlotKey,
+  persistentPrefix
 } from '../../src/components/saves';
 
 import game from '../../src/components/game';
@@ -42,6 +43,7 @@ jest.mock('../../src/components/ink', () => ({
   loadState: jest.fn(() => mockInkState),
   getGlobalTags: jest.fn(() => mockGlobalTags),
   getVariable: jest.fn((v) => `${v}-value`),
+  setVariable: jest.fn(),
   observeVariable: jest.fn((v, handler) => { mockObserver = handler; }),
   getScene: jest.fn(() => JSON.parse(JSON.stringify(mockScene))),
   makeChoice: jest.fn(),
@@ -269,6 +271,33 @@ describe('components/game', () => {
         var2: 'var2-value'
       });
       expect(emit).toHaveBeenCalledWith('ink/variableObserver', { name: 'var1', value: 50 });
+    });
+
+    test('handle persistent vars', async () => {
+      // set
+      mockGlobalTags = { persist: ['var1', 'var2'] };
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      await game.init(pathToInkFile, inkFile);
+      const persistentStore = persistentPrefix('persist');
+      expect(mockState.get().vars).toEqual({});
+      // run
+      await game.initInkStory();
+      // expect observers to be registered, but no data are saved
+      expect(mockState.get().metadata).toEqual(mockGlobalTags);
+      expect(ink.observeVariable).toHaveBeenCalledTimes(2);
+      expect(ink.observeVariable).toHaveBeenCalledWith('var1', expect.any(Function));
+      expect(ink.observeVariable).toHaveBeenCalledWith('var2', expect.any(Function));
+      expect(await mockPersistent.exists(persistentStore)).toEqual(false);
+      await mockObserver('var1', 50);
+      const state1 = await mockPersistent.get(persistentStore);
+      expect(state1).toEqual({ var1: 50 });
+      expect(ink.setVariable).not.toHaveBeenCalled();
+      // reinit the game
+      // run
+      await game.initInkStory();
+      expect(ink.setVariable).toHaveBeenCalledTimes(1);
+      expect(ink.setVariable).toHaveBeenCalledWith('var1', 50);
     });
 
     test('load from nonexistent save', async () => {

@@ -3,6 +3,7 @@ import { emit } from '../utils/emitter';
 import hashCode from '../utils/hashcode';
 
 import ink from './ink';
+import { getSession, setSession, getSessions, removeSession } from './sessions';
 import { playSound, stopSound, playMusic, playSingleMusic, stopMusic } from './sound';
 import {
   getSaveSlotKey,
@@ -272,15 +273,21 @@ export default {
   makeChoice: (id) => ink.makeChoice(id),
   getAssetPath: (path) => interfaces().loader.getAssetPath(path),
   defineSceneProcessor,
-  getSaveSlotKey,
+  // saves
   SAVE_GAME,
   SAVE_AUTOSAVE,
   SAVE_CHECKPOINT,
+  getSaveSlotKey,
   saveGame,
   saveCheckpoint,
   saveAutosave,
   load,
   listSaves,
   removeSave,
-  existSave
+  existSave,
+  // sessions
+  getSession,
+  setSession,
+  getSessions,
+  removeSession
 };

@@ -6,6 +6,7 @@ import ink from './ink';
 import { getSession, setSession, getSessions, removeSession } from './sessions';
 import { playSound, stopSound, playMusic, playSingleMusic, stopMusic } from './sound';
 import {
+  persistentPrefix,
   getSaveSlotKey,
   load,
   save,
@@ -35,6 +36,31 @@ function $iterateObservers(observerHandler) {
   }
 }
 
+async function $handlePersistent() {
+  const { state, persistent } = interfaces();
+  let persistentVars = state.get().metadata.persist;
+  if (persistentVars) {
+    if (!Array.isArray(persistentVars)) {
+      persistentVars = [persistentVars];
+    }
+    const storeID = persistentPrefix('persist');
+    let persistentVarState = {};
+    // load persistent data, if possible
+    if (await persistent.exists(storeID)) {
+      persistentVarState = await persistent.get(storeID);
+      Object.entries(persistentVarState).forEach(
+        ([k, v]) => ink.setVariable(k, v)
+      );
+    }
+    // register observers for persistent vars
+    persistentVars.forEach((variable) => {
+      ink.observeVariable(variable, async (name, value) => {
+        persistentVarState[name] = value;
+        await persistent.set(storeID, persistentVarState);
+      });
+    });
+  }
+}
 
 // ===========================================
 
@@ -75,6 +101,7 @@ async function initInkStory() {
       emit('ink/variableObserver', { name, value });
     });
   });
+  await $handlePersistent();
   currentInkScriptUUID = expectedInkScriptUUID;
   emit('game/initInkStory');
 }

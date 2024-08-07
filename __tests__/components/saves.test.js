@@ -3,7 +3,6 @@ import mockPersistent from '../../__mocks__/persistent';
 import mockState from '../../__mocks__/state';
 
 import { emit } from '../../src/utils/emitter';
-import { playMusic } from '../../src/components/sound';
 import ink from '../../src/components/ink';
 import { $getSlotName, load, save, existSave, removeSave, listSaves } from '../../src/components/saves';
 
@@ -15,10 +14,6 @@ jest.mock('../../src/components/ink', () => ({
   loadState: jest.fn(),
   getState: jest.fn(() => ({ inkjson: 'content' })),
   getVariable: jest.fn((v) => `${v}-value`)
-}));
-
-jest.mock('../../src/components/sound', () => ({
-  playMusic: jest.fn()
 }));
 
 jest.mock('../../src/utils/interfaces', () => ({
@@ -86,32 +81,7 @@ describe('components/saves', () => {
       expect(ink.loadState).toHaveBeenCalledWith({ inkjson: 'content' });
       expect(mockState.get().scenes).toEqual(mockScenes);
       expect(mockState.get().game).toEqual({ gameUUID: 'test-game' });
-      expect(playMusic).not.toHaveBeenCalled();
       expect(mockState.get().vars).toEqual({});
-      expect(emit).toHaveBeenCalledWith('game/load', saveID);
-    });
-
-    test('load game state - restore music', async () => {
-      mockState.setSubkey('game', '$currentMusic', 'music.mp3');
-      const saveID = 'save_id';
-      expect(playMusic).not.toHaveBeenCalled();
-      await save(saveID);
-      emit.mockClear();
-      // load
-      await load(saveID);
-      expect(playMusic).toHaveBeenCalledWith('music.mp3');
-      expect(emit).toHaveBeenCalledWith('game/load', saveID);
-    });
-
-    test('load game state - restore music - false', async () => {
-      mockState.setSubkey('game', '$currentMusic', false);
-      const saveID = 'save_id';
-      expect(playMusic).not.toHaveBeenCalled();
-      await save(saveID);
-      emit.mockClear();
-      // load
-      await load(saveID);
-      expect(playMusic).not.toHaveBeenCalled();
       expect(emit).toHaveBeenCalledWith('game/load', saveID);
     });
   });

@@ -88,6 +88,11 @@ async function start(saveSlot) {
   if (saveSlot) {
     if (await existSave(saveSlot)) {
       await load(saveSlot);
+      const { game } = state.get();
+      // restore music
+      if (game.$currentMusic) {
+        playMusic(game.$currentMusic);
+      }
     }
   }
   // read initial state of observed variables

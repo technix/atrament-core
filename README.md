@@ -340,6 +340,12 @@ Go to specified Ink knot or stitch. Wrapper for `Story.ChoosePathString`.
 
 Event: `'ink/goTo', { knot: ref }`
 
+#### atrament.ink.onError(errorCallback)
+
+When Ink error occurs, emits `ink/onError` event and calls `errorCallback` function with error event object as argument.
+
+Event: `'ink/onError', errorEvent`
+
 #### atrament.ink.getScene()
 
 Returns **Scene** object.

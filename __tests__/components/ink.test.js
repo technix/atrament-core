@@ -18,6 +18,7 @@ const mockInkStoryInstance = {
     LoadJson: jest.fn(),
     toJson: jest.fn(() => ({ inkstate: 'jsonStructure' }))
   },
+  onError: () => {},
   canContinue: true,
   currentChoices: null,
   Continue() {
@@ -171,6 +172,17 @@ describe('components/ink', () => {
     ink.goTo(knot);
     expect(spyChoosePathString).toHaveBeenCalledWith(knot);
     expect(emit).toHaveBeenCalledWith('ink/goTo', knot);
+  });
+
+  test('onError', () => {
+    const errorEvent = { error: 'Internal error' };
+    let checkErrorEvent = null;
+    ink.onError((error) => { checkErrorEvent = error; });
+    // check
+    expect(checkErrorEvent).not.toEqual(errorEvent);
+    ink.story().onError(errorEvent);
+    expect(checkErrorEvent).toEqual(errorEvent);
+    expect(emit).toHaveBeenCalledWith('ink/onError', errorEvent);
   });
 
   test('getScene', () => {

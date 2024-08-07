@@ -47,6 +47,14 @@ describe('components/saves', () => {
       const slotName = getSaveSlotKey({ type: 'checkpoint', name: 'stage1' });
       expect(slotName).toBe('test-game//save/checkpoint/stage1');
     });
+    test('default - untyped', () => {
+      const slotName = getSaveSlotKey({ type: true, name: 'check' });
+      expect(slotName).toBe('test-game//save//check');
+    });
+    test('default - unnamed', () => {
+      const slotName = getSaveSlotKey({ type: 'checkpoint', name: true });
+      expect(slotName).toBe('test-game//save/checkpoint/');
+    });
     test('session', () => {
       mockState.setSubkey('game', '$sessionID', 's1');
       const slotName = getSaveSlotKey({ type: 'autosave' });
@@ -124,21 +132,24 @@ describe('components/saves', () => {
   describe('listSaves', () => {
     test('get saves for specific game', async () => {
       mockState.setSubkey('game', '$gameUUID', 'UUID1');
-      await save({ type: 'save', name: 'game1_save1' });
+      await save({ type: 'game', name: 'game1_save1' });
       await save({ type: 'checkpoint', name: 'game1_save2' });
       await save({ type: 'autosave' });
       let savesList = await listSaves();
       expect(savesList).toEqual([{
+        id: getSaveSlotKey({ type: 'game', name: 'game1_save1' }),
         name: 'game1_save1',
-        type: 'save',
+        type: 'game',
         game: { $gameUUID: 'UUID1' },
         date: 1691539200000
       }, {
+        id: getSaveSlotKey({ type: 'checkpoint', name: 'game1_save2' }),
         name: 'game1_save2',
         type: 'checkpoint',
         game: { $gameUUID: 'UUID1' },
         date: 1691539200000
       }, {
+        id: getSaveSlotKey({ type: 'autosave' }),
         type: 'autosave',
         game: { $gameUUID: 'UUID1' },
         date: 1691539200000
@@ -152,6 +163,7 @@ describe('components/saves', () => {
       await save({ type: 'checkpoint', name: 'game2_checkpoint' });
       savesList = await listSaves();
       expect(savesList).toEqual([{
+        id: getSaveSlotKey({ type: 'checkpoint', name: 'game2_checkpoint' }),
         name: 'game2_checkpoint',
         type: 'checkpoint',
         game: { $gameUUID: 'UUID2' },
@@ -162,16 +174,19 @@ describe('components/saves', () => {
       mockState.setSubkey('game', '$gameUUID', 'UUID1');
       savesList = await listSaves();
       expect(savesList).toEqual([{
+        id: getSaveSlotKey({ type: 'game', name: 'game1_save1' }),
         name: 'game1_save1',
-        type: 'save',
+        type: 'game',
         game: { $gameUUID: 'UUID1' },
         date: 1691539200000
       }, {
+        id: getSaveSlotKey({ type: 'checkpoint', name: 'game1_save2' }),
         name: 'game1_save2',
         type: 'checkpoint',
         game: { $gameUUID: 'UUID1' },
         date: 1691539200000
       }, {
+        id: getSaveSlotKey({ type: 'autosave' }),
         type: 'autosave',
         game: { $gameUUID: 'UUID1' },
         date: 1691539200000

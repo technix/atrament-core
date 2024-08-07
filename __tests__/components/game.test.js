@@ -7,7 +7,17 @@ import hashCode from '../../src/utils/hashcode';
 
 import ink from '../../src/components/ink';
 import { playMusic, stopMusic, playSound, playSingleMusic, stopSound } from '../../src/components/sound';
-import { load, save, existSave, removeSave, listSaves } from '../../src/components/saves';
+import {
+  load,
+  save,
+  existSave,
+  removeSave,
+  listSaves,
+  SAVE_AUTOSAVE,
+  SAVE_CHECKPOINT,
+  SAVE_GAME,
+  getSaveSlotKey
+} from '../../src/components/saves';
 
 import game from '../../src/components/game';
 
@@ -17,8 +27,10 @@ let mockInkContent;
 const mockInitLoader = jest.fn(() => Promise.resolve());
 const mockLoader = jest.fn(() => Promise.resolve(mockInkContent));
 let mockObserver;
-
+const mockInkState = { inkState: true };
 const mockGetAssetPath = jest.fn((file) => `${mockState.get().game.$path}/${file}`);
+
+const pause = (ms) => new Promise((res) => { setTimeout(res, ms); });
 
 jest.mock('../../src/utils/emitter', () => ({
   emit: jest.fn()
@@ -26,6 +38,8 @@ jest.mock('../../src/utils/emitter', () => ({
 
 jest.mock('../../src/components/ink', () => ({
   initStory: jest.fn(),
+  getState: jest.fn(() => mockInkState),
+  loadState: jest.fn(() => mockInkState),
   getGlobalTags: jest.fn(() => mockGlobalTags),
   getVariable: jest.fn((v) => `${v}-value`),
   observeVariable: jest.fn((v, handler) => { mockObserver = handler; }),
@@ -42,27 +56,18 @@ jest.mock('../../src/components/sound', () => ({
   stopSound: jest.fn()
 }));
 
-jest.mock('../../src/components/saves', () => ({
-  load: jest.fn(async (gameSaveId) => {
-    const exists = await mockPersistent.exists(gameSaveId);
-    if (exists) {
-      const saveContent = await mockPersistent.get(gameSaveId);
-      if (saveContent.game) {
-        mockState.setKey('game', saveContent.game);
-      }
-    }
-  }),
-  save: jest.fn(),
-  existSave: jest.fn((saveID) => Promise.resolve(mockPersistent.exists(saveID))),
-  removeSave: jest.fn(),
-  listSaves: jest.fn(async () => {
-    const keys = await mockPersistent.keys();
-    const savesList = await Promise.all(keys.map(
-      async (key) => { const r = await mockPersistent.get(key); return r; }
-    ));
-    return savesList;
-  })
-}));
+jest.mock('../../src/components/saves', () => {
+  const saves = jest.requireActual('../../src/components/saves');
+  return {
+    ...saves,
+    load: jest.spyOn(saves, 'load'),
+    save: jest.spyOn(saves, 'save'),
+    existSave: jest.spyOn(saves, 'existSave'),
+    removeSave: jest.spyOn(saves, 'removeSave'),
+    listSaves: jest.spyOn(saves, 'listSaves')
+  };
+});
+
 
 jest.mock('../../src/utils/interfaces', () => ({
   interfaces: jest.fn(() => ({
@@ -141,13 +146,13 @@ describe('components/game', () => {
     // run
     game.clear();
     // check
-    expect(emit).toHaveBeenCalledWith('game/clear');
     expect(stopMusic).toHaveBeenCalledTimes(1);
     expect(mockState.get().scenes).toEqual([]);
     expect(mockState.get().vars).toEqual({});
     expect(mockState.get().metadata).toEqual({ ccc: 'ddd' });
     expect(mockState.get().game).toEqual({ ddd: 'eee' });
     expect(ink.resetStory).toHaveBeenCalledTimes(1);
+    expect(emit).toHaveBeenCalledWith('game/clear');
   });
 
   test('reset', async () => {
@@ -161,12 +166,12 @@ describe('components/game', () => {
     // run
     game.reset();
     // check
-    expect(emit).toHaveBeenCalledWith('game/reset');
     expect(stopMusic).toHaveBeenCalledTimes(1);
     expect(mockState.get().scenes).toEqual([]);
     expect(mockState.get().vars).toEqual({});
     expect(mockState.get().metadata).toEqual({});
     expect(mockState.get().game).toEqual({});
+    expect(emit).toHaveBeenCalledWith('game/reset');
   });
 
 
@@ -191,7 +196,6 @@ describe('components/game', () => {
       // run
       await game.start();
       // check
-      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: undefined });
       expect(ink.initStory).toHaveBeenCalledTimes(1);
       expect(ink.initStory).toHaveBeenCalledWith(mockInkContent);
       expect(stopMusic).toHaveBeenCalledTimes(1);
@@ -201,6 +205,7 @@ describe('components/game', () => {
       expect(ink.observeVariable).not.toHaveBeenCalled();
       expect(existSave).not.toHaveBeenCalled();
       expect(load).not.toHaveBeenCalled();
+      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: undefined });
     });
 
     test('restore observers', async () => {
@@ -236,7 +241,7 @@ describe('components/game', () => {
       expect(emit).toHaveBeenCalledWith('ink/variableObserver', { name: 'var1', value: 50 });
     });
 
-    test('load from nonexistant save', async () => {
+    test('load from nonexistent save', async () => {
       // set
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
@@ -253,32 +258,34 @@ describe('components/game', () => {
       // set
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      mockPersistent.set('existingsave', 'content');
+      const saveID = getSaveSlotKey({ type: SAVE_GAME, name: 'existingsave' });
+      game.saveGame('existingsave');
       await game.init(pathToInkFile, inkFile);
       // run
-      await game.start('existingsave');
+      await game.start(saveID);
       // check
       expect(ink.initStory).toHaveBeenCalledTimes(1);
       expect(existSave).toHaveBeenCalledTimes(1);
-      expect(existSave).toHaveBeenCalledWith('existingsave');
+      expect(existSave).toHaveBeenCalledWith(saveID);
       expect(load).toHaveBeenCalledTimes(1);
-      expect(load).toHaveBeenCalledWith('existingsave');
+      expect(load).toHaveBeenCalledWith(saveID);
     });
 
     test('load from existing save - story is initialized', async () => {
       // set
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      mockPersistent.set('existingsave', 'content');
+      const saveID = getSaveSlotKey({ type: SAVE_GAME, name: 'existingsave' });
+      game.saveGame('existingsave');
       await game.init(pathToInkFile, inkFile);
       // run
-      await game.start('existingsave');
+      await game.start(saveID);
       // check
       expect(ink.initStory).toHaveBeenCalledTimes(1);
       expect(existSave).toHaveBeenCalledTimes(1);
-      expect(existSave).toHaveBeenCalledWith('existingsave');
+      expect(existSave).toHaveBeenCalledWith(saveID);
       expect(load).toHaveBeenCalledTimes(1);
-      expect(load).toHaveBeenCalledWith('existingsave');
+      expect(load).toHaveBeenCalledWith(saveID);
     });
 
     test('load ink file while starting', async () => {
@@ -366,48 +373,52 @@ describe('components/game', () => {
 
   describe('canResume', () => {
     test('default', async () => {
-      const expectedSaveslot = undefined;
+      const expectedSaveslot = null; // no saves, can't resume
       const canResume = await game.canResume();
-      expect(emit).toHaveBeenCalledWith('game/canResume', expectedSaveslot);
       expect(canResume).toBe(expectedSaveslot);
+      expect(emit).toHaveBeenCalledWith('game/canResume', expectedSaveslot);
     });
 
     test('autosave', async () => {
       // set
-      mockPersistent.set('_autosave_', 'autosave_content');
-      const expectedSaveslot = '_autosave_';
+      const expectedSaveslot = getSaveSlotKey({ type: SAVE_AUTOSAVE });
+      await game.saveAutosave();
       // run
       const canResume = await game.canResume();
       // check
-      expect(emit).toHaveBeenCalledWith('game/canResume', expectedSaveslot);
       expect(canResume).toBe(expectedSaveslot);
-    });
-
-    test('checkpoints', async () => {
-      // set
-      mockPersistent.set('_autosave_', 'autosave_content');
-      mockPersistent.set('checkpoint/point1', { id: 'checkpoint/point1', date: Date.now() - 100 });
-      mockPersistent.set('checkpoint/point2', { id: 'checkpoint/point2', date: Date.now() - 1000 });
-      mockPersistent.set('checkpoint/point3', { id: 'checkpoint/point3', date: Date.now() });
-      const expectedSaveslot = '_autosave_'; // autosave has higher precedence
-      // run
-      const canResume = await game.canResume();
-      // check
       expect(emit).toHaveBeenCalledWith('game/canResume', expectedSaveslot);
-      expect(canResume).toBe(expectedSaveslot);
     });
 
     test('both autosave and checkpoints', async () => {
       // set
-      mockPersistent.set('checkpoint/point1', { id: 'checkpoint/point1', date: Date.now() - 100 });
-      mockPersistent.set('checkpoint/point2', { id: 'checkpoint/point2', date: Date.now() - 1000 });
-      mockPersistent.set('checkpoint/point3', { id: 'checkpoint/point3', date: Date.now() });
-      const expectedSaveslot = 'checkpoint/point3'; // latest checkpoint
+      await game.saveAutosave();
+      await game.saveCheckpoint('point1');
+      await pause(1);
+      await game.saveCheckpoint('point2');
+      await pause(1);
+      await game.saveCheckpoint('point3');
+      const expectedSaveslot = getSaveSlotKey({ type: SAVE_AUTOSAVE }); // autosave has higher precedence
       // run
       const canResume = await game.canResume();
       // check
-      expect(emit).toHaveBeenCalledWith('game/canResume', expectedSaveslot);
       expect(canResume).toBe(expectedSaveslot);
+      expect(emit).toHaveBeenCalledWith('game/canResume', expectedSaveslot);
+    });
+
+    test('checkpoints', async () => {
+      // set
+      await game.saveCheckpoint('point1');
+      await pause(1);
+      await game.saveCheckpoint('point2');
+      await pause(1);
+      await game.saveCheckpoint('point3');
+      const expectedSaveslot = getSaveSlotKey({ type: SAVE_CHECKPOINT, name: 'point3' }); // latest checkpoint
+      // run
+      const canResume = await game.canResume();
+      // check
+      expect(canResume).toBe(expectedSaveslot);
+      expect(emit).toHaveBeenCalledWith('game/canResume', expectedSaveslot);
     });
   });
 
@@ -421,21 +432,21 @@ describe('components/game', () => {
     test('cannot resume - start again', async () => {
       expect(ink.resetStory).not.toHaveBeenCalled();
       await game.resume();
-      expect(emit).toHaveBeenCalledWith('game/resume', { saveSlot: undefined });
-      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: undefined });
       expect(load).not.toHaveBeenCalled();
       expect(ink.resetStory).toHaveBeenCalledTimes(1);
+      expect(emit).toHaveBeenCalledWith('game/resume', { saveSlot: null });
+      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: null });
     });
 
     test('can resume - start from save', async () => {
       expect(ink.resetStory).not.toHaveBeenCalled();
-      const saveID = '_autosave_';
-      mockPersistent.set(saveID, 'autosave_content');
+      const saveID = getSaveSlotKey({ type: SAVE_AUTOSAVE });
+      mockPersistent.set(saveID, { type: SAVE_AUTOSAVE, game: {} });
       await game.resume();
-      expect(emit).toHaveBeenCalledWith('game/resume', { saveSlot: saveID });
-      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: saveID });
       expect(load).toHaveBeenCalledWith(saveID);
       expect(ink.resetStory).toHaveBeenCalledTimes(1);
+      expect(emit).toHaveBeenCalledWith('game/resume', { saveSlot: saveID });
+      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: saveID });
     });
   });
 
@@ -450,27 +461,30 @@ describe('components/game', () => {
     test('save slot is not set', async () => {
       expect(ink.resetStory).not.toHaveBeenCalled();
       expect(ink.getScene).not.toHaveBeenCalled();
-      const saveID = '_autosave_';
-      mockPersistent.set(saveID, 'autosave_content');
+      // run
+      await game.saveAutosave();
       await game.restart();
-      expect(emit).toHaveBeenCalledWith('game/restart', { saveSlot: undefined });
-      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: undefined });
+      // check
       expect(load).not.toHaveBeenCalled();
       expect(ink.resetStory).toHaveBeenCalledTimes(1);
       expect(ink.getScene).toHaveBeenCalledTimes(1);
+      expect(emit).toHaveBeenCalledWith('game/restart', { saveSlot: undefined });
+      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: undefined });
     });
 
     test('save slot is set', async () => {
       expect(ink.resetStory).not.toHaveBeenCalled();
       expect(ink.getScene).not.toHaveBeenCalled();
-      const saveID = '_autosave_';
-      mockPersistent.set(saveID, 'autosave_content');
+      // run
+      const saveID = getSaveSlotKey({ type: SAVE_AUTOSAVE });
+      await game.saveAutosave();
       await game.restart(saveID);
-      expect(emit).toHaveBeenCalledWith('game/restart', { saveSlot: saveID });
-      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: saveID });
+      // check
       expect(load).toHaveBeenCalledWith(saveID);
       expect(ink.resetStory).toHaveBeenCalledTimes(1);
       expect(ink.getScene).toHaveBeenCalledTimes(1);
+      expect(emit).toHaveBeenCalledWith('game/restart', { saveSlot: saveID });
+      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: saveID });
     });
   });
 
@@ -502,7 +516,7 @@ describe('components/game', () => {
       expect(mockState.get().scenes).toEqual([processedMockScene]);
       game.continueStory();
       expect(mockState.get().scenes).toEqual([processedMockScene, processedMockScene]);
-      expect(save).toHaveBeenCalledWith('_autosave_'); // autosave by default
+      expect(save).toHaveBeenCalledWith({ type: SAVE_AUTOSAVE }); // autosave by default
     });
 
     test('scene - single scene', () => {
@@ -522,7 +536,7 @@ describe('components/game', () => {
       game.continueStory();
       expect(emit).toHaveBeenCalledWith('game/continueStory');
       expect(mockState.get().scenes).toEqual([processedMockScene]);
-      expect(save).toHaveBeenCalledWith('_autosave_');
+      expect(save).toHaveBeenCalledWith({ type: SAVE_AUTOSAVE });
     });
 
     test('scene - autosave disabled', () => {
@@ -560,9 +574,9 @@ describe('components/game', () => {
         mockScene = { ...sampleScene, tags: { AUDIO: soundFile } };
         expect(playSound).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIO: soundFile });
         expect(playSound).toHaveBeenCalledWith(soundFile);
         expect(playMusic).not.toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIO: soundFile });
       });
 
       test('AUDIO - stop', () => {
@@ -570,10 +584,10 @@ describe('components/game', () => {
         mockScene = { ...sampleScene, tags: { AUDIO: soundFile } };
         expect(stopSound).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIO: soundFile });
         expect(stopSound).toHaveBeenCalledTimes(1);
         expect(stopSound).toHaveBeenCalledWith();
         expect(stopMusic).not.toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIO: soundFile });
       });
 
       test('AUDIO - start multiple files', () => {
@@ -582,9 +596,9 @@ describe('components/game', () => {
         mockScene = { ...sampleScene, tags: { AUDIO: [soundFile1, soundFile2] } };
         expect(playSound).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIO: [soundFile1, soundFile2] });
         expect(playSound).toHaveBeenCalledWith([soundFile1, soundFile2]);
         expect(playMusic).not.toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIO: [soundFile1, soundFile2] });
       });
 
       test('AUDIOLOOP - start', () => {
@@ -592,9 +606,9 @@ describe('components/game', () => {
         mockScene = { ...sampleScene, tags: { AUDIOLOOP: musicFile } };
         expect(playSingleMusic).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIOLOOP: musicFile });
         expect(playSingleMusic).toHaveBeenCalledWith(musicFile);
         expect(playSound).not.toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIOLOOP: musicFile });
       });
 
       test('AUDIOLOOP - stop', () => {
@@ -602,10 +616,10 @@ describe('components/game', () => {
         mockScene = { ...sampleScene, tags: { AUDIOLOOP: musicFile } };
         expect(stopMusic).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIOLOOP: musicFile });
         expect(stopMusic).toHaveBeenCalledTimes(1);
         expect(stopMusic).toHaveBeenCalledWith();
         expect(stopSound).not.toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { AUDIOLOOP: musicFile });
       });
 
       test('PLAY_SOUND', () => {
@@ -613,10 +627,10 @@ describe('components/game', () => {
         mockScene = { ...sampleScene, tags: { PLAY_SOUND: soundFile } };
         expect(playSound).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { PLAY_SOUND: soundFile });
         expect(playSound).toHaveBeenCalledTimes(1);
         expect(playSound).toHaveBeenCalledWith(soundFile);
         expect(playMusic).not.toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { PLAY_SOUND: soundFile });
       });
 
 
@@ -625,20 +639,20 @@ describe('components/game', () => {
         mockScene = { ...sampleScene, tags: { STOP_SOUND: soundFile } };
         expect(stopSound).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_SOUND: soundFile });
         expect(stopSound).toHaveBeenCalledTimes(1);
         expect(stopSound).toHaveBeenCalledWith(soundFile);
         expect(stopMusic).not.toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_SOUND: soundFile });
       });
 
       test('STOP_SOUND - all', () => {
         mockScene = { ...sampleScene, tags: { STOP_SOUND: true } };
         expect(stopSound).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_SOUND: true });
         expect(stopSound).toHaveBeenCalledTimes(1);
         expect(stopSound).toHaveBeenCalledWith();
         expect(stopMusic).not.toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_SOUND: true });
       });
 
       test('PLAY_MUSIC', () => {
@@ -646,10 +660,10 @@ describe('components/game', () => {
         mockScene = { ...sampleScene, tags: { PLAY_MUSIC: musicFile } };
         expect(playMusic).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { PLAY_MUSIC: musicFile });
         expect(playMusic).toHaveBeenCalledTimes(1);
         expect(playMusic).toHaveBeenCalledWith(musicFile);
         expect(playSound).not.toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { PLAY_MUSIC: musicFile });
       });
 
       test('STOP_MUSIC', () => {
@@ -657,44 +671,44 @@ describe('components/game', () => {
         mockScene = { ...sampleScene, tags: { STOP_MUSIC: musicFile } };
         expect(stopMusic).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_MUSIC: musicFile });
         expect(stopMusic).toHaveBeenCalledTimes(1);
         expect(stopMusic).toHaveBeenCalledWith(musicFile);
         expect(stopSound).not.toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_MUSIC: musicFile });
       });
 
       test('STOP_MUSIC - all', () => {
         mockScene = { ...sampleScene, tags: { STOP_MUSIC: true } };
         expect(stopMusic).not.toHaveBeenCalled();
         game.continueStory();
-        expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_MUSIC: true });
         expect(stopMusic).toHaveBeenCalledTimes(1);
         expect(stopMusic).toHaveBeenCalledWith();
         expect(stopSound).not.toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith('game/handletag', { STOP_MUSIC: true });
       });
 
       test('CHECKPOINT - default', () => {
         mockScene = { ...sampleScene, tags: { CHECKPOINT: true } };
         expect(save).not.toHaveBeenCalled();
         game.continueStory();
+        expect(save).toHaveBeenCalledWith({ type: SAVE_CHECKPOINT, name: true });
         expect(emit).toHaveBeenCalledWith('game/handletag', { CHECKPOINT: true });
-        expect(save).toHaveBeenCalledWith('checkpoint/_default_');
       });
 
       test('CHECKPOINT - named', () => {
         mockScene = { ...sampleScene, tags: { CHECKPOINT: 'point1' } };
         expect(save).not.toHaveBeenCalled();
         game.continueStory();
+        expect(save).toHaveBeenCalledWith({ type: SAVE_CHECKPOINT, name: 'point1' });
         expect(emit).toHaveBeenCalledWith('game/handletag', { CHECKPOINT: 'point1' });
-        expect(save).toHaveBeenCalledWith('checkpoint/point1');
       });
 
       test('SAVEGAME', () => {
         mockScene = { ...sampleScene, tags: { SAVEGAME: 'point2' } };
         expect(save).not.toHaveBeenCalled();
         game.continueStory();
+        expect(save).toHaveBeenCalledWith({ type: SAVE_GAME, name: 'point2' });
         expect(emit).toHaveBeenCalledWith('game/handletag', { SAVEGAME: 'point2' });
-        expect(save).toHaveBeenCalledWith('point2');
       });
 
       test('custom scene processor', () => {
@@ -703,8 +717,8 @@ describe('components/game', () => {
         const mockProcessor = jest.fn((s) => { s.customtag = s.tags.CUSTOMTAG; });
         game.defineSceneProcessor(mockProcessor);
         game.continueStory();
-        expect(emit).not.toHaveBeenCalledWith('game/handletag', expect.any(Object));
         expect(mockState.get().scenes).toEqual([targetScene]);
+        expect(emit).not.toHaveBeenCalledWith('game/handletag', expect.any(Object));
       });
     });
   });
@@ -726,19 +740,36 @@ describe('components/game', () => {
 
   test('load', async () => {
     const id = 'saveID';
+    await game.saveGame(id);
     expect(load).not.toHaveBeenCalled();
-    await game.load(id);
+    await game.load({ type: SAVE_GAME, name: id });
     expect(load).toHaveBeenCalledTimes(1);
-    expect(load).toHaveBeenCalledWith(id);
+    expect(load).toHaveBeenCalledWith({ type: SAVE_GAME, name: id });
   });
 
-  test('save', async () => {
+  test('saveGame', async () => {
     const id = 'saveID';
     expect(save).not.toHaveBeenCalled();
-    await game.save(id);
+    await game.saveGame(id);
     expect(save).toHaveBeenCalledTimes(1);
-    expect(save).toHaveBeenCalledWith(id);
+    expect(save).toHaveBeenCalledWith({ type: SAVE_GAME, name: id });
   });
+
+  test('saveCheckpoint', async () => {
+    const id = 'saveID';
+    expect(save).not.toHaveBeenCalled();
+    await game.saveCheckpoint(id);
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenCalledWith({ type: SAVE_CHECKPOINT, name: id });
+  });
+
+  test('saveAutosave', async () => {
+    expect(save).not.toHaveBeenCalled();
+    await game.saveAutosave();
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenCalledWith({ type: SAVE_AUTOSAVE });
+  });
+
 
   test('listSaves', async () => {
     expect(listSaves).not.toHaveBeenCalled();
@@ -759,17 +790,5 @@ describe('components/game', () => {
     const x = await game.existSave('someSave');
     expect(existSave).toHaveBeenCalledTimes(1);
     expect(x).toBe(false);
-  });
-
-  test('getAutosaveSlot', async () => {
-    expect(game.getAutosaveSlot()).toEqual('_autosave_');
-  });
-
-  test('getCheckpointSlot - default', async () => {
-    expect(game.getCheckpointSlot()).toEqual('checkpoint/_default_');
-  });
-
-  test('getCheckpointSlot - by id', async () => {
-    expect(game.getCheckpointSlot('scene1')).toEqual('checkpoint/scene1');
   });
 });

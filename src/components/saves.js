@@ -21,13 +21,7 @@ export async function load(saveID) {
   state.setKey('game', gameState.game);
   ink.loadState(gameState.state);
   // restore observed variables
-  const { metadata, game } = state.get();
-  // TODO: avoid double restoring of observed variables on load and on start
-  if (metadata.observe) {
-    metadata.observe.forEach((name) => {
-      state.setSubkey('vars', name, ink.getVariable(name));
-    });
-  }
+  const { game } = state.get();
   // restore music
   if (game.$currentMusic) {
     playMusic(game.$currentMusic);

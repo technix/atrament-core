@@ -22,6 +22,15 @@ function $getCheckpointName(id) {
   return `checkpoint/${saveId}`;
 }
 
+function $iterateObservers(observerHandler) {
+  const { state } = interfaces();
+  const observers = state.get().metadata.observe;
+  if (observers) {
+    observers.forEach(observerHandler);
+  }
+}
+
+
 // ===========================================
 
 async function init(pathToInkFile, inkFile, gameID) {
@@ -48,47 +57,43 @@ async function loadInkFile() {
 
 async function initInkStory() {
   const { state } = interfaces();
+  let isNewStory = false;
   if (currentInkScriptUUID !== expectedInkScriptUUID) {
     // ink content is not from the same game, reload
     const inkContent = await loadInkFile();
     // initialize InkJS
     ink.initStory(inkContent);
-    currentInkScriptUUID = expectedInkScriptUUID;
-  }
-  // read global tags
-  const metadata = ink.getGlobalTags();
-  state.setKey('metadata', metadata);
-  emit('game/initInkStory');
-}
-
-function $registerObservers() {
-  const { state } = interfaces();
-  const observers = state.get().metadata.observe;
-  if (observers) {
-    observers.forEach((variable) => {
-      // save initial value to state
-      state.setSubkey('vars', variable, ink.getVariable(variable));
-      // register variable observer
+    // read global tags
+    const metadata = ink.getGlobalTags();
+    state.setKey('metadata', metadata);
+    // register variable observers
+    $iterateObservers((variable) => {
       ink.observeVariable(variable, (name, value) => {
         state.setSubkey('vars', name, value);
         emit('ink/variableObserver', { name, value });
       });
     });
+    currentInkScriptUUID = expectedInkScriptUUID;
+    isNewStory = true;
   }
+  emit('game/initInkStory', isNewStory);
 }
 
 async function start(saveSlot) {
+  const { state } = interfaces();
   stopMusic(); // stop all music
   $clearGameState(); // game state cleanup
   await initInkStory();
-  // register variable observers
-  $registerObservers();
   // load saved game, if present
   if (saveSlot) {
     if (await existSave(saveSlot)) {
       await load(saveSlot);
     }
   }
+  // read initial state of observed variables
+  $iterateObservers((variable) => {
+    state.setSubkey('vars', variable, ink.getVariable(variable));
+  });
   emit('game/start', { saveSlot });
 }
 

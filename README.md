@@ -159,13 +159,13 @@ Event: `'game/init', { pathToInkFile: path, inkFile: file }`
 
 #### async atrament.game.initInkStory()
 
-If initialized game is not the same as current one - load Ink file and initialize Ink Story object. Then updates game metadata and initializes variable observers.
+Load Ink file and initialize Ink Story object. Then updates game metadata and initializes variable observers.
 
-Event: `'game/initInkStory', isNewStory`
+Event: `'game/initInkStory'`
 
 #### async atrament.game.start(saveslot)
 
-If `initInkStory` is not called yet, calls it first.
+If game is started for the first time, or initialized game is not the same as current one - call `initInkStory` first.
 Clears game state, gets initial data for variable observers.
 If `saveslot` is defined, load state from specified save.
 

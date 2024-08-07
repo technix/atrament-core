@@ -188,7 +188,6 @@ describe('components/game', () => {
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
       await game.init(pathToInkFile, inkFile);
-      await game.initInkStory();
       // run
       await game.start();
       // check
@@ -242,7 +241,6 @@ describe('components/game', () => {
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
       await game.init(pathToInkFile, inkFile);
-      await game.initInkStory();
       // run
       await game.start('somesave');
       // check
@@ -257,7 +255,6 @@ describe('components/game', () => {
       const inkFile = 'game.ink.json';
       mockPersistent.set('existingsave', 'content');
       await game.init(pathToInkFile, inkFile);
-      await game.initInkStory();
       // run
       await game.start('existingsave');
       // check
@@ -274,7 +271,6 @@ describe('components/game', () => {
       const inkFile = 'game.ink.json';
       mockPersistent.set('existingsave', 'content');
       await game.init(pathToInkFile, inkFile);
-      await game.initInkStory();
       // run
       await game.start('existingsave');
       // check
@@ -307,7 +303,6 @@ describe('components/game', () => {
       const inkFile = 'game.ink.json';
       mockPersistent.set(saveID, { game: { $currentMusic: 'music.mp3' } });
       await game.init(pathToInkFile, inkFile);
-      await game.initInkStory();
       // run
       expect(playMusic).not.toHaveBeenCalled();
       await game.start(saveID);
@@ -323,7 +318,6 @@ describe('components/game', () => {
       const inkFile = 'game.ink.json';
       mockPersistent.set(saveID, { game: { $currentMusic: false } });
       await game.init(pathToInkFile, inkFile);
-      await game.initInkStory();
       // run
       expect(playMusic).not.toHaveBeenCalled();
       await game.start(saveID);
@@ -345,7 +339,6 @@ describe('components/game', () => {
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
       await game.init(pathToInkFile, inkFile);
-      await game.initInkStory();
       // run
       await game.start();
       // check

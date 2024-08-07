@@ -451,17 +451,21 @@ atrament.set('fullscreen', true);
   tags: {},
   choices: [],
   images: [],
+  sounds: [],
+  music: [],
   uuid: Number
 }
 ```
 
 | Key | Description                |
 | :-------- | :------------------------- |
-| `content` | Array of Ink paragraphs: `{text: '', tags: {}, images: []}` |
+| `content` | Array of Ink paragraphs: `{text: '', tags: {}, images: [], sounds: [], music: []}` |
 | `text` | Array of all story text from all paragraphs of this scene |
 | `tags` | Array of all tags from all paragraphs of this scene |
 | `choices` | Array of choice objects: `{ id: 0, choice: 'Choice Text', tags: {}}` |
 | `images` | Array of all images from all paragraphs of this scene |
+| `sound` | Array of all sounds from all paragraphs of this scene |
+| `music` | Array of all music tracks from all paragraphs of this scene |
 | `uuid` | Unique ID of the scene (`Date.now()`) |
 
 

@@ -492,11 +492,13 @@ describe('components/game', () => {
     const pathToInkFile = '/some/directory';
     const inkFile = 'game.ink.json';
     const processedMockScene = {
-      content: [{ text: 'aaa', images: [] }],
+      content: [{ text: 'aaa', images: [], sounds: [], music: [] }],
       text: ['aaaa'],
       tags: {},
       choices: [],
-      images: []
+      images: [],
+      sounds: [],
+      music: []
     };
     beforeEach(async () => {
       await game.init(pathToInkFile, inkFile);
@@ -554,7 +556,13 @@ describe('components/game', () => {
       let processedSampleScene;
       beforeEach(() => {
         sampleScene = { content: [{ text: 'aaa' }], text: ['aaaa'], tags: {}, choices: [] };
-        processedSampleScene = { ...sampleScene, content: [{ text: 'aaa', images: [] }], images: [] };
+        processedSampleScene = {
+          ...sampleScene,
+          content: [{ text: 'aaa', images: [], sounds: [], music: [] }],
+          images: [],
+          sounds: [],
+          music: []
+        };
       });
 
       test('CLEAR', () => {

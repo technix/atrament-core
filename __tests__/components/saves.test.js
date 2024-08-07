@@ -32,7 +32,7 @@ beforeEach(() => {
   mockPersistent.reset();
   jest.clearAllMocks();
   mockPersistent.init('myapp-test');
-  mockState.setKey('game', { gameUUID: 'test-game' });
+  mockState.setKey('game', { $gameUUID: 'test-game' });
   mockState.setKey('scenes', []);
   mockState.setKey('vars', {});
 });
@@ -98,7 +98,7 @@ describe('components/saves', () => {
       await load(saveID);
       expect(ink.loadState).toHaveBeenCalledWith({ inkjson: 'content' });
       expect(mockState.get().scenes).toEqual(mockScenes);
-      expect(mockState.get().game).toEqual({ gameUUID: 'test-game' });
+      expect(mockState.get().game).toEqual({ $gameUUID: 'test-game' });
       expect(mockState.get().vars).toEqual({});
       expect(emit).toHaveBeenCalledWith('game/load', saveID);
     });
@@ -123,7 +123,7 @@ describe('components/saves', () => {
 
   describe('listSaves', () => {
     test('get saves for specific game', async () => {
-      mockState.setSubkey('game', 'gameUUID', 'UUID1');
+      mockState.setSubkey('game', '$gameUUID', 'UUID1');
       await save({ type: 'save', name: 'game1_save1' });
       await save({ type: 'checkpoint', name: 'game1_save2' });
       await save({ type: 'autosave' });
@@ -131,20 +131,20 @@ describe('components/saves', () => {
       expect(savesList).toEqual([{
         name: 'game1_save1',
         type: 'save',
-        game: { gameUUID: 'UUID1' },
+        game: { $gameUUID: 'UUID1' },
         date: 1691539200000
       }, {
         name: 'game1_save2',
         type: 'checkpoint',
-        game: { gameUUID: 'UUID1' },
+        game: { $gameUUID: 'UUID1' },
         date: 1691539200000
       }, {
         type: 'autosave',
-        game: { gameUUID: 'UUID1' },
+        game: { $gameUUID: 'UUID1' },
         date: 1691539200000
       }]);
       // switch to another game
-      mockState.setSubkey('game', 'gameUUID', 'UUID2');
+      mockState.setSubkey('game', '$gameUUID', 'UUID2');
       savesList = await listSaves();
       expect(savesList).toEqual([]);
       expect(emit).toHaveBeenCalledWith('game/listSaves', []);
@@ -154,26 +154,26 @@ describe('components/saves', () => {
       expect(savesList).toEqual([{
         name: 'game2_checkpoint',
         type: 'checkpoint',
-        game: { gameUUID: 'UUID2' },
+        game: { $gameUUID: 'UUID2' },
         date: 1691539200000
       }]);
       expect(emit).toHaveBeenCalledWith('game/listSaves', savesList);
       // back to original game
-      mockState.setSubkey('game', 'gameUUID', 'UUID1');
+      mockState.setSubkey('game', '$gameUUID', 'UUID1');
       savesList = await listSaves();
       expect(savesList).toEqual([{
         name: 'game1_save1',
         type: 'save',
-        game: { gameUUID: 'UUID1' },
+        game: { $gameUUID: 'UUID1' },
         date: 1691539200000
       }, {
         name: 'game1_save2',
         type: 'checkpoint',
-        game: { gameUUID: 'UUID1' },
+        game: { $gameUUID: 'UUID1' },
         date: 1691539200000
       }, {
         type: 'autosave',
-        game: { gameUUID: 'UUID1' },
+        game: { $gameUUID: 'UUID1' },
         date: 1691539200000
       }]);
       expect(emit).toHaveBeenCalledWith('game/listSaves', savesList);

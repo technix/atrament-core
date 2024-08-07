@@ -96,7 +96,7 @@ describe('components/game', () => {
       expect(mockState.get().game).toEqual({
         $path: pathToInkFile,
         $file: inkFile,
-        gameUUID: hashCode(`${pathToInkFile}|${inkFile}`)
+        $gameUUID: hashCode(`${pathToInkFile}|${inkFile}`)
       });
       expect(mockInitLoader).toHaveBeenCalledWith(pathToInkFile);
       expect(emit).toHaveBeenCalledWith('game/init', { pathToInkFile, inkFile });
@@ -110,7 +110,7 @@ describe('components/game', () => {
       expect(mockState.get().game).toEqual({
         $path: pathToInkFile,
         $file: inkFile,
-        gameUUID: 'customUUID'
+        $gameUUID: 'customUUID'
       });
     });
   });

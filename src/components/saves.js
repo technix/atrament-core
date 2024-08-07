@@ -4,9 +4,9 @@ import { emit } from '../utils/emitter';
 
 
 function savePrefix() {
-  const { gameUUID, $sessionID } = interfaces().state.get().game;
+  const { $gameUUID, $sessionID } = interfaces().state.get().game;
   return [
-    gameUUID,
+    $gameUUID,
     $sessionID || '',
     'save'
   ].join('/');

@@ -4,7 +4,17 @@ import mockState from '../../__mocks__/state';
 
 import { emit } from '../../src/utils/emitter';
 import ink from '../../src/components/ink';
-import { getSaveSlotKey, load, save, existSave, removeSave, listSaves } from '../../src/components/saves';
+import {
+  getSaveSlotKey,
+  load,
+  save,
+  existSave,
+  removeSave,
+  listSaves,
+  SAVE_GAME,
+  SAVE_AUTOSAVE,
+  SAVE_CHECKPOINT
+} from '../../src/components/saves';
 
 jest.mock('../../src/utils/emitter', () => ({
   emit: jest.fn()
@@ -41,29 +51,33 @@ describe('components/saves', () => {
   describe('getSaveSlotKey', () => {
     test('default', () => {
       const slotName = getSaveSlotKey({ type: 'autosave' });
-      expect(slotName).toBe('test-game//save/autosave/');
+      expect(slotName).toBe(`test-game//save/${SAVE_AUTOSAVE}/`);
     });
     test('default - named', () => {
       const slotName = getSaveSlotKey({ type: 'checkpoint', name: 'stage1' });
-      expect(slotName).toBe('test-game//save/checkpoint/stage1');
+      expect(slotName).toBe(`test-game//save/${SAVE_CHECKPOINT}/stage1`);
+    });
+    test('default - numbered', () => {
+      const slotName = getSaveSlotKey({ type: 'checkpoint', name: 1 });
+      expect(slotName).toBe(`test-game//save/${SAVE_CHECKPOINT}/1`);
     });
     test('default - untyped', () => {
       const slotName = getSaveSlotKey({ type: true, name: 'check' });
-      expect(slotName).toBe('test-game//save//check');
+      expect(slotName).toBe(`test-game//save/${SAVE_GAME}/check`);
     });
     test('default - unnamed', () => {
       const slotName = getSaveSlotKey({ type: 'checkpoint', name: true });
-      expect(slotName).toBe('test-game//save/checkpoint/');
+      expect(slotName).toBe(`test-game//save/${SAVE_CHECKPOINT}/`);
     });
     test('session', () => {
       mockState.setSubkey('game', '$sessionID', 's1');
       const slotName = getSaveSlotKey({ type: 'autosave' });
-      expect(slotName).toBe('test-game/s1/save/autosave/');
+      expect(slotName).toBe(`test-game/s1/save/${SAVE_AUTOSAVE}/`);
     });
     test('session - named', () => {
       mockState.setSubkey('game', '$sessionID', 's1');
       const slotName = getSaveSlotKey({ type: 'checkpoint', name: 'stage1' });
-      expect(slotName).toBe('test-game/s1/save/checkpoint/stage1');
+      expect(slotName).toBe(`test-game/s1/save/${SAVE_CHECKPOINT}/stage1`);
     });
   });
 

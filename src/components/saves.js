@@ -19,8 +19,8 @@ function savePrefix() {
 export function getSaveSlotKey({ name, type }) {
   return [
     savePrefix(),
-    typeof type === 'string' ? type : '',
-    typeof name === 'string' ? name : ''
+    [SAVE_GAME, SAVE_AUTOSAVE, SAVE_CHECKPOINT].includes(type) ? type : SAVE_GAME,
+    typeof name === 'string' || typeof name === 'number' ? name : ''
   ].join('/');
 }
 

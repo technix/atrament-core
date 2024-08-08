@@ -2,6 +2,7 @@ import { interfaces } from '../../utils/interfaces';
 import { emit } from '../../utils/emitter';
 
 import hashCode from '../../utils/hashcode';
+import toArray from '../../utils/to-array';
 
 import ink from '../ink';
 import { persistentPrefix, load, existSave } from '../saves';
@@ -13,22 +14,16 @@ let currentInkScriptUUID = null;
 
 function $iterateObservers(observerHandler) {
   const { state } = interfaces();
-  let observers = state.get().metadata.observe;
+  const observers = state.get().metadata.observe;
   if (observers) {
-    if (!Array.isArray(observers)) {
-      observers = [observers];
-    }
-    observers.forEach(observerHandler);
+    toArray(observers).forEach(observerHandler);
   }
 }
 
 async function $handlePersistent() {
   const { state, persistent } = interfaces();
-  let persistentVars = state.get().metadata.persist;
+  const persistentVars = state.get().metadata.persist;
   if (persistentVars) {
-    if (!Array.isArray(persistentVars)) {
-      persistentVars = [persistentVars];
-    }
     const storeID = persistentPrefix('persist');
     let persistentVarState = {};
     // load persistent data, if possible
@@ -39,7 +34,7 @@ async function $handlePersistent() {
       );
     }
     // register observers for persistent vars
-    persistentVars.forEach((variable) => {
+    toArray(persistentVars).forEach((variable) => {
       ink.observeVariable(variable, async (name, value) => {
         persistentVarState[name] = value;
         await persistent.set(storeID, persistentVarState);

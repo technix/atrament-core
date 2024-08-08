@@ -15,7 +15,7 @@ export function parseTags(tags) {
     let tagValue;
 
     const content = item.match(/\s*(\w+)\s*:\s*(.+?)\s*$/);
-    if (Array.isArray(content)) {
+    if (content) {
       // tag is in "key: value" format
       const [, key, value] = content;
       tagName = key;

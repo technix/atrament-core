@@ -1,5 +1,5 @@
-import { emit } from '../utils/emitter';
-import { interfaces } from '../utils/interfaces';
+import { emit } from '../../utils/emitter';
+import { interfaces } from '../../utils/interfaces';
 
 async function $iteratePersistent(callback) {
   const { persistent } = interfaces();

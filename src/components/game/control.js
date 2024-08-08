@@ -1,11 +1,11 @@
-import { interfaces } from '../utils/interfaces';
-import { emit } from '../utils/emitter';
+import { interfaces } from '../../utils/interfaces';
+import { emit } from '../../utils/emitter';
 
-import hashCode from '../utils/hashcode';
+import hashCode from '../../utils/hashcode';
 
-import ink from './ink';
-import { persistentPrefix, load, existSave } from './saves';
-import { playMusic, stopMusic } from './sound';
+import ink from '../ink';
+import { persistentPrefix, load, existSave } from '../saves';
+import { playMusic, stopMusic } from '../sound';
 
 
 let expectedInkScriptUUID = null;

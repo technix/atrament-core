@@ -172,6 +172,7 @@ describe('utils/scene-processors', () => {
         }, {
           text: 'bbb',
           tags: {
+            AUDIO: 'audio.mp3',
             PLAY_SOUND: 'sound3.mp3',
             PLAY_MUSIC: ['music2.mp3', 'music3.mp3']
           }
@@ -194,18 +195,19 @@ describe('utils/scene-processors', () => {
         }, {
           text: 'bbb',
           tags: {
+            AUDIO: 'audio.mp3',
             PLAY_SOUND: 'sound3.mp3',
             PLAY_MUSIC: ['music2.mp3', 'music3.mp3']
           },
           images: [],
-          sounds: ['sound3.mp3'],
+          sounds: ['audio.mp3', 'sound3.mp3'],
           music: ['music2.mp3', 'music3.mp3']
         }],
         text: ['aaaa'],
         tags: {},
         choices: [],
         images: [],
-        sounds: ['sound1.mp3', 'sound2.mp3', 'sound3.mp3'],
+        sounds: ['sound1.mp3', 'sound2.mp3', 'audio.mp3', 'sound3.mp3'],
         music: ['music1.mp3', 'music2.mp3', 'music3.mp3']
       });
     });

@@ -1,8 +1,5 @@
 import { interfaces } from '../utils/interfaces';
-
-function toArray(v) {
-  return Array.isArray(v) ? v : [v];
-}
+import toArray from '../utils/to-array';
 
 export function playSound(snd) {
   const { sound, loader } = interfaces();

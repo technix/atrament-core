@@ -101,7 +101,6 @@ async function initInkStory() {
       emit('ink/variableObserver', { name, value });
     });
   });
-  await $handlePersistent();
   currentInkScriptUUID = expectedInkScriptUUID;
   emit('game/initInkStory');
 }
@@ -125,6 +124,7 @@ async function start(saveSlot) {
       }
     }
   }
+  await $handlePersistent();
   // read initial state of observed variables
   $iterateObservers((variable) => {
     state.setSubkey('vars', variable, ink.getVariable(variable));

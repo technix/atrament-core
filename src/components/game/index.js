@@ -1,11 +1,11 @@
-import { interfaces } from '../utils/interfaces';
-import { emit } from '../utils/emitter';
+import { interfaces } from '../../utils/interfaces';
+import { emit } from '../../utils/emitter';
 
-import { init, loadInkFile, initInkStory, start, clear, reset } from './game-control';
-
-import ink from './ink';
+import { init, loadInkFile, initInkStory, start, clear, reset } from './control';
 import { getSession, setSession, getSessions, removeSession } from './sessions';
-import { playSound, stopSound, playMusic, playSingleMusic, stopMusic } from './sound';
+
+import ink from '../ink';
+import { playSound, stopSound, playMusic, playSingleMusic, stopMusic } from '../sound';
 import {
   getSaveSlotKey,
   load,
@@ -16,9 +16,9 @@ import {
   SAVE_GAME,
   SAVE_AUTOSAVE,
   SAVE_CHECKPOINT
-} from './saves';
+} from '../saves';
 
-import internalSceneProcessors from '../utils/scene-processors';
+import internalSceneProcessors from '../../utils/scene-processors';
 
 const sceneProcessors = [];
 

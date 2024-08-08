@@ -2,7 +2,7 @@ import ink from './ink';
 import { interfaces } from '../utils/interfaces';
 import { emit } from '../utils/emitter';
 
-import { validSession } from './sessions';
+import { validSession } from './game/sessions';
 
 export const SAVE_GAME = 'game';
 export const SAVE_AUTOSAVE = 'autosave';

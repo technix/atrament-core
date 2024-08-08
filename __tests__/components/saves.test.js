@@ -3,7 +3,7 @@ import mockPersistent from '../../__mocks__/persistent';
 import mockState from '../../__mocks__/state';
 
 import { emit } from '../../src/utils/emitter';
-import { setSession } from '../../src/components/sessions';
+import { setSession } from '../../src/components/game/sessions';
 import ink from '../../src/components/ink';
 import {
   getSaveSlotKey,

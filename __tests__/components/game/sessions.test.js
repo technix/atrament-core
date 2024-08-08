@@ -1,25 +1,25 @@
 /* eslint-env jest */
-import mockPersistent from '../../__mocks__/persistent';
-import mockState from '../../__mocks__/state';
+import mockPersistent from '../../../__mocks__/persistent';
+import mockState from '../../../__mocks__/state';
 
-import { getSession, setSession, getSessions, removeSession } from '../../src/components/sessions';
+import { getSession, setSession, getSessions, removeSession } from '../../../src/components/game/sessions';
 
-import { emit } from '../../src/utils/emitter';
+import { emit } from '../../../src/utils/emitter';
 
 import {
   save,
   SAVE_GAME
-} from '../../src/components/saves';
+} from '../../../src/components/saves';
 
-jest.mock('../../src/utils/emitter', () => ({
+jest.mock('../../../src/utils/emitter', () => ({
   emit: jest.fn()
 }));
 
-jest.mock('../../src/components/ink', () => ({
+jest.mock('../../../src/components/ink', () => ({
   getState: jest.fn(() => ({ inkjson: 'content' }))
 }));
 
-jest.mock('../../src/utils/interfaces', () => ({
+jest.mock('../../../src/utils/interfaces', () => ({
   interfaces: jest.fn(() => ({
     state: mockState,
     persistent: mockPersistent

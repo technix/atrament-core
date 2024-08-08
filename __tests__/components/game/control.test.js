@@ -1,15 +1,15 @@
 /* eslint-env jest */
-import mockPersistent from '../../__mocks__/persistent';
-import mockState from '../../__mocks__/state';
+import mockPersistent from '../../../__mocks__/persistent';
+import mockState from '../../../__mocks__/state';
 
-import { emit } from '../../src/utils/emitter';
-import hashCode from '../../src/utils/hashcode';
+import { emit } from '../../../src/utils/emitter';
+import hashCode from '../../../src/utils/hashcode';
 
-import ink from '../../src/components/ink';
-import { persistentPrefix, load, existSave, save, SAVE_GAME, getSaveSlotKey } from '../../src/components/saves';
-import { playMusic, stopMusic } from '../../src/components/sound';
+import ink from '../../../src/components/ink';
+import { persistentPrefix, load, existSave, save, SAVE_GAME, getSaveSlotKey } from '../../../src/components/saves';
+import { playMusic, stopMusic } from '../../../src/components/sound';
 
-import { init, loadInkFile, initInkStory, start, clear, reset } from '../../src/components/game-control';
+import { init, loadInkFile, initInkStory, start, clear, reset } from '../../../src/components/game/control';
 
 let mockGlobalTags;
 let mockObserver;
@@ -19,16 +19,16 @@ const mockLoader = jest.fn(() => Promise.resolve(mockInkContent));
 const mockInitLoader = jest.fn(() => Promise.resolve());
 const mockGetAssetPath = jest.fn((file) => `${mockState.get().game.$path}/${file}`);
 
-jest.mock('../../src/components/sound', () => ({
+jest.mock('../../../src/components/sound', () => ({
   playMusic: jest.fn(),
   stopMusic: jest.fn()
 }));
 
-jest.mock('../../src/utils/emitter', () => ({
+jest.mock('../../../src/utils/emitter', () => ({
   emit: jest.fn()
 }));
 
-jest.mock('../../src/components/ink', () => ({
+jest.mock('../../../src/components/ink', () => ({
   initStory: jest.fn(),
   getVariable: jest.fn((v) => `${v}-value`),
   setVariable: jest.fn(),
@@ -39,7 +39,7 @@ jest.mock('../../src/components/ink', () => ({
   loadState: jest.fn(() => mockInkState),
 }));
 
-jest.mock('../../src/utils/interfaces', () => ({
+jest.mock('../../../src/utils/interfaces', () => ({
   interfaces: jest.fn(() => ({
     state: mockState,
     persistent: mockPersistent,
@@ -51,8 +51,8 @@ jest.mock('../../src/utils/interfaces', () => ({
   }))
 }));
 
-jest.mock('../../src/components/saves', () => {
-  const saves = jest.requireActual('../../src/components/saves');
+jest.mock('../../../src/components/saves', () => {
+  const saves = jest.requireActual('../../../src/components/saves');
   return {
     ...saves,
     load: jest.spyOn(saves, 'load'),

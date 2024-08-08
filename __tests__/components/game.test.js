@@ -282,7 +282,7 @@ describe('components/game', () => {
       const persistentStore = persistentPrefix('persist');
       expect(mockState.get().vars).toEqual({});
       // run
-      await game.initInkStory();
+      await game.start();
       // expect observers to be registered, but no data are saved
       expect(mockState.get().metadata).toEqual(mockGlobalTags);
       expect(ink.observeVariable).toHaveBeenCalledTimes(2);
@@ -295,7 +295,7 @@ describe('components/game', () => {
       expect(ink.setVariable).not.toHaveBeenCalled();
       // reinit the game
       // run
-      await game.initInkStory();
+      await game.start();
       expect(ink.setVariable).toHaveBeenCalledTimes(1);
       expect(ink.setVariable).toHaveBeenCalledWith('var1', 50);
     });

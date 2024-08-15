@@ -4,11 +4,13 @@ import { emit } from '../utils/emitter';
 
 let inkStory = null;
 
+
 function initStory(content) {
   const { InkStory } = getConfig();
   inkStory = new InkStory(content);
   emit('ink/initStory');
 }
+
 
 function resetStory() {
   let success = false;
@@ -19,8 +21,26 @@ function resetStory() {
   emit('ink/resetStory', success);
 }
 
+
+function $continue(story, scene) {
+  story.Continue();
+  const text = story.currentText;
+  // add story text
+  scene.text.push(text);
+  // add tags
+  const tags = parseTags(story.currentTags);
+  scene.tags = { ...scene.tags, ...tags };
+  // save content - text along with tags
+  scene.content.push({ text, tags });
+  if (text === '\n') {
+    // there was an empty line, try again to get some text
+    $continue(story, scene);
+  }
+}
+
+
 // get scene from ink
-function getScene() {
+function getScene(continueMaximally) {
   const scene = {
     content: [],
     text: [],
@@ -28,15 +48,13 @@ function getScene() {
     choices: [],
     uuid: Date.now()
   };
-  while (inkStory.canContinue) {
-    inkStory.Continue();
-    // add story text
-    scene.text.push(inkStory.currentText);
-    // add tags
-    const tags = parseTags(inkStory.currentTags);
-    scene.tags = { ...scene.tags, ...tags };
-    // save content - text along with tags
-    scene.content.push({ text: inkStory.currentText, tags });
+  if (continueMaximally) {
+    while (inkStory.canContinue) {
+      $continue(inkStory, scene);
+    }
+  } else {
+    $continue(inkStory, scene);
+    scene.canContinue = inkStory.canContinue;
   }
   inkStory.currentChoices.forEach((choice, id) => {
     scene.choices.push({
@@ -48,6 +66,7 @@ function getScene() {
   emit('ink/getScene', scene);
   return scene;
 }
+
 
 export default {
   initStory,

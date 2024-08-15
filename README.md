@@ -32,6 +32,8 @@ If you are looking for example of a web application based on Atrament, check out
 | `# persist: varName` | Save this variable value to persistent storage, restore before game starts. |
 | `# autosave: false` | Disables autosaves. |
 | `# single_scene` | Store only last scene in Atrament state. |
+| `# continue_maximally: false` | Pause story after each line. In this mode `scene` object contains `canContinue` field, which is set to true if the story can be continued. |
+
 
 ### Knot tags
 | Tag | Description                |

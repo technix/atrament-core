@@ -20,9 +20,13 @@ const mockInkStoryInstance = {
   },
   onError: () => {},
   canContinue: true,
-  currentChoices: null,
+  currentChoices: [],
   Continue() {
-    this.currentText = `Paragraph ${this.sceneCounter}.`;
+    if (this.sceneCounter === 1) {
+      this.currentText = '\n';
+    } else {
+      this.currentText = `Paragraph ${this.sceneCounter}.`;
+    }
     this.currentTags = ['HELLO', 'WORLD'];
     this.sceneCounter += 1;
     if (this.sceneCounter > 3) {
@@ -34,7 +38,7 @@ const mockInkStoryInstance = {
     }
   },
   ChooseChoiceIndex() {
-    this.currentChoices = null;
+    this.currentChoices = [];
     this.canContinue = true;
   },
   VisitCountAtPathString() {
@@ -73,6 +77,10 @@ const spyResetState = jest.spyOn(mockInkStoryInstance, 'ResetState');
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockInkStoryInstance.content = '';
+  mockInkStoryInstance.currentChoices = [];
+  mockInkStoryInstance.sceneCounter = 1;
+  mockInkStoryInstance.canContinue = true;
 });
 
 describe('components/ink', () => {
@@ -190,7 +198,38 @@ describe('components/ink', () => {
     const expectedScene = {
       content: [
         {
-          text: 'Paragraph 1.',
+          text: '\n',
+          tags: { HELLO: true, WORLD: true }
+        },
+        {
+          text: 'Paragraph 2.',
+          tags: { HELLO: true, WORLD: true }
+        }
+      ],
+      text: [
+        '\n',
+        'Paragraph 2.'
+      ],
+      tags: {
+        HELLO: true,
+        WORLD: true
+      },
+      canContinue: true, // in "continue" mode, adds canContinue flag
+      choices: [],
+      uuid: jest.now() // equivalent to Date.now()
+    };
+    const scene = ink.getScene();
+    expect(spyContinue).toHaveBeenCalledTimes(2); // first paragraph has "\n"
+    expect(scene).toEqual(expectedScene);
+    expect(emit).toHaveBeenCalledWith('ink/getScene', scene);
+  });
+
+  test('getScene - maximal continue', () => {
+    expect(spyContinue).not.toHaveBeenCalled();
+    const expectedScene = {
+      content: [
+        {
+          text: '\n',
           tags: { HELLO: true, WORLD: true }
         },
         {
@@ -203,7 +242,7 @@ describe('components/ink', () => {
         }
       ],
       text: [
-        'Paragraph 1.',
+        '\n',
         'Paragraph 2.',
         'Paragraph 3.'
       ],
@@ -217,7 +256,7 @@ describe('components/ink', () => {
       ],
       uuid: jest.now() // equivalent to Date.now()
     };
-    const scene = ink.getScene();
+    const scene = ink.getScene(true);
     expect(spyContinue).toHaveBeenCalledTimes(3);
     expect(scene).toEqual(expectedScene);
     expect(emit).toHaveBeenCalledWith('ink/getScene', scene);

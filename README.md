@@ -199,9 +199,11 @@ Event: `'game/canResume', { saveSlot: saveslot }`
 
 Restart game from specified save slot (if `saveslot` is not defined, starts new game). 
 
-Note: this methods runs `atrament.game.continueStory()` to regenerate game content.
-
 Event: `'game/restart', { saveSlot: saveslot }`
+
+#### async atrament.game.restartAndContinue(saveslot)
+
+Run `atrament.game.restart`, then run `atrament.game.continueStory()` to regenerate game content.
 
 #### async atrament.game.load(saveslot)
 

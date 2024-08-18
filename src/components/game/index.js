@@ -109,7 +109,8 @@ function continueStory() {
   const { state } = interfaces();
   const { metadata } = state.get();
   // get next scene
-  const scene = ink.getScene(!!metadata.continue_maximally);
+  const isContinueMaximally = !(metadata.continue_maximally === false)
+  const scene = ink.getScene(isContinueMaximally);
   if (scene.content.length === 0) {
     /*
       if we have a scene with empty content
@@ -126,13 +127,13 @@ function continueStory() {
 
   // RESTART
   if (tags.RESTART) {
-    restartAndContinue();
+    restart();
     return;
   }
 
   // RESTART_FROM_CHECKPOINT
   if (tags.RESTART_FROM_CHECKPOINT) {
-    restartAndContinue(getSaveSlotKey({ type: 'checkpoint', name: tags.RESTART_FROM_CHECKPOINT }));
+    restart(getSaveSlotKey({ type: 'checkpoint', name: tags.RESTART_FROM_CHECKPOINT }));
     return;
   }
 

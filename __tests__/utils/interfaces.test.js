@@ -48,7 +48,8 @@ describe('utils/interfaces', () => {
       loader: null,
       persistent: 'persistentInterface',
       sound: defaultInterfaces.sound,
-      state: null
+      state: null,
+      unknown: 'unknownInterface'
     });
   });
 });

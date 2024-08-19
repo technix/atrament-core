@@ -1,4 +1,4 @@
-const $interfaces = {
+let $interfaces = {
   loader: null,
   persistent: null,
   sound: {
@@ -17,9 +17,5 @@ const $interfaces = {
 export const interfaces = () => $interfaces;
 
 export function defineInterfaces(interfaceDefinitions) {
-  Object.keys(interfaceDefinitions).forEach((key) => {
-    if (key in $interfaces) {
-      $interfaces[key] = interfaceDefinitions[key];
-    }
-  });
+  $interfaces = { ...$interfaces, ...interfaceDefinitions };
 }

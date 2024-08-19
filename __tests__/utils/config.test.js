@@ -2,7 +2,6 @@
 import { getConfig, setConfig } from '../../src/utils/config';
 
 const defaultConfig = {
-  applicationID: '!CHANGE_THIS',
   settings: {
     volume: 0,
     mute: true
@@ -11,7 +10,7 @@ const defaultConfig = {
 
 const Story = () => ({ inkStoryConstructor: true });
 
-afterAll(() => setConfig(Story, defaultConfig));
+afterAll(() => setConfig(Story, { ...defaultConfig, applicationID: 'jest-test'}));
 
 describe('utils/config', () => {
   test('no params', () => {
@@ -25,16 +24,20 @@ describe('utils/config', () => {
     expect(cfg).toEqual(defaultConfig);
   });
 
-  test('no config provided', () => {
-    setConfig(Story);
-    const cfg = getConfig();
-    expect(cfg).toEqual(defaultConfig);
-  });
-
   test('no valid Story constructor provided', () => {
     expect(() => {
       setConfig({ some: 'config' });
     }).toThrow('atrament.init: Story is not a constructor!');
+  });
+
+  test('no config provided', () => {
+    expect(() => setConfig(Story)).toThrow('atrament.init: config.applicationID is not set!');
+  });
+
+  test('config without applicationID', () => {
+    expect(
+      () => setConfig(Story, { settings: { mute: true } })
+    ).toThrow('atrament.init: config.applicationID is not set!');
   });
 
   test('sets config', () => {

@@ -86,7 +86,7 @@ beforeEach(() => {
 describe('components/ink', () => {
   test('initStory', () => {
     const content = 'ink json';
-    setConfig(MockInkStory, {});
+    setConfig(MockInkStory, { applicationID: 'testAppID' });
     ink.initStory(content);
     const story = ink.story();
     expect(MockInkStory).toHaveBeenCalledWith(content);

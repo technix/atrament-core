@@ -50,7 +50,7 @@ const Story = () => ({ inkStoryConstructor: true });
 
 beforeEach(() => {
   jest.clearAllMocks();
-  setConfig(Story, {});
+  setConfig(Story, { applicationID: 'testAppID' });
 });
 
 describe('atrament', () => {
@@ -90,7 +90,7 @@ describe('atrament', () => {
     expect(mockPersistent.init).not.toHaveBeenCalled();
     expect(getConfig()).toEqual({
       InkStory: Story,
-      applicationID: '!CHANGE_THIS',
+      applicationID: 'testAppID',
       settings: { mute: true, volume: 0 }
     });
     // run

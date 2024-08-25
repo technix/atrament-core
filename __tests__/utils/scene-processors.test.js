@@ -226,6 +226,11 @@ describe('utils/scene-processors', () => {
           id: 1,
           choice: 'ccc',
           tags: { [choiceTag]: true }
+        },
+        {
+          id: 2,
+          choice: 'ddd',
+          tags: {}
         }]
       };
       internalSceneProcessors.forEach((p) => p(scene));
@@ -244,6 +249,11 @@ describe('utils/scene-processors', () => {
           choice: 'ccc',
           tags: { [choiceTag]: true },
           disabled: true
+        },
+        {
+          id: 2,
+          choice: 'ddd',
+          tags: {}
         }],
         images: [],
         sounds: [],

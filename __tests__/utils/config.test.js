@@ -10,7 +10,7 @@ const defaultConfig = {
 
 const Story = () => ({ inkStoryConstructor: true });
 
-afterAll(() => setConfig(Story, { ...defaultConfig, applicationID: 'jest-test'}));
+afterAll(() => setConfig(Story, { ...defaultConfig, applicationID: 'jest-test' }));
 
 describe('utils/config', () => {
   test('no params', () => {

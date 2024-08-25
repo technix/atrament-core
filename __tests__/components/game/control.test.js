@@ -36,7 +36,7 @@ jest.mock('../../../src/components/ink', () => ({
   getGlobalTags: jest.fn(() => mockGlobalTags),
   resetStory: jest.fn(),
   getState: jest.fn(() => mockInkState),
-  loadState: jest.fn(() => mockInkState),
+  loadState: jest.fn(() => mockInkState)
 }));
 
 jest.mock('../../../src/utils/interfaces', () => ({

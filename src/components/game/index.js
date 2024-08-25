@@ -109,7 +109,7 @@ function continueStory() {
   const { state } = interfaces();
   const { metadata } = state.get();
   // get next scene
-  const isContinueMaximally = !(metadata.continue_maximally === false)
+  const isContinueMaximally = !(metadata.continue_maximally === false);
   const scene = ink.getScene(isContinueMaximally);
   if (scene.content.length === 0) {
     /*

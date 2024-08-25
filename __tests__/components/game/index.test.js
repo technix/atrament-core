@@ -515,7 +515,7 @@ describe('components/game', () => {
         expect(ink.resetStory).toHaveBeenCalledTimes(1);
         expect(ink.getScene).toHaveBeenCalledTimes(1); // continueStory is not called
         expect(emit).toHaveBeenCalledWith(
-          'game/restart', 
+          'game/restart',
           { saveSlot: getSaveSlotKey({ type: SAVE_CHECKPOINT, name: 'test_checkpoint' }) }
         );
       });

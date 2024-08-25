@@ -105,6 +105,21 @@ describe('components/sessions', () => {
       expect(sessions).toEqual(expectedSessions);
       expect(emit).toHaveBeenCalledWith('game/getSessions', expectedSessions);
     });
+
+    test('exclude settings and persistent', async () => {
+      // prepare
+      save({ type: SAVE_GAME, name: 'save1' });
+      save({ type: SAVE_GAME, name: 'save2' });
+      mockPersistent.set('settings', {settings: true});
+      mockPersistent.set('persist', {persist: true});
+      const expectedSessions = { '': 2 };
+      // run
+      const sessions = await getSessions();
+      // check
+      expect(sessions).toEqual(expectedSessions);
+      expect(emit).toHaveBeenCalledWith('game/getSessions', expectedSessions);
+    });
+
   });
 
   describe('deleteSession', () => {

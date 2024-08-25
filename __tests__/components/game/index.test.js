@@ -216,7 +216,7 @@ describe('components/game', () => {
   });
 
   // ============================================================
-  // restart
+  // restartAndContinue
   // ============================================================
   describe('restartAndContinue', () => {
     beforeEach(async () => {
@@ -491,6 +491,33 @@ describe('components/game', () => {
         game.continueStory();
         expect(save).toHaveBeenCalledWith({ type: SAVE_GAME, name: 'point2' });
         expect(emit).toHaveBeenCalledWith('game/handletag', { SAVEGAME: 'point2' });
+      });
+
+      test('RESTART', () => {
+        mockScene = { ...sampleScene, tags: { RESTART: true } };
+        expect(ink.resetStory).not.toHaveBeenCalled();
+        // run
+        game.continueStory();
+        // check
+        expect(ink.resetStory).toHaveBeenCalledTimes(1);
+        expect(ink.getScene).toHaveBeenCalledTimes(1); // continueStory is not called
+        expect(emit).toHaveBeenCalledWith('game/restart', { saveSlot: undefined });
+      });
+
+      test('RESTART_FROM_CHECKPOINT', () => {
+        mockScene = { ...sampleScene, tags: { RESTART_FROM_CHECKPOINT: 'test_checkpoint' } };
+        expect(ink.resetStory).not.toHaveBeenCalled();
+        expect(load).not.toHaveBeenCalled();
+        // run
+        game.continueStory();
+        // check
+        expect(load).not.toHaveBeenCalled();
+        expect(ink.resetStory).toHaveBeenCalledTimes(1);
+        expect(ink.getScene).toHaveBeenCalledTimes(1); // continueStory is not called
+        expect(emit).toHaveBeenCalledWith(
+          'game/restart', 
+          { saveSlot: getSaveSlotKey({ type: SAVE_CHECKPOINT, name: 'test_checkpoint' }) }
+        );
       });
 
       test('custom scene processor', () => {

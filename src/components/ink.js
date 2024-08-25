@@ -101,6 +101,15 @@ export default {
     emit('ink/getVariable', { name, value });
     return value;
   },
+  getVariables: () => {
+    const varState = inkStory.variablesState;
+    const inkVars = {};
+    varState._globalVariables.forEach(/* eslint-disable-line no-underscore-dangle */
+      (value, key) => { inkVars[key] = varState[key]; }
+    );
+    emit('ink/getVariables', inkVars);
+    return inkVars;
+  },
   setVariable: (name, value) => {
     inkStory.variablesState[name] = value;
     emit('ink/setVariable', { name, value });

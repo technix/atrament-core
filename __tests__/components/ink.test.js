@@ -48,7 +48,8 @@ const mockInkStoryInstance = {
     return `${fn} result: ${args[0] + args[1]}`;
   },
   variablesState: {
-    var1: 'var1-value'
+    var1: 'var1-value',
+    var2: 'var2-value'
   },
   ObserveVariable() {
     return true;
@@ -60,6 +61,11 @@ const mockInkStoryInstance = {
     return true;
   }
 };
+
+const inkVars = Object.keys(mockInkStoryInstance.variablesState);
+const globalVars = new Map();
+inkVars.forEach((k) => globalVars.set(k, true));
+mockInkStoryInstance.variablesState._globalVariables = globalVars; /* eslint-disable-line no-underscore-dangle */
 
 const MockInkStory = jest.fn((content) => {
   mockInkStoryInstance.content = content;
@@ -158,6 +164,16 @@ describe('components/ink', () => {
     const result = ink.getVariable('var1');
     expect(result).toEqual(expectedValue);
     expect(emit).toHaveBeenCalledWith('ink/getVariable', { name: 'var1', value: expectedValue });
+  });
+
+  test('getVariables', () => {
+    const expectedValue = {
+      var1: 'var1-value',
+      var2: 'var2-value'
+    };
+    const result = ink.getVariables();
+    expect(result).toEqual(expectedValue);
+    expect(emit).toHaveBeenCalledWith('ink/getVariables', result);
   });
 
   test('setVariable', () => {

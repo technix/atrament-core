@@ -362,6 +362,12 @@ Returns value of specified Ink variable.
 
 Event: `'ink/getVariable', { name: variableName }`
 
+#### atrament.ink.getVariables()
+
+Returns all variables and their values as a key-value object.
+
+Event: `'ink/getVariables', inkVariablesObject`
+
 #### atrament.ink.setVariable(variableName, value)
 
 Sets value of specified Ink variable.

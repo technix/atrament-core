@@ -2,20 +2,20 @@
 
 `atrament-core` is a framework for choice-based games, built around `inkjs`. 
 
-If you need a ready to use library for web applications, check out [atrament-web](https://github.com/technix/atrament-web).
+If you need a ready-to-use library for web applications, check out [atrament-web](https://github.com/technix/atrament-web).
 
-If you are looking for example of a web application based on Atrament, check out [atrament-web-ui](https://github.com/technix/atrament-web-ui).
+If you are looking for an example of a web application based on Atrament, check out [atrament-web-ui](https://github.com/technix/atrament-web-ui).
 
 ## Features
 
-- Implements game flow: loading Ink story, get content, make choice
+- Implements game flow: loading Ink story, getting text content, making choices
 - Manages global application settings
-- Parses tags, handles some of them (compatible with Inky)
+- Parses tags, and handles some of them (mostly compatible with Inky)
 - Auto-observe variables defined with 'observe' global tag
 - Manages sound and music via knot tags
 - Manages autosaves, checkpoints, and named saves for every game
 - Music state is saved and restored along with game state
-- All changes affect internal state
+- All changes affect the internal state
 
 
 ## Installation
@@ -28,17 +28,17 @@ If you are looking for example of a web application based on Atrament, check out
 
 | Tag | Description                |
 | :-------- | :------------------------- |
-| `# observe: varName` | Register variable observer for `varName` Ink variable. Variable value is available in `vars` section of Atrament state. |
-| `# persist: varName` | Save this variable value to persistent storage, restore before game starts. |
+| `# observe: varName` | Register variable observer for `varName` Ink variable. The variable value is available in the `vars` section of Atrament state. |
+| `# persist: varName` | Save this variable value to persistent storage, and restore it before the game starts. |
 | `# autosave: false` | Disables autosaves. |
-| `# single_scene` | Store only last scene in Atrament state. |
-| `# continue_maximally: false` | Pause story after each line. In this mode `scene` object contains `canContinue` field, which is set to true if the story can be continued. |
+| `# single_scene` | Store only the last scene in the Atrament state. |
+| `# continue_maximally: false` | Pause story after each line. In this mode the `scene` object contains the `canContinue` field, which is set to true if the story can be continued. |
 
 
 ### Knot tags
 | Tag | Description                |
 | :-------- | :------------------------- |
-| `# CLEAR` | Clear scenes list before saving current scene to Atrament state. |
+| `# CLEAR` | Clear the scenes list before saving the current scene to Atrament state. |
 | `# AUDIO: sound.mp3` | Play sound (once). |
 | `# AUDIOLOOP: music.mp3` | Play background music (looped). There can be only one background music track. |
 | `# AUDIOLOOP: false` | Stop playing all background music. |
@@ -48,13 +48,13 @@ If you are looking for example of a web application based on Atrament, check out
 | `# PLAY_MUSIC: music.mp3` | Play background music (looped). There can be multiple background music tracks, played simultaneously. |
 | `# STOP_MUSIC: music.mp3` | Stop playing specific background music. |
 | `# STOP_MUSIC` | Stop playing all background music. |
-| `# CHECKPOINT` | Save game to 'default' checkpoint. |
-| `# CHECKPOINT: checkpointName` | Save game to  checkpoint `checkpointName`. |
-| `# SAVEGAME: saveslot` | Save game to `saveslot`. |
+| `# CHECKPOINT` | Save the game to the default checkpoint. |
+| `# CHECKPOINT: checkpointName` | Save the game to checkpoint `checkpointName`. |
+| `# SAVEGAME: saveslot` | Save the game to `saveslot`. |
 | `# RESTART` | Start game from beginning. |
-| `# RESTART_FROM_CHECKPOINT` | Restart game from latest checkpoint. |
+| `# RESTART_FROM_CHECKPOINT` | Restart the game from the latest checkpoint. |
 | `# RESTART_FROM_CHECKPOINT: checkpointName` | Restart game from named checkpoint. |
-| `# IMAGE: picture.jpg` | Adds image to the `images` attribute of the scene and paragraph. Can be used to preload image files for the scene. |
+| `# IMAGE: picture.jpg` | Adds specified image to the `images` attribute of the scene and paragraph. It can be used to preload image files for the scene. |
 
 Note: For sound effects, please use either AUDIO/AUDIOLOOP or PLAY_SOUND/PLAY_MUSIC/STOP_SOUND/STOP_MUSIC tags. Combining them may lead to unexpected side effects.
 
@@ -92,7 +92,7 @@ atrament.defineInterfaces({
 
 #### atrament.init(Story, configuration)
 
-Initialize game engine. Takes two parameters:
+Initialize the game engine. Takes two parameters:
 - **Story** is an inkjs constructor, imported directly from inkjs
 - **configuration** is a configuration object:
     - **applicationID** should be a unique string. It is used to distinguish persistent storage of your application.
@@ -113,7 +113,7 @@ atrament.init(Story, config);
 
 #### atrament.on(event, listener)
 
-Subscribe to specific Atrament event. The **listener** function is called with single argument containing event parameters.
+Subscribe to specific Atrament events. The **listener** function is called with a single argument containing event parameters.
 
 You can subscribe to all Atrament events:
 ```
@@ -122,7 +122,7 @@ atrament.on('*', (event, args) => { ... });
 
 #### atrament.off(event, listener)
 
-Unsubscribe listener from specific Atrament event.
+Unsubscribe specified listener from the Atrament event.
 
 #### atrament.state
 
@@ -134,7 +134,7 @@ atrament.state.setSubkey('game', 'checkpoint', true);
 
 #### atrament.store
 
-Return raw store object. Can be used in hooks, for example:
+Return raw store object. It can be used in hooks, for example:
 
 ```
 const gamestate = useStore(atrament.store);
@@ -142,7 +142,7 @@ const gamestate = useStore(atrament.store);
 
 #### atrament.interfaces
 
-Returns raw interface objects. Can be used to operate with them directly.
+Returns raw interface objects. It can be used to operate with them directly.
 
 ```
 const { state, persistent } = atrament.interfaces;
@@ -152,30 +152,30 @@ const { state, persistent } = atrament.interfaces;
 
 #### async atrament.game.init(path, file, gameID)
 
-Initialize game object. Required to perform operations with saves.
+Initialize game object. It is required to perform operations with saves.
 Parameters:
 - path: path to Ink file
 - file: Ink file name
-- gameID: optional. If provided, Atrament will use given ID for save management. Otherwise, it will be generated based on path and filename.
+- gameID: optional. If provided, Atrament will use the given ID for save management. Otherwise, it will be generated based on path and filename.
 
 Event: `'game/init', { pathToInkFile: path, inkFile: file }`
 
 #### async atrament.game.initInkStory()
 
-Load Ink file and initialize Ink Story object. Then updates game metadata and initializes variable observers.
+Load Ink file and initialize Ink Story object. Then it updates game metadata and initializes variable observers.
 
 Event: `'game/initInkStory'`
 
 #### atrament.game.getSaveSlotKey({ name, type })
 
 Returns save slot identifier for given save name and type.
-Possible save types: `atrament.game.SAVE_GAME`, `atrament.game.SAVE_CHECKPOINT`, `atrament.game.SAVE_AUTOSAVE`. For autosaves, `name` parameter should be omitted.
-Returned value can be used as a `saveslot` parameter.
+Possible save types: `atrament.game.SAVE_GAME`, `atrament.game.SAVE_CHECKPOINT`, `atrament.game.SAVE_AUTOSAVE`. For autosaves, the `name` parameter should be omitted.
+The returned value can be used as a `saveslot` parameter.
 
 #### async atrament.game.start(saveslot)
 
-If game is started for the first time, or initialized game is not the same as current one - call `initInkStory` first.
-Clears game state, gets initial data for variable observers.
+If the game is started for the first time, or the initialized game is not the same as the current one - call `initInkStory` first.
+Clears game state, and gets initial data for variable observers.
 If `saveslot` is defined, load state from specified save.
 
 Event: `'game/start', { saveSlot: saveslot }`
@@ -184,20 +184,20 @@ Event: `'game/start', { saveSlot: saveslot }`
 
 Resume saved game:
 - if autosave exists, resume from autosave
-- if checkpoints exist, resume from newest checkpoint
-- otherwise, start new game
+- if checkpoints exist, resume from the newest checkpoint
+- otherwise, start a new game
 
 Event: `'game/resume', { saveSlot: saveslot }`
 
 #### async atrament.game.canResume()
 
-Returns save slot identifier, if game can be resumed.
+Returns save slot identifier if game can be resumed.
 
 Event: `'game/canResume', { saveSlot: saveslot }`
 
 #### async atrament.game.restart(saveslot)
 
-Restart game from specified save slot (if `saveslot` is not defined, starts new game). 
+Restart the game from the specified save slot (if `saveslot` is not defined, start a new game). 
 
 Event: `'game/restart', { saveSlot: saveslot }`
 
@@ -219,13 +219,13 @@ Event: `'game/save', { type: 'game', name }`
 
 #### async atrament.game.saveCheckpoint(name)
 
-Save game state to checkpoint.
+Save the game state to the checkpoint.
 
 Event: `'game/save', { type: 'checkpoint', name }`
 
 #### async atrament.game.saveAutosave()
 
-Save game state to autosave slot.
+Save the game state to autosave slot.
 
 Event: `'game/save', { type: 'autosave' }`
 
@@ -237,7 +237,7 @@ Event: `'game/listSaves', savesListArray`
 
 #### async atrament.game.removeSave(saveslot)
 
-Removes specified game slot.
+Removes specified game save slot.
 
 Event: `'game/removeSave', saveslot`
 
@@ -250,7 +250,7 @@ Returns `true` if specified save slot exists.
 - gets Ink scene content
 - run scene processors
 - process tags
-- updates Atrament state with scene
+- updates Atrament state with a scene content
 
 Event: `'game/continueStory'`
 
@@ -258,11 +258,11 @@ Event for tag handling: `'game/handleTag', { [tagName]: tagValue }`
 
 #### atrament.game.makeChoice(id)
 
-Make choice in Ink. Wrapper for `atrament.ink.makeChoice`.
+Make a choice in Ink. Wrapper for `atrament.ink.makeChoice`.
 
 #### atrament.game.defineSceneProcessor(processorFunction)
 
-Register `processorFunction` for scene post-processing. It takes `scene` object as argument by reference:
+Register `processorFunction` for scene post-processing. It takes the `scene` object as an argument by reference:
 
 ```
 function processCheckpoint(scene) {
@@ -276,17 +276,17 @@ atrament.game.defineSceneProcessor(processCheckpoint);
 
 #### atrament.game.getAssetPath(file)
 
-Returns full path to asset file (image, sound, music).
+Returns the full path to asset file (image, sound, music).
 
 #### atrament.game.clear()
 
-Method to call at the game end. Stops music, clears `scenes` and `vars` in Atrame state.
+Method to call at the game end. It stops music, and clears `scenes` and `vars` in the Atrament state.
 
 Event: `'game/clear'`
 
 #### atrament.game.reset()
 
-Method to call at the game end. Calls `atrament.game.clear()`, then clears `metadata` and `game` in Atrament state.
+Method to call at the game end. It calls `atrament.game.clear()`, then clears `metadata` and `game` in Atrament state.
 
 Event: `'game/reset'`
 
@@ -296,7 +296,7 @@ Returns current game session.
 
 #### atrament.game.setSession(sessionID)
 
-Sets current game session. If set to empty value, returns to default session.
+Sets current game session. If set to empty value, reset session ID to default.
 
 Event: `'game/setSession', sessionID`
 
@@ -346,7 +346,7 @@ Event: `'ink/getVisitCount', { ref: ref, visitCount: value }`
 
 #### atrament.ink.evaluateFunction(functionName, argsArray)
 
-Evaluates Ink function, returns result of evaluation. Wrapper for `Story.EvaluateFunction`.
+Evaluates Ink function, then returns the result of the evaluation. Wrapper for `Story.EvaluateFunction`.
 
 Event: `'ink/evaluateFunction', { function: functionName, args: argsArray, result: functionReturnValue }`
 
@@ -376,17 +376,17 @@ Event: `'ink/setVariable', { name: variableName, value: value }`
 
 #### atrament.ink.observeVariable(variableName, observerFunction)
 
-Registers observer for specified variable. Wrapper for `Story.ObserveVariable`.
+Registers observer for a specified variable. Wrapper for `Story.ObserveVariable`.
 
 #### atrament.ink.goTo(ref)
 
-Go to specified Ink knot or stitch. Wrapper for `Story.ChoosePathString`.
+Go to the specified Ink knot or stitch. Wrapper for `Story.ChoosePathString`.
 
 Event: `'ink/goTo', { knot: ref }`
 
 #### atrament.ink.onError(errorCallback)
 
-When Ink error occurs, emits `ink/onError` event and calls `errorCallback` function with error event object as argument.
+When an Ink error occurs, it emits `ink/onError` event and calls the `errorCallback` function with the error event object as an argument.
 
 Event: `'ink/onError', errorEvent`
 
@@ -398,9 +398,9 @@ Event: `'ink/getScene', { scene: sceneObject }`
 
 ### Settings methods
 
-Application settings for your application. Loading, saving, and setting values changes `settings` section of Atrament state.
+Application settings for your application. Loading, saving, and setting values changes the `settings` section of the Atrament state.
 
-However, if you need to perform additional actions when setting is changed, you can define handler for it - see below. By default, Atrament handles `mute` and `volume` settings this way, muting and setting sound volume respectively.
+However, if you need to perform additional actions when the setting is changed, you can define a handler for it - see below. By default, Atrament handles `mute` and `volume` settings this way, muting and setting sound volume respectively.
 
 #### async atrament.settings.load()
 
@@ -416,7 +416,7 @@ Event: `'settings/save'`
 
 #### atrament.settings.get(parameter)
 
-Returns value of setting.
+Returns value of the setting.
 
 Event: `'settings/get', { name: parameter }`
 
@@ -449,7 +449,7 @@ atrament.toggle('fullscreen');
 // or
 atrament.set('fullscreen', true);
 
-// both these methods will change setting and run corresponding handler
+// both these methods will change the setting and run the corresponding handler
 ```
 
 
@@ -494,8 +494,8 @@ atrament.set('fullscreen', true);
 
 | Key | Description                |
 | :-------- | :------------------------- |
-| `settings` | Single level key-value store for application settings |
-| `game` | Single level game-specific data. Atrament populates the following keys: *$pathToInkFile, $inkFile, $gameUUID* |
+| `settings` | Single-level key-value store for application settings |
+| `game` | Single-level game-specific data. Atrament populates the following keys: *$pathToInkFile, $inkFile, $gameUUID* |
 | `metadata` | Data loaded from Ink file global tags |
 | `scenes` | Array of game scenes |
 | `vars` | Names and values of auto-observed variables |
@@ -513,7 +513,7 @@ atrament.set('fullscreen', true);
 | `game` | Content of `game` from Atrament state |
 | `scenes` | Content of `scenes` from Atrament state |
 
-Please note that `metadata` and `vars` from Atrament state are not included in the save. However, they are automatically populated from Ink state after loading from save.
+Please note that `metadata` and `vars` from the Atrament state are not included in the save. However, they are automatically populated from the Ink state after loading from a save.
 
 
 ## Interfaces
@@ -523,7 +523,7 @@ Please note that `metadata` and `vars` from Atrament state are not included in t
 There are four interfaces in `atrament-core`. Their implementation is not included, so developers can use `atrament-core` with the libraries they like. 
 
 ### loader
-Interface to file operations. Function `init` will be called first, taking path to the game as a parameter. Function `getAssetPath` should return full path of given file. Async function `loadInk` should return content of a given Ink file, located in the folder defined at the initialization time.
+Interface to file operations. The function `init` will be called first, taking the path to the game as a parameter. The function `getAssetPath` should return the full path of a given file. The async function `loadInk` should return the content of a given Ink file, located in the folder defined at the initialization time.
 
 ```
 {

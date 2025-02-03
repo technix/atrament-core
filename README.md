@@ -584,3 +584,7 @@ Interface to sound management library.
 Atrament is distributed under MIT license.
 
 Copyright (c) 2023 Serhii "techniX" Mozhaiskyi
+
+Made with the support of the [Interactive Fiction Technology Foundation](https://iftechfoundation.org/)
+
+<img src="https://iftechfoundation.org/logo.svg" width="200px">

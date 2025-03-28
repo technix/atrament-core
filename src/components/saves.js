@@ -27,30 +27,45 @@ export function getSaveSlotKey({ name, type }) {
 }
 
 
+export function setState(gameState) {
+  const { state } = interfaces();
+  state.setKey('scenes', gameState.scenes);
+  state.setKey('game', gameState.game);
+  ink.loadState(gameState.state);
+}
+
+
 export async function load(s) {
   let saveSlotKey = s;
   if (typeof s === 'object') {
     saveSlotKey = getSaveSlotKey(s);
   }
-  const { persistent, state } = interfaces();
+  const { persistent } = interfaces();
   const gameState = await persistent.get(saveSlotKey);
-  state.setKey('scenes', gameState.scenes);
-  state.setKey('game', gameState.game);
-  ink.loadState(gameState.state);
+  setState(gameState);
   emit('game/load', saveSlotKey);
 }
 
 
-export async function save({ name, type }) {
-  const { state, persistent } = interfaces();
+export function getState() {
+  const { state } = interfaces();
   const atramentState = state.get();
-  const gameState = {
-    name,
-    type,
+  return {
     date: Date.now(),
     state: ink.getState(),
     game: atramentState.game,
     scenes: atramentState.scenes
+  };
+}
+
+
+export async function save({ name, type }) {
+  const { persistent } = interfaces();
+  const gState = getState();
+  const gameState = {
+    name,
+    type,
+    ...gState
   };
   const saveSlotKey = getSaveSlotKey({ name, type });
   await persistent.set(saveSlotKey, gameState);

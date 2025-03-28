@@ -8,6 +8,8 @@ import ink from '../ink';
 import { playSound, stopSound, playMusic, playSingleMusic, stopMusic } from '../sound';
 import {
   getSaveSlotKey,
+  getState,
+  setState,
   load,
   save,
   existSave,
@@ -191,6 +193,8 @@ export default {
   saveCheckpoint,
   saveAutosave,
   load,
+  getState,
+  setState,
   listSaves,
   removeSave,
   existSave,

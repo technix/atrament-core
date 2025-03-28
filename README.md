@@ -312,6 +312,14 @@ Delete all saves for a given session.
 
 Event: `'game/deleteSession', sessionID`
 
+#### atrament.game.getState()
+
+Get state object for the game (ink state, "game" and "scenes" state keys)
+
+#### atrament.game.setState(gameState)
+
+Set the game state from the provided object (same as returned by getState)
+
 
 ### Ink methods
 

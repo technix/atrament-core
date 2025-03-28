@@ -7,6 +7,8 @@ import { setSession } from '../../src/components/game/sessions';
 import ink from '../../src/components/ink';
 import {
   getSaveSlotKey,
+  getState,
+  setState,
   load,
   save,
   existSave,
@@ -81,6 +83,40 @@ describe('components/saves', () => {
       expect(slotName).toBe(`test-game/s1/save/${SAVE_CHECKPOINT}/stage1`);
     });
   });
+
+  describe('getState/setState', () => {
+    test('get game state', async () => {
+      const mockScenes = ['scene1', 'scene2'];
+      mockState.setKey('scenes', mockScenes);
+      // run
+      const gameState = getState();
+      // check
+      expect(ink.getState).toHaveBeenCalledTimes(1);
+      expect(gameState).toEqual({
+        date: 1691539200000,
+        game: mockState.get().game,
+        scenes: mockScenes,
+        state: { inkjson: 'content' }
+      });
+    });
+
+    test('set game state', async () => {
+      const gameState = {
+        date: 1791539200000,
+        game: { name: 'test-game', title: '111' },
+        scenes: ['sceneA', 'sceneB'],
+        state: { inkjson: 'content' }
+      };
+      // run
+      setState(gameState);
+      // check
+      expect(ink.loadState).toHaveBeenCalledWith(gameState.state);
+      expect(mockState.get().scenes).toEqual(gameState.scenes);
+      expect(mockState.get().game).toEqual(gameState.game);
+      expect(mockState.get().vars).toEqual({});
+    });
+  });
+
 
   describe('save', () => {
     test('save game state', async () => {

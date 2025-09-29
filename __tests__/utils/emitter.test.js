@@ -6,22 +6,22 @@ describe('utils/emitter', () => {
     const eventHandler = jest.fn();
 
     emit('event', 'eventParameter');
-    expect(eventHandler).toBeCalledTimes(0);
+    expect(eventHandler).toHaveBeenCalledTimes(0);
 
     emitter.on('event', eventHandler);
     emit('event', 'eventParameter');
-    expect(eventHandler).toBeCalledTimes(1);
-    expect(eventHandler).toBeCalledWith('eventParameter');
+    expect(eventHandler).toHaveBeenCalledTimes(1);
+    expect(eventHandler).toHaveBeenCalledWith('eventParameter');
     eventHandler.mockClear();
 
     emit('event', { key: 'value' });
-    expect(eventHandler).toBeCalledTimes(1);
-    expect(eventHandler).toBeCalledWith({ key: 'value' });
+    expect(eventHandler).toHaveBeenCalledTimes(1);
+    expect(eventHandler).toHaveBeenCalledWith({ key: 'value' });
     eventHandler.mockClear();
 
     emitter.off('event', eventHandler);
     emit('event', 'eventParameter');
-    expect(eventHandler).toBeCalledTimes(0);
+    expect(eventHandler).toHaveBeenCalledTimes(0);
     eventHandler.mockClear();
   });
 });

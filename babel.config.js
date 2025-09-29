@@ -1,4 +1,4 @@
-module.exports = (api) => {
+export default (api) => {
   // api.cache(true);
   const isTest = api.env('test');
   const presetEnv = {

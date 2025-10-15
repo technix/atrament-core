@@ -1,6 +1,6 @@
 /* eslint-env jest */
-import mockPersistent from '../../../__mocks__/persistent';
-import mockState from '../../../__mocks__/state';
+import mockPersistent from '../../../src/interfaces/persistent';
+import mockState from '../../../src/interfaces/state';
 
 import { emit } from '../../../src/utils/emitter';
 import hashCode from '../../../src/utils/hashcode';

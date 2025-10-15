@@ -1,9 +1,12 @@
 /* eslint-env jest */
 import { interfaces, defineInterfaces } from '../../src/utils/interfaces';
 
+import stateInterface from '../../src/interfaces/state';
+import persistentInterface from '../../src/interfaces/persistent';
+
 const defaultInterfaces = {
   loader: null,
-  persistent: null,
+  persistent: persistentInterface,
   sound: {
     init: expect.any(Function),
     mute: expect.any(Function),
@@ -14,7 +17,7 @@ const defaultInterfaces = {
     playMusic: expect.any(Function),
     stopMusic: expect.any(Function)
   },
-  state: null
+  state: stateInterface
 };
 
 afterEach(() => defineInterfaces(defaultInterfaces));
@@ -24,15 +27,15 @@ describe('utils/interfaces', () => {
     let i = interfaces();
     expect(i).toEqual(defaultInterfaces);
     defineInterfaces({
-      loader: 'loaderInterface',
-      persistent: 'persistentInterface'
+      persistent: 'persistentInterface',
+      state: 'stateInterface'
     });
     i = interfaces();
     expect(i).toEqual({
-      loader: 'loaderInterface',
+      loader: null,
       persistent: 'persistentInterface',
       sound: defaultInterfaces.sound,
-      state: null
+      state: 'stateInterface'
     });
   });
 
@@ -48,7 +51,7 @@ describe('utils/interfaces', () => {
       loader: null,
       persistent: 'persistentInterface',
       sound: defaultInterfaces.sound,
-      state: null,
+      state: defaultInterfaces.state,
       unknown: 'unknownInterface'
     });
   });

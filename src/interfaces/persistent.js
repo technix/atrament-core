@@ -1,3 +1,5 @@
+// in-memory persistent storage substitution
+
 const gameState = {};
 let key = '';
 

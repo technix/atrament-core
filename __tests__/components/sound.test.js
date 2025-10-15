@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import { playSound, stopSound, playMusic, playSingleMusic, stopMusic } from '../../src/components/sound';
-import mockState from '../../__mocks__/state';
+import mockState from '../../src/interfaces/state';
 
 const mockPlaySound = jest.fn();
 const mockStopSound = jest.fn();

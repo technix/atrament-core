@@ -1,13 +1,13 @@
 {
   "name": "@atrament/core",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "Atrament, a text game engine - core module",
   "type": "module",
-  "main": "dist/core.mjs",
+  "main": "dist/index.mjs",
   "exports": {
     ".": {
-      "require": "./dist/core.cjs",
-      "import": "./dist/core.mjs"
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
     }
   },
   "files": [

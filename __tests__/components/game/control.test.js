@@ -39,7 +39,7 @@ jest.mock('../../../src/components/ink', () => ({
   loadState: jest.fn(() => mockInkState)
 }));
 
-jest.mock('../../../src/utils/interfaces', () => ({
+jest.mock('../../../src/interfaces', () => ({
   interfaces: jest.fn(() => ({
     state: mockState,
     persistent: mockPersistent,

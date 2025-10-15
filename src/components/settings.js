@@ -1,4 +1,4 @@
-import { interfaces } from '../utils/interfaces';
+import { interfaces } from '../interfaces';
 import { getConfig } from '../utils/config';
 import { emit } from '../utils/emitter';
 

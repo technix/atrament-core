@@ -67,7 +67,7 @@ jest.mock('../../../src/components/saves', () => {
 });
 
 
-jest.mock('../../../src/utils/interfaces', () => ({
+jest.mock('../../../src/interfaces', () => ({
   interfaces: jest.fn(() => ({
     state: mockState,
     persistent: mockPersistent,

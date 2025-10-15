@@ -1,5 +1,5 @@
 import ink from './ink';
-import { interfaces } from '../utils/interfaces';
+import { interfaces } from '../interfaces';
 import { emit } from '../utils/emitter';
 
 import { validSession } from './game/sessions';

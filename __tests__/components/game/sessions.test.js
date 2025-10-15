@@ -19,7 +19,7 @@ jest.mock('../../../src/components/ink', () => ({
   getState: jest.fn(() => ({ inkjson: 'content' }))
 }));
 
-jest.mock('../../../src/utils/interfaces', () => ({
+jest.mock('../../../src/interfaces', () => ({
   interfaces: jest.fn(() => ({
     state: mockState,
     persistent: mockPersistent

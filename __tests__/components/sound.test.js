@@ -7,7 +7,7 @@ const mockStopSound = jest.fn();
 const mockPlayMusic = jest.fn();
 const mockStopMusic = jest.fn();
 
-jest.mock('../../src/utils/interfaces', () => ({
+jest.mock('../../src/interfaces', () => ({
   interfaces: jest.fn(() => ({
     state: mockState,
     sound: {

@@ -1,6 +1,6 @@
-import interfacePersistent from '../interfaces/persistent';
-import interfaceSound from '../interfaces/sound';
-import interfaceState from '../interfaces/state';
+import interfacePersistent from './persistent';
+import interfaceSound from './sound';
+import interfaceState from './state';
 
 let $interfaces = {
   loader: null,

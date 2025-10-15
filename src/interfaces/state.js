@@ -1,3 +1,5 @@
+// simple in-memory app state
+
 const atramentState = {
   settings: {},
   game: {},

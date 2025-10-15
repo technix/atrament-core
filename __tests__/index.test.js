@@ -30,7 +30,7 @@ const mockInterfaces = {
   persistent: mockPersistent
 };
 
-jest.mock('../src/utils/interfaces', () => ({
+jest.mock('../src/interfaces', () => ({
   interfaces: jest.fn(() => mockInterfaces)
 }));
 

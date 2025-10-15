@@ -1,4 +1,4 @@
-import { interfaces, defineInterfaces } from './utils/interfaces';
+import { interfaces, defineInterfaces } from './interfaces';
 import { getConfig, setConfig } from './utils/config';
 import { emitter, emit } from './utils/emitter';
 

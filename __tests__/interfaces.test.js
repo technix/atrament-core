@@ -1,8 +1,8 @@
 /* eslint-env jest */
-import { interfaces, defineInterfaces } from '../../src/utils/interfaces';
+import { interfaces, defineInterfaces } from '../src/interfaces';
 
-import stateInterface from '../../src/interfaces/state';
-import persistentInterface from '../../src/interfaces/persistent';
+import stateInterface from '../src/interfaces/state';
+import persistentInterface from '../src/interfaces/persistent';
 
 const defaultInterfaces = {
   loader: null,

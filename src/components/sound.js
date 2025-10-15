@@ -1,4 +1,4 @@
-import { interfaces } from '../utils/interfaces';
+import { interfaces } from '../interfaces';
 import toArray from '../utils/to-array';
 
 export function playSound(snd) {

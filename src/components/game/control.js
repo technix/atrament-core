@@ -1,4 +1,4 @@
-import { interfaces } from '../../utils/interfaces';
+import { interfaces } from '../../interfaces';
 import { emit } from '../../utils/emitter';
 
 import hashCode from '../../utils/hashcode';

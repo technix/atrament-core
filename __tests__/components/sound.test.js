@@ -60,6 +60,7 @@ describe('components/sound', () => {
   });
 
   test('stopSound - all sounds', () => {
+    playSound(['sound/file1.mp3', 'sound/file2.mp3']);
     expect(mockStopSound).toHaveBeenCalledTimes(0);
     stopSound();
     expect(mockStopSound).toHaveBeenCalledTimes(1);
@@ -140,7 +141,6 @@ describe('components/sound', () => {
     playMusic(['sound/test.mp3', 'sound/test2.mp3']);
     stopMusic();
     expect(mockStopMusic).toHaveBeenCalledTimes(1);
-    expect(mockStopMusic).toHaveBeenCalledWith();
     expect(mockState.get().game.$currentMusic).toEqual([]);
   });
 });

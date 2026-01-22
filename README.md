@@ -1,10 +1,8 @@
-# Atrament
+# @atrament/core
 
-`atrament-core` is a framework for choice-based games, built around `inkjs`. 
+`@atrament/core` is a framework for choice-based games, built around `InkJS`. It is a foundation of an [@atrament/web](https://github.com/technix/atrament-web) library and [atrament-ui](https://github.com/technix/atrament-web-ui) web application.
 
-If you need a ready-to-use library for web applications, check out [atrament-web](https://github.com/technix/atrament-web).
-
-If you are looking for an example of a web application based on Atrament, check out [atrament-web-ui](https://github.com/technix/atrament-web-ui).
+**[Documentation](https://atrament.ink)**
 
 ## Features
 
@@ -604,3 +602,5 @@ Copyright (c) 2023 Serhii "techniX" Mozhaiskyi
 Made with the support of the [Interactive Fiction Technology Foundation](https://iftechfoundation.org/)
 
 <img src="https://iftechfoundation.org/logo.svg" width="200px">
+
+

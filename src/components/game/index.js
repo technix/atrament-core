@@ -100,7 +100,12 @@ async function loadInkFile() {
   const { game } = interfaces().state.get();
   let inkContent = await interfaces().loader.loadInk(game.$file);
   if (typeof inkContent === 'string') {
-    inkContent = JSON.parse(inkContent.replace('\uFEFF', ''));
+    try {
+      inkContent = JSON.parse(inkContent.replace('\uFEFF', ''));
+    } catch (e) {
+      console.error(e);
+      throw Error(`Failed to parse Ink script: ${game.$path}/${game.$file}`);
+    }
   }
   emit('game/loadInkFile', game.$file);
   return inkContent;

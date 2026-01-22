@@ -29,11 +29,23 @@ const mockInkStoryInstance = {
     }
     this.currentTags = ['HELLO', 'WORLD'];
     this.sceneCounter += 1;
-    if (this.sceneCounter > 3) {
+    if (this.sceneCounter === 4) {
       this.canContinue = false;
       this.currentChoices = [
         { text: 'Option 1' },
         { text: 'Option 2', tags: ['CHOICE', 'TEST: optional'] }
+      ];
+    }
+    if (this.sceneCounter === 5) {
+      this.currentText = '';
+      this.canContinue = true;
+    }
+    if (this.sceneCounter === 6) {
+      this.currentText = '';
+      this.canContinue = false;
+      this.currentChoices = [
+        { text: 'Option 1x' },
+        { text: 'Option 2x', tags: ['CHOICE', 'TEST: optional'] }
       ];
     }
   },
@@ -231,6 +243,7 @@ describe('components/ink', () => {
         WORLD: true
       },
       canContinue: true, // in "continue" mode, adds canContinue flag
+      isEmpty: false, // scene is non-empty
       choices: [],
       uuid: jest.now() // equivalent to Date.now()
     };
@@ -270,10 +283,40 @@ describe('components/ink', () => {
         { id: 0, choice: 'Option 1', tags: {} },
         { id: 1, choice: 'Option 2', tags: { CHOICE: true, TEST: 'optional' } }
       ],
+      isEmpty: false, // scene is non-empty
       uuid: jest.now() // equivalent to Date.now()
     };
     const scene = ink.getScene(true);
     expect(spyContinue).toHaveBeenCalledTimes(3);
+    expect(scene).toEqual(expectedScene);
+    expect(emit).toHaveBeenCalledWith('ink/getScene', scene);
+  });
+
+  test('getScene - maximal continue 2', () => {
+    mockInkStoryInstance.Continue();
+    mockInkStoryInstance.Continue();
+    mockInkStoryInstance.Continue();
+    mockInkStoryInstance.Continue();
+    const expectedScene = {
+      content: [
+        {
+          text: '',
+          tags: { HELLO: true, WORLD: true }
+        }
+      ],
+      text: [''],
+      tags: {
+        HELLO: true,
+        WORLD: true
+      },
+      choices: [
+        { id: 0, choice: 'Option 1x', tags: {} },
+        { id: 1, choice: 'Option 2x', tags: { CHOICE: true, TEST: 'optional' } }
+      ],
+      isEmpty: true, // scene is empty
+      uuid: jest.now() // equivalent to Date.now()
+    };
+    const scene = ink.getScene(true);
     expect(scene).toEqual(expectedScene);
     expect(emit).toHaveBeenCalledWith('ink/getScene', scene);
   });

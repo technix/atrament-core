@@ -28,6 +28,9 @@ function $continue(story, scene) {
   }
   story.Continue();
   const text = story.currentText;
+  if (text && text !== '\n') {
+    scene.isEmpty = false;
+  }
   // add story text
   scene.text.push(text);
   // add tags
@@ -49,6 +52,7 @@ function getScene(continueMaximally) {
     text: [],
     tags: {},
     choices: [],
+    isEmpty: true,
     uuid: Date.now()
   };
   if (continueMaximally) {

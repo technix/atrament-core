@@ -468,6 +468,7 @@ atrament.set('fullscreen', true);
   images: [],
   sounds: [],
   music: [],
+  isEmpty: Boolean,
   uuid: Number
 }
 ```
@@ -481,6 +482,7 @@ atrament.set('fullscreen', true);
 | `images` | Array of all images from all paragraphs of this scene |
 | `sound` | Array of all sounds from all paragraphs of this scene |
 | `music` | Array of all music tracks from all paragraphs of this scene |
+| `isEmpty` | True if there is no text content in the scene |
 | `uuid` | Unique ID of the scene (`Date.now()`) |
 
 

@@ -1,12 +1,14 @@
 import { interfaces } from '../../interfaces';
 import { emit } from '../../utils/emitter';
+import toArray from '../../utils/to-array';
+import hashCode from '../../utils/hashcode';
 
-import { init, loadInkFile, initInkStory, start, clear, reset } from './control';
 import { getSession, setSession, getSessions, removeSession } from './sessions';
 
 import ink from '../ink';
 import { playSound, stopSound, playMusic, playSingleMusic, stopMusic } from '../sound';
 import {
+  persistentPrefix,
   getSaveSlotKey,
   getState,
   setState,
@@ -22,9 +24,144 @@ import {
 
 import internalSceneProcessors from '../../utils/scene-processors';
 
+// ===========================================
+
+let expectedInkScriptUUID = null;
+let currentInkScriptUUID = null;
+
 const sceneProcessors = [];
 
+const persistentVarState = {};
+
 // ===========================================
+// Internal functions
+
+function $clearGameState() {
+  const { state } = interfaces();
+  // reset state
+  state.setKey('scenes', []);
+  state.setKey('vars', {});
+}
+
+
+function $iterateObservers(observerHandler) {
+  const { state } = interfaces();
+  const observers = state.get().metadata.observe;
+  if (observers) {
+    toArray(observers).forEach(observerHandler);
+  }
+}
+
+
+async function $handlePersistent() {
+  const { state, persistent } = interfaces();
+  const { game, metadata } = state.get();
+  const persistentVars = metadata.persist;
+  if (persistentVars) {
+    const storeID = persistentPrefix('persist');
+    // load persistent data, if possible
+    if (await persistent.exists(storeID)) {
+      persistentVarState[game.$gameUUID] = await persistent.get(storeID);
+      Object.entries(persistentVarState[game.$gameUUID]).forEach(
+        ([k, v]) => ink.setVariable(k, v)
+      );
+    } else if (!persistentVarState[game.$gameUUID]) {
+      persistentVarState[game.$gameUUID] = {};
+    }
+    // register observers for persistent vars
+    toArray(persistentVars).forEach((variable) => {
+      ink.observeVariable(variable, async (name, value) => {
+        persistentVarState[game.$gameUUID][name] = value;
+        await persistent.set(storeID, persistentVarState[game.$gameUUID]);
+      });
+    });
+  }
+}
+
+
+// ===========================================
+// Exported functions
+
+
+async function init(pathToInkFile, inkFile, gameID) {
+  await interfaces().loader.init(pathToInkFile);
+  const gameObj = {
+    $path: pathToInkFile,
+    $file: inkFile,
+    $gameUUID: gameID || hashCode(`${pathToInkFile}|${inkFile}`)
+  };
+  interfaces().state.setKey('game', gameObj);
+  expectedInkScriptUUID = gameObj.$gameUUID; // expecting to load content with this UUID
+  emit('game/init', { pathToInkFile, inkFile });
+}
+
+
+async function loadInkFile() {
+  const { game } = interfaces().state.get();
+  let inkContent = await interfaces().loader.loadInk(game.$file);
+  if (typeof inkContent === 'string') {
+    inkContent = JSON.parse(inkContent.replace('\uFEFF', ''));
+  }
+  emit('game/loadInkFile', game.$file);
+  return inkContent;
+}
+
+
+async function initInkStory() {
+  const { state } = interfaces();
+  const inkContent = await loadInkFile();
+  // initialize InkJS
+  ink.initStory(inkContent);
+  // read global tags
+  const metadata = ink.getGlobalTags();
+  state.setKey('metadata', metadata);
+  // register variable observers
+  $iterateObservers((variable) => {
+    ink.observeVariable(variable, (name, value) => {
+      state.setSubkey('vars', name, value);
+      emit('ink/variableObserver', { name, value });
+    });
+  });
+  currentInkScriptUUID = expectedInkScriptUUID;
+  emit('game/initInkStory');
+}
+
+
+async function start(saveSlot) {
+  const { state } = interfaces();
+  stopMusic(); // stop all music
+  $clearGameState(); // game state cleanup
+  if (currentInkScriptUUID !== expectedInkScriptUUID) {
+    // ink content is not from the same game, reload
+    await initInkStory();
+  }
+  // load saved game, if present
+  let isNewGame = true;
+  if (saveSlot) {
+    if (await existSave(saveSlot)) {
+      await load(saveSlot);
+      const { game } = state.get();
+      // restore music
+      if (game.$currentMusic) {
+        playMusic(game.$currentMusic);
+      }
+      isNewGame = false;
+    }
+  }
+  await $handlePersistent();
+  // read initial state of observed variables
+  $iterateObservers((variable) => {
+    state.setSubkey('vars', variable, ink.getVariable(variable));
+  });
+  // need to run continueStory in the following cases:
+  // 1. This is a new game
+  // 2. This is a loaded game, and 'continue_maximally' is not set to true
+  emit('game/start', { saveSlot });
+  if (isNewGame || (!isNewGame && state.get().metadata.continue_maximally !== false)) {
+    continueStory();
+  }
+}
+
 
 async function canResume() {
   let saveSlot = null;
@@ -58,9 +195,21 @@ async function restart(saveSlot) {
 }
 
 
-async function restartAndContinue(saveSlot) {
-  await restart(saveSlot);
-  continueStory();
+function clear() {
+  stopMusic(); // stop all music
+  $clearGameState();
+  ink.resetStory(); // reset ink story state
+  emit('game/clear');
+}
+
+
+function reset() {
+  const { state } = interfaces();
+  clear();
+  // clean metadata and game
+  state.setKey('metadata', {});
+  state.setKey('game', {});
+  emit('game/reset');
 }
 
 
@@ -113,7 +262,7 @@ function continueStory() {
   // get next scene
   const isContinueMaximally = !(metadata.continue_maximally === false);
   const scene = ink.getScene(isContinueMaximally);
-  if (scene.content.length === 0) {
+  if (!scene.content || scene.content.length === 0) {
     /*
       if we have a scene with empty content
       (usually it happens after state load)
@@ -179,7 +328,6 @@ export default {
   resume,
   canResume,
   restart,
-  restartAndContinue,
   continueStory,
   makeChoice: (id) => ink.makeChoice(id),
   getAssetPath: (path) => interfaces().loader.getAssetPath(path),

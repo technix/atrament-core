@@ -194,7 +194,7 @@ describe('components/game', () => {
       // check
       expect(load).not.toHaveBeenCalled();
       expect(ink.resetStory).toHaveBeenCalledTimes(1);
-      expect(ink.getScene).not.toHaveBeenCalled(); // continueStory is not called
+      expect(ink.getScene).toHaveBeenCalledTimes(1); // continueStory is called - new game
       expect(emit).toHaveBeenCalledWith('game/restart', { saveSlot: undefined });
       expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: undefined });
     });
@@ -209,52 +209,29 @@ describe('components/game', () => {
       // check
       expect(load).toHaveBeenCalledWith(saveID);
       expect(ink.resetStory).toHaveBeenCalledTimes(1);
-      expect(ink.getScene).not.toHaveBeenCalled(); // continueStory is not called
+      expect(ink.getScene).toHaveBeenCalledTimes(1); // continueStory is called - loaded game without continue_maximally
       expect(emit).toHaveBeenCalledWith('game/restart', { saveSlot: saveID });
       expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: saveID });
     });
-  });
 
-  // ============================================================
-  // restartAndContinue
-  // ============================================================
-  describe('restartAndContinue', () => {
-    beforeEach(async () => {
-      const pathToInkFile = '/some/directory';
-      const inkFile = 'game.ink.json';
-      await game.init(pathToInkFile, inkFile);
-      mockScene = { content: [{ text: 'aaa' }], text: ['aaaa'], tags: {}, choices: [] };
-    });
-
-    test('save slot is not set', async () => {
+    test('save slot is set, continue_maximally is false', async () => {
       expect(ink.resetStory).not.toHaveBeenCalled();
       expect(ink.getScene).not.toHaveBeenCalled();
       // run
-      await game.saveAutosave();
-      await game.restartAndContinue();
-      // check
-      expect(load).not.toHaveBeenCalled();
-      expect(ink.resetStory).toHaveBeenCalledTimes(1);
-      expect(ink.getScene).toHaveBeenCalledTimes(1);
-      expect(emit).toHaveBeenCalledWith('game/restart', { saveSlot: undefined });
-      expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: undefined });
-    });
-
-    test('save slot is set', async () => {
-      expect(ink.resetStory).not.toHaveBeenCalled();
-      expect(ink.getScene).not.toHaveBeenCalled();
-      // run
+      mockState.setKey('metadata', { continue_maximally: false });
       const saveID = getSaveSlotKey({ type: SAVE_AUTOSAVE });
       await game.saveAutosave();
-      await game.restartAndContinue(saveID);
+      await game.restart(saveID);
       // check
       expect(load).toHaveBeenCalledWith(saveID);
       expect(ink.resetStory).toHaveBeenCalledTimes(1);
-      expect(ink.getScene).toHaveBeenCalledTimes(1);
+      // continueStory is not called - loaded game with continue_maximally:false
+      expect(ink.getScene).toHaveBeenCalledTimes(0);
       expect(emit).toHaveBeenCalledWith('game/restart', { saveSlot: saveID });
       expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: saveID });
     });
   });
+
 
   // ============================================================
   // continueStory
@@ -513,7 +490,7 @@ describe('components/game', () => {
         // check
         expect(load).not.toHaveBeenCalled();
         expect(ink.resetStory).toHaveBeenCalledTimes(1);
-        expect(ink.getScene).toHaveBeenCalledTimes(1); // continueStory is not called
+        expect(ink.getScene).toHaveBeenCalledTimes(2); // continueStory is called
         expect(emit).toHaveBeenCalledWith(
           'game/restart',
           { saveSlot: getSaveSlotKey({ type: SAVE_CHECKPOINT, name: 'test_checkpoint' }) }

@@ -9,11 +9,12 @@ import ink from '../../../src/components/ink';
 import { persistentPrefix, load, existSave, save, SAVE_GAME, getSaveSlotKey } from '../../../src/components/saves';
 import { playMusic, stopMusic } from '../../../src/components/sound';
 
-import { init, loadInkFile, initInkStory, start, clear, reset } from '../../../src/components/game/control';
+import game from '../../../src/components/game';
 
 let mockGlobalTags;
 let mockObserver;
 let mockInkContent;
+let mockScene;
 const mockInkState = { inkState: true };
 const mockLoader = jest.fn(() => Promise.resolve(mockInkContent));
 const mockInitLoader = jest.fn(() => Promise.resolve());
@@ -34,6 +35,7 @@ jest.mock('../../../src/components/ink', () => ({
   setVariable: jest.fn(),
   observeVariable: jest.fn((v, handler) => { mockObserver = handler; }),
   getGlobalTags: jest.fn(() => mockGlobalTags),
+  getScene: jest.fn(() => JSON.parse(JSON.stringify(mockScene))),
   resetStory: jest.fn(),
   getState: jest.fn(() => mockInkState),
   loadState: jest.fn(() => mockInkState)
@@ -66,9 +68,11 @@ beforeEach(() => {
   mockState.reset();
   mockPersistent.reset();
   jest.clearAllMocks();
+  mockScene = {};
   mockGlobalTags = [];
   mockObserver = () => {};
 });
+
 
 describe('components/game', () => {
   // ============================================================
@@ -79,7 +83,7 @@ describe('components/game', () => {
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
       expect(emit).not.toHaveBeenCalled();
-      await init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       expect(mockState.get().game).toEqual({
         $path: pathToInkFile,
         $file: inkFile,
@@ -93,7 +97,7 @@ describe('components/game', () => {
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
       expect(emit).not.toHaveBeenCalled();
-      await init(pathToInkFile, inkFile, 'customUUID');
+      await game.init(pathToInkFile, inkFile, 'customUUID');
       expect(mockState.get().game).toEqual({
         $path: pathToInkFile,
         $file: inkFile,
@@ -109,10 +113,10 @@ describe('components/game', () => {
     mockInkContent = '{"data":"ink content"}';
     const pathToInkFile = '/some/directory';
     const inkFile = 'game.ink.json';
-    await init(pathToInkFile, inkFile);
+    await game.init(pathToInkFile, inkFile);
     expect(mockLoader).not.toHaveBeenCalled();
     emit.mockClear();
-    const inkContent = await loadInkFile();
+    const inkContent = await game.loadInkFile();
     expect(inkContent).toEqual({ data: 'ink content' });
     expect(mockLoader).toHaveBeenCalledWith(inkFile);
     expect(emit).toHaveBeenCalledWith('game/loadInkFile', inkFile);
@@ -131,7 +135,7 @@ describe('components/game', () => {
     expect(stopMusic).not.toHaveBeenCalled();
     expect(ink.resetStory).not.toHaveBeenCalled();
     // run
-    clear();
+    game.clear();
     // check
     expect(stopMusic).toHaveBeenCalledTimes(1);
     expect(mockState.get().scenes).toEqual([]);
@@ -154,7 +158,7 @@ describe('components/game', () => {
     mockState.setKey('game', { ddd: 'eee' });
     expect(stopMusic).not.toHaveBeenCalled();
     // run
-    reset();
+    game.reset();
     // check
     expect(stopMusic).toHaveBeenCalledTimes(1);
     expect(mockState.get().scenes).toEqual([]);
@@ -168,10 +172,21 @@ describe('components/game', () => {
   // start
   // ============================================================
   describe('start', () => {
+    const processedMockScene = {
+      content: [{ text: 'aaa', images: [], sounds: [], music: [] }],
+      text: ['aaaa'],
+      tags: {},
+      choices: [],
+      images: [],
+      sounds: [],
+      music: []
+    };
+
     beforeEach(async () => {
       // reset
-      await init(null, null, 'NONEXISTENT');
-      await initInkStory();
+      await game.init(null, null, 'NONEXISTENT');
+      await game.initInkStory();
+      mockScene = { content: [{ text: 'aaa' }], text: ['aaaa'], tags: {}, choices: [] };
       jest.clearAllMocks();
     });
 
@@ -184,14 +199,14 @@ describe('components/game', () => {
       mockState.setKey('metadata', { ccc: 'ddd' });
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      await init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       // run
-      await start();
+      await game.start();
       // check
       expect(ink.initStory).toHaveBeenCalledTimes(1);
       expect(ink.initStory).toHaveBeenCalledWith(mockInkContent);
       expect(stopMusic).toHaveBeenCalledTimes(1);
-      expect(mockState.get().scenes).toEqual([]);
+      expect(mockState.get().scenes).toEqual([processedMockScene]);
       expect(mockState.get().vars).toEqual({});
       expect(mockState.get().metadata).toEqual(mockGlobalTags);
       expect(ink.observeVariable).not.toHaveBeenCalled();
@@ -205,17 +220,17 @@ describe('components/game', () => {
       mockGlobalTags = { observe: 'var1' };
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      await init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       expect(mockState.get().vars).toEqual({});
       // run
-      await initInkStory();
+      await game.initInkStory();
       // expect observers to be registered, but values are not set yet
       expect(mockState.get().metadata).toEqual(mockGlobalTags);
       expect(ink.observeVariable).toHaveBeenCalledTimes(1);
       expect(ink.observeVariable).toHaveBeenCalledWith('var1', expect.any(Function));
       expect(mockState.get().vars).toEqual({});
       // run
-      await start();
+      await game.start();
       // check
       expect(mockState.get().vars).toEqual({
         var1: 'var1-value'
@@ -235,10 +250,10 @@ describe('components/game', () => {
       mockGlobalTags = { observe: ['var1', 'var2'] };
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      await init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       expect(mockState.get().vars).toEqual({});
       // run
-      await initInkStory();
+      await game.initInkStory();
       // expect observers to be registered, but values are not set yet
       expect(mockState.get().metadata).toEqual(mockGlobalTags);
       expect(ink.observeVariable).toHaveBeenCalledTimes(2);
@@ -246,7 +261,7 @@ describe('components/game', () => {
       expect(ink.observeVariable).toHaveBeenCalledWith('var2', expect.any(Function));
       expect(mockState.get().vars).toEqual({});
       // run
-      await start();
+      await game.start();
       // check
       expect(mockState.get().vars).toEqual({
         var1: 'var1-value',
@@ -268,11 +283,11 @@ describe('components/game', () => {
       mockGlobalTags = { persist: ['var1', 'var2'] };
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      await init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       const persistentStore = persistentPrefix('persist');
       expect(mockState.get().vars).toEqual({});
       // run
-      await start();
+      await game.start();
       // expect observers to be registered, but no data are saved
       expect(mockState.get().metadata).toEqual(mockGlobalTags);
       expect(ink.observeVariable).toHaveBeenCalledTimes(2);
@@ -285,7 +300,7 @@ describe('components/game', () => {
       expect(ink.setVariable).not.toHaveBeenCalled();
       // reinit the game
       // run
-      await start();
+      await game.start();
       expect(ink.setVariable).toHaveBeenCalledTimes(1);
       expect(ink.setVariable).toHaveBeenCalledWith('var1', 50);
     });
@@ -294,9 +309,9 @@ describe('components/game', () => {
       // set
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      await init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       // run
-      await start('somesave');
+      await game.start('somesave');
       // check
       expect(existSave).toHaveBeenCalledTimes(1);
       expect(existSave).toHaveBeenCalledWith('somesave');
@@ -309,15 +324,35 @@ describe('components/game', () => {
       const inkFile = 'game.ink.json';
       const saveID = getSaveSlotKey({ type: SAVE_GAME, name: 'existingsave' });
       save({ type: SAVE_GAME, name: 'existingsave' });
-      await init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       // run
-      await start(saveID);
+      await game.start(saveID);
       // check
       expect(ink.initStory).toHaveBeenCalledTimes(1);
       expect(existSave).toHaveBeenCalledTimes(1);
       expect(existSave).toHaveBeenCalledWith(saveID);
       expect(load).toHaveBeenCalledTimes(1);
       expect(load).toHaveBeenCalledWith(saveID);
+      expect(ink.getScene).toHaveBeenCalledTimes(1); // runs continueStory
+    });
+
+    test('load from existing save with continue_maximally:false', async () => {
+      // set
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      mockGlobalTags = { continue_maximally: false };
+      const saveID = getSaveSlotKey({ type: SAVE_GAME, name: 'existingsave' });
+      save({ type: SAVE_GAME, name: 'existingsave' });
+      await game.init(pathToInkFile, inkFile);
+      // run
+      await game.start(saveID);
+      // check
+      expect(ink.initStory).toHaveBeenCalledTimes(1);
+      expect(existSave).toHaveBeenCalledTimes(1);
+      expect(existSave).toHaveBeenCalledWith(saveID);
+      expect(load).toHaveBeenCalledTimes(1);
+      expect(load).toHaveBeenCalledWith(saveID);
+      expect(ink.getScene).toHaveBeenCalledTimes(0); // continueStory does not run
     });
 
     test('load from existing save - story is initialized', async () => {
@@ -326,9 +361,9 @@ describe('components/game', () => {
       const inkFile = 'game.ink.json';
       const saveID = getSaveSlotKey({ type: SAVE_GAME, name: 'existingsave' });
       save({ type: SAVE_GAME, name: 'existingsave' });
-      await init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       // run
-      await start(saveID);
+      await game.start(saveID);
       // check
       expect(ink.initStory).toHaveBeenCalledTimes(1);
       expect(existSave).toHaveBeenCalledTimes(1);
@@ -341,12 +376,12 @@ describe('components/game', () => {
       // set
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      await init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       mockInkContent = null; // reset ink content
-      await loadInkFile();
+      await game.loadInkFile();
       mockLoader.mockClear();
       // run
-      await start();
+      await game.start();
       // check
       expect(mockLoader).toHaveBeenCalledWith(inkFile);
       expect(emit).toHaveBeenCalledWith('game/loadInkFile', inkFile);
@@ -357,11 +392,11 @@ describe('components/game', () => {
       const saveID = 'test_save_id';
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      mockPersistent.set(saveID, { game: { $currentMusic: 'music.mp3' } });
-      await init(pathToInkFile, inkFile);
+      mockPersistent.set(saveID, { game: { $currentMusic: 'music.mp3' }, scenes: [] });
+      await game.init(pathToInkFile, inkFile);
       // run
       expect(playMusic).not.toHaveBeenCalled();
-      await start(saveID);
+      await game.start(saveID);
       // check
       expect(playMusic).toHaveBeenCalledWith('music.mp3');
       expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: saveID });
@@ -372,11 +407,11 @@ describe('components/game', () => {
       const saveID = 'test_save_id';
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      mockPersistent.set(saveID, { game: { $currentMusic: false } });
-      await init(pathToInkFile, inkFile);
+      mockPersistent.set(saveID, { game: { $currentMusic: false }, scenes: [] });
+      await game.init(pathToInkFile, inkFile);
       // run
       expect(playMusic).not.toHaveBeenCalled();
-      await start(saveID);
+      await game.start(saveID);
       // check
       expect(playMusic).not.toHaveBeenCalled();
       expect(emit).toHaveBeenCalledWith('game/start', { saveSlot: saveID });
@@ -387,16 +422,17 @@ describe('components/game', () => {
     beforeEach(async () => {
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      await init(pathToInkFile, inkFile);
+      mockScene = { content: [{ text: 'aaa' }], text: ['aaaa'], tags: {}, choices: [] };
+      await game.init(pathToInkFile, inkFile);
     });
 
     test('start from beginning - same ink story', async () => {
       // set
       const pathToInkFile = '/some/directory';
       const inkFile = 'game.ink.json';
-      await init(pathToInkFile, inkFile);
+      await game.init(pathToInkFile, inkFile);
       // run
-      await start();
+      await game.start();
       // check
       expect(ink.initStory).not.toHaveBeenCalled(); // this story is already initialized
       expect(ink.observeVariable).not.toHaveBeenCalled();
@@ -408,10 +444,10 @@ describe('components/game', () => {
       mockInkContent = '{"inkstory":"inkContent"}';
       const pathToInkFile = '/some/directory2';
       const inkFile = 'game2.ink.json';
-      await init(pathToInkFile, inkFile);
-      await loadInkFile();
+      await game.init(pathToInkFile, inkFile);
+      await game.loadInkFile();
       // run
-      await start();
+      await game.start();
       // check
       expect(ink.initStory).toHaveBeenCalledTimes(1);
       expect(ink.initStory).toHaveBeenCalledWith({ inkstory: 'inkContent' });

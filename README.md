@@ -201,10 +201,6 @@ Restart the game from the specified save slot (if `saveslot` is not defined, sta
 
 Event: `'game/restart', { saveSlot: saveslot }`
 
-#### async atrament.game.restartAndContinue(saveslot)
-
-Run `atrament.game.restart`, then run `atrament.game.continueStory()` to regenerate game content.
-
 #### async atrament.game.load(saveslot)
 
 Load game state from specified save slot. 

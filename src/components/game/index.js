@@ -194,6 +194,10 @@ async function restart(saveSlot) {
   await start(saveSlot);
 }
 
+async function restartFromCheckpoint(checkpointName) {
+  await restart(getSaveSlotKey({ type: 'checkpoint', name: checkpointName }));
+}
+
 
 function clear() {
   stopMusic(); // stop all music
@@ -284,7 +288,7 @@ function continueStory() {
 
   // RESTART_FROM_CHECKPOINT
   if (tags.RESTART_FROM_CHECKPOINT) {
-    restart(getSaveSlotKey({ type: 'checkpoint', name: tags.RESTART_FROM_CHECKPOINT }));
+    restartFromCheckpoint(tags.RESTART_FROM_CHECKPOINT);
     return;
   }
 
@@ -328,6 +332,7 @@ export default {
   resume,
   canResume,
   restart,
+  restartFromCheckpoint,
   continueStory,
   makeChoice: (id) => ink.makeChoice(id),
   getAssetPath: (path) => interfaces().loader.getAssetPath(path),

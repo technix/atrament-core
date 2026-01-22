@@ -201,6 +201,10 @@ Restart the game from the specified save slot (if `saveslot` is not defined, sta
 
 Event: `'game/restart', { saveSlot: saveslot }`
 
+#### async atrament.game.restartFromCheckpoint(name)
+
+Restart the game from the checkpoint with the given name (if no such checkpoint found, restart the game).
+
 #### async atrament.game.load(saveslot)
 
 Load game state from specified save slot. 

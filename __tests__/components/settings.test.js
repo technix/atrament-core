@@ -221,4 +221,32 @@ describe('components/settings', () => {
       expect(settings.get('fontsize')).toBe(30);
     });
   });
+
+
+  describe('reset', () => {
+    test('to default settings', async () => {
+      mockState.setKey('settings', {
+        mute: false,
+        volume: 5,
+        fullscreen: false,
+        fontsize: 10
+      });
+      expect(mockState.get().settings).toEqual({
+        mute: false,
+        volume: 5,
+        fullscreen: false,
+        fontsize: 10
+      });
+      // run
+      settings.reset();
+      // check
+      expect(mockState.get().settings).toEqual(defaultConfig.settings);
+      expect(mockSound.mute).toHaveBeenCalledWith(true);
+      expect(mockSound.setVolume).toHaveBeenCalledWith(0);
+      expect(emit).toHaveBeenCalledWith('settings/reset', {
+        mute: true,
+        volume: 0
+      });
+    });
+  });
 });

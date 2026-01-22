@@ -65,6 +65,15 @@ function runHandlers() {
   });
 }
 
+function reset() {
+  const { state } = interfaces();
+  // load default values
+  const defaultSettings = JSON.parse(JSON.stringify(getConfig().settings)); // TODO use deep copy here
+  state.setKey('settings', defaultSettings);
+  runHandlers();
+  emit('settings/reset', defaultSettings);
+}
+
 export default {
   load,
   save,
@@ -72,5 +81,6 @@ export default {
   set,
   toggle,
   defineHandler,
-  runHandlers
+  runHandlers,
+  reset
 };

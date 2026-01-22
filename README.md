@@ -434,6 +434,12 @@ Event: `'settings/set', { name: parameter, value: value }`
 
 Toggles setting (sets `true` to `false` and vice versa).
 
+#### atrament.settings.reset()
+
+Resets settings to their defaults.
+
+Event: `'settings/reset', defaultSettingsObject`
+
 #### atrament.settings.defineHandler(parameter, handlerFunction)
 
 Defines a settings handler. 

@@ -5,9 +5,14 @@ import { emit } from '../utils/emitter';
 let inkStory = null;
 
 
-function initStory(content) {
+function initStory(content, scriptPath) {
   const { InkStory } = getConfig();
-  inkStory = new InkStory(content);
+  try {
+    inkStory = new InkStory(content);
+  } catch (e) {
+    console.log(e);
+    throw Error(`Failed to parse Ink script: ${scriptPath}`);
+  }
   emit('ink/initStory');
 }
 

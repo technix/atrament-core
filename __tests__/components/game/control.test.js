@@ -117,7 +117,7 @@ describe('components/game', () => {
     expect(mockLoader).not.toHaveBeenCalled();
     emit.mockClear();
     const inkContent = await game.loadInkFile();
-    expect(inkContent).toEqual({ data: 'ink content' });
+    expect(inkContent).toEqual(mockInkContent);
     expect(mockLoader).toHaveBeenCalledWith(inkFile);
     expect(emit).toHaveBeenCalledWith('game/loadInkFile', inkFile);
   });
@@ -204,7 +204,7 @@ describe('components/game', () => {
       await game.start();
       // check
       expect(ink.initStory).toHaveBeenCalledTimes(1);
-      expect(ink.initStory).toHaveBeenCalledWith(mockInkContent);
+      expect(ink.initStory).toHaveBeenCalledWith(mockInkContent, `${pathToInkFile}/${inkFile}`);
       expect(stopMusic).toHaveBeenCalledTimes(1);
       expect(mockState.get().scenes).toEqual([processedMockScene]);
       expect(mockState.get().vars).toEqual({});
@@ -450,7 +450,7 @@ describe('components/game', () => {
       await game.start();
       // check
       expect(ink.initStory).toHaveBeenCalledTimes(1);
-      expect(ink.initStory).toHaveBeenCalledWith({ inkstory: 'inkContent' });
+      expect(ink.initStory).toHaveBeenCalledWith(mockInkContent, `${pathToInkFile}/${inkFile}`);
       expect(ink.observeVariable).not.toHaveBeenCalled();
       expect(load).not.toHaveBeenCalled();
     });

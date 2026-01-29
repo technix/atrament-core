@@ -100,12 +100,7 @@ async function loadInkFile() {
   const { game } = interfaces().state.get();
   let inkContent = await interfaces().loader.loadInk(game.$file);
   if (typeof inkContent === 'string') {
-    try {
-      inkContent = JSON.parse(inkContent.replace('\uFEFF', ''));
-    } catch (e) {
-      console.error(e);
-      throw Error(`Failed to parse Ink script: ${game.$path}/${game.$file}`);
-    }
+    inkContent = inkContent.replace('\uFEFF', '');
   }
   emit('game/loadInkFile', game.$file);
   return inkContent;
@@ -116,7 +111,8 @@ async function initInkStory() {
   const { state } = interfaces();
   const inkContent = await loadInkFile();
   // initialize InkJS
-  ink.initStory(inkContent);
+  const { game } = state.get();
+  ink.initStory(inkContent, `${game.$path}/${game.$file}`);
   // read global tags
   const metadata = ink.getGlobalTags();
   state.setKey('metadata', metadata);

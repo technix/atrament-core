@@ -5,3 +5,4 @@
 .eslintcache
 npm-debug.*
 *.tgz
+bundlemeta.json

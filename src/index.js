@@ -42,6 +42,7 @@ export default {
   },
   on: (event, callback) => emitter.on(event, callback),
   off: (event, callback) => emitter.off(event, callback),
+  emit,
   // sub-objects
   game,
   ink,

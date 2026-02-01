@@ -122,6 +122,10 @@ atrament.on('*', (event, args) => { ... });
 
 Unsubscribe specified listener from the Atrament event.
 
+#### atrament.emit(event, message)
+
+Emit an Atrament event.
+
 #### atrament.state
 
 Returns Atrament state interface. Can be used to operate state directly:

@@ -466,7 +466,7 @@ describe('components/game', () => {
         mockScene = { ...sampleScene, tags: { SAVEGAME: 'point2' } };
         expect(save).not.toHaveBeenCalled();
         game.continueStory();
-        expect(save).toHaveBeenCalledWith({ type: SAVE_GAME, name: 'point2' });
+        expect(save).toHaveBeenCalledWith({ type: SAVE_GAME, name: 'point2', description: '' });
         expect(emit).toHaveBeenCalledWith('game/handletag', { SAVEGAME: 'point2' });
       });
 
@@ -537,10 +537,19 @@ describe('components/game', () => {
 
   test('saveGame', async () => {
     const id = 'saveID';
+    const description = 'save description';
+    expect(save).not.toHaveBeenCalled();
+    await game.saveGame(id, description);
+    expect(save).toHaveBeenCalledTimes(1);
+    expect(save).toHaveBeenCalledWith({ type: SAVE_GAME, name: id, description });
+  });
+
+  test('saveGame, no description', async () => {
+    const id = 'saveID';
     expect(save).not.toHaveBeenCalled();
     await game.saveGame(id);
     expect(save).toHaveBeenCalledTimes(1);
-    expect(save).toHaveBeenCalledWith({ type: SAVE_GAME, name: id });
+    expect(save).toHaveBeenCalledWith({ type: SAVE_GAME, name: id, description: '' });
   });
 
   test('saveCheckpoint', async () => {

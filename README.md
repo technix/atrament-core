@@ -209,11 +209,11 @@ Load game state from specified save slot.
 
 Event: `'game/load', saveslot`
 
-#### async atrament.game.saveGame(name)
+#### async atrament.game.saveGame(name, description)
 
-Save game state to save slot.
+Save game state to save slot. The `description` parameter is optional.
 
-Event: `'game/save', { type: 'game', name }`
+Event: `'game/save', { type: 'game', saveslot, description }`
 
 #### async atrament.game.saveCheckpoint(name)
 

@@ -218,8 +218,8 @@ function reset() {
 }
 
 
-async function saveGame(name) {
-  await save({ type: SAVE_GAME, name });
+async function saveGame(name, description = '') {
+  await save({ type: SAVE_GAME, name, description });
 }
 
 

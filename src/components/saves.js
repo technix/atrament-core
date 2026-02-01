@@ -59,17 +59,18 @@ export function getState() {
 }
 
 
-export async function save({ name, type }) {
+export async function save({ name, description, type }) {
   const { persistent } = interfaces();
   const gState = getState();
   const gameState = {
     name,
+    description,
     type,
     ...gState
   };
   const saveSlotKey = getSaveSlotKey({ name, type });
   await persistent.set(saveSlotKey, gameState);
-  emit('game/save', saveSlotKey);
+  emit('game/save', saveSlotKey, description);
 }
 
 

@@ -124,8 +124,9 @@ describe('components/saves', () => {
       mockState.setKey('scenes', mockScenes);
       const type = 'checkpoint';
       const name = 'stage2';
+      const description = 'save description';
       // run
-      await save({ type, name });
+      await save({ type, name, description });
       // check
       expect(ink.getState).toHaveBeenCalledTimes(1);
       const saveID = getSaveSlotKey({ type, name });
@@ -133,12 +134,13 @@ describe('components/saves', () => {
       expect(saved).toEqual({
         name,
         type,
+        description,
         date: 1691539200000,
         game: mockState.get().game,
         scenes: mockScenes,
         state: { inkjson: 'content' }
       });
-      expect(emit).toHaveBeenCalledWith('game/save', saveID);
+      expect(emit).toHaveBeenCalledWith('game/save', saveID, description);
     });
   });
 

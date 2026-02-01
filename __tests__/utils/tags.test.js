@@ -17,10 +17,11 @@ describe('utils/tags', () => {
   });
 
   test('parameterized tags', () => {
-    const tags = parseTags(['TAG1: named', 'TAG2: config:string']);
+    const tags = parseTags(['TAG1 : named ', 'TAG2: config:string', 'TAG3: multiple words : test']);
     expect(tags).toEqual({
       TAG1: 'named',
-      TAG2: 'config:string'
+      TAG2: 'config:string',
+      TAG3: 'multiple words : test'
     });
   });
 

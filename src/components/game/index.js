@@ -57,25 +57,27 @@ async function $handlePersistent() {
   const { state, persistent } = interfaces();
   const { game, metadata } = state.get();
   const persistentVars = metadata.persist;
-  if (persistentVars) {
-    const storeID = persistentPrefix('persist');
-    // load persistent data, if possible
-    if (await persistent.exists(storeID)) {
-      persistentVarState[game.$gameUUID] = await persistent.get(storeID);
-      Object.entries(persistentVarState[game.$gameUUID]).forEach(
-        ([k, v]) => ink.setVariable(k, v)
-      );
-    } else if (!persistentVarState[game.$gameUUID]) {
-      persistentVarState[game.$gameUUID] = {};
-    }
-    // register observers for persistent vars
-    toArray(persistentVars).forEach((variable) => {
-      ink.observeVariable(variable, async (name, value) => {
-        persistentVarState[game.$gameUUID][name] = value;
-        await persistent.set(storeID, persistentVarState[game.$gameUUID]);
-      });
-    });
+  if (!persistentVars) {
+    return;
   }
+  const uuid = game.$gameUUID;
+  const storeID = persistentPrefix('persist');
+  // load persistent data, if possible
+  if (await persistent.exists(storeID)) {
+    persistentVarState[uuid] = await persistent.get(storeID);
+    Object.entries(persistentVarState[uuid]).forEach(
+      ([k, v]) => ink.setVariable(k, v)
+    );
+  } else if (!persistentVarState[uuid]) {
+    persistentVarState[uuid] = {};
+  }
+  // register observers for persistent vars
+  toArray(persistentVars).forEach((variable) => {
+    ink.observeVariable(variable, async (name, value) => {
+      persistentVarState[uuid][name] = value;
+      await persistent.set(storeID, persistentVarState[uuid]);
+    });
+  });
 }
 
 

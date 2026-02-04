@@ -1,3 +1,4 @@
+/* global __APP_VERSION__ */
 import { interfaces, defineInterfaces } from './interfaces';
 import { getConfig, setConfig } from './utils/config';
 import { emitter, emit } from './utils/emitter';
@@ -7,7 +8,7 @@ import ink from './components/ink';
 import settings from './components/settings';
 
 // @atrament/core version
-const version = '2.1.4';
+const version = __APP_VERSION__;
 
 /*
 Initialize engine:

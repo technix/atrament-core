@@ -59,7 +59,9 @@ export default {
   // globalTeardown: null,
 
   // A set of global variables that need to be available in all test environments
-  // globals: {},
+  globals: {
+    __APP_VERSION__: process.env.npm_package_version
+  },
 
   // An array of directory names to be searched recursively up from the requiring module's location
   // moduleDirectories: [

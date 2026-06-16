@@ -38,7 +38,7 @@
     "eslint-plugin-import": "2.32.0",
     "jest": "30.3.0",
     "jest-mock-console": "2.0.0",
-    "vite": "8.0.6",
+    "vite": "8.0.16",
     "vite-plugin-bundlesize": "0.3.0"
   }
 }

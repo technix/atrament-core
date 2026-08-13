@@ -6,8 +6,16 @@ export default defineConfig({
   plugins: [
     bundlesize({
       limits: [
-        { name: 'index.cjs', limit: '6 kB', mode: 'gzip' },
-        { name: 'index.mjs', limit: '6 kB', mode: 'gzip' }
+        {
+          name: 'index.cjs',
+          limit: '6 kB',
+          mode: 'gzip'
+        },
+        {
+          name: 'index.mjs',
+          limit: '6 kB',
+          mode: 'gzip'
+        }
       ]
     })
   ],
@@ -17,19 +25,21 @@ export default defineConfig({
   build: {
     sourcemap: 'hidden',
     lib: {
-      entry: resolve(__dirname, 'src/index.js'),
-      formats: ['es', 'cjs']
+      entry: resolve(import.meta.dirname, 'src/index.js')
     },
     rollupOptions: {
-      output: [{
-        entryFileNames: '[name].cjs',
-        format: 'cjs',
-        dir: 'dist'
-      }, {
-        entryFileNames: '[name].mjs',
-        format: 'es',
-        dir: 'dist'
-      }]
+      output: [
+        {
+          entryFileNames: '[name].cjs',
+          format: 'cjs',
+          dir: 'dist'
+        },
+        {
+          entryFileNames: '[name].mjs',
+          format: 'es',
+          dir: 'dist'
+        }
+      ]
     }
   }
 });

@@ -29,9 +29,9 @@
     "mitt": "3.0.1"
   },
   "devDependencies": {
-    "@babel/core": "7.29.0",
-    "@babel/preset-env": "7.29.2",
-    "@babel/register": "7.28.6",
+    "@babel/core": "7.29.7",
+    "@babel/preset-env": "7.29.7",
+    "@babel/register": "7.29.7",
     "@stylistic/eslint-plugin": "5.10.0",
     "eslint": "10.8.1",
     "eslint-stylistic-airbnb": "3.2.0",

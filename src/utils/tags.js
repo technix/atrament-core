@@ -17,11 +17,15 @@ export function parseTags(tags) {
     const content = item.match(/\s*(\w+)\s*:\s*(.+?)\s*$/);
     if (content) {
       // tag is in "key: value" format
-      const [, key, value] = content;
+      const [
+        ,
+        key,
+        value
+      ] = content;
       tagName = key;
       try {
         tagValue = JSON.parse(value); // this is JSON
-      } catch (e) {
+      } catch (_e) {
         const firstChar = value.substr(0, 1);
         if (firstChar === '{' || firstChar === '[') {
           console.warn('Malformed JSON tag, ignored.', key, value); /* eslint-disable-line */

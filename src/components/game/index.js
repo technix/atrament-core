@@ -3,10 +3,20 @@ import { emit } from '../../utils/emitter';
 import toArray from '../../utils/to-array';
 import hashCode from '../../utils/hashcode';
 
-import { getSession, setSession, getSessions, removeSession } from './sessions';
-
 import ink from '../ink';
-import { playSound, stopSound, playMusic, playSingleMusic, stopMusic } from '../sound';
+import {
+  getSession,
+  setSession,
+  getSessions,
+  removeSession
+} from './sessions';
+import {
+  playSound,
+  stopSound,
+  playMusic,
+  playSingleMusic,
+  stopMusic
+} from '../sound';
 import {
   persistentPrefix,
   getSaveSlotKey,
@@ -43,7 +53,6 @@ function $clearGameState() {
   state.setKey('vars', {});
 }
 
-
 function $iterateObservers(observerHandler) {
   const { state } = interfaces();
   const observers = state.get().metadata.observe;
@@ -51,7 +60,6 @@ function $iterateObservers(observerHandler) {
     toArray(observers).forEach(observerHandler);
   }
 }
-
 
 async function $handlePersistent() {
   const { state, persistent } = interfaces();
@@ -68,8 +76,8 @@ async function $handlePersistent() {
     Object.entries(persistentVarState[uuid]).forEach(
       ([k, v]) => ink.setVariable(k, v)
     );
-  } else if (!persistentVarState[uuid]) {
-    persistentVarState[uuid] = {};
+  } else {
+    persistentVarState[uuid] ||= {};
   }
   // register observers for persistent vars
   toArray(persistentVars).forEach((variable) => {
@@ -80,10 +88,8 @@ async function $handlePersistent() {
   });
 }
 
-
 // ===========================================
 // Exported functions
-
 
 async function init(pathToInkFile, inkFile, gameID) {
   await interfaces().loader.init(pathToInkFile);
@@ -97,7 +103,6 @@ async function init(pathToInkFile, inkFile, gameID) {
   emit('game/init', { pathToInkFile, inkFile });
 }
 
-
 async function loadInkFile() {
   const { game } = interfaces().state.get();
   let inkContent = await interfaces().loader.loadInk(game.$file);
@@ -107,7 +112,6 @@ async function loadInkFile() {
   emit('game/loadInkFile', game.$file);
   return inkContent;
 }
-
 
 async function initInkStory() {
   const { state } = interfaces();
@@ -128,7 +132,6 @@ async function initInkStory() {
   currentInkScriptUUID = expectedInkScriptUUID;
   emit('game/initInkStory');
 }
-
 
 async function start(saveSlot) {
   const { state } = interfaces();
@@ -165,7 +168,6 @@ async function start(saveSlot) {
   }
 }
 
-
 async function canResume() {
   let saveSlot = null;
   const autosaveSlot = getSaveSlotKey({ type: SAVE_AUTOSAVE });
@@ -182,14 +184,12 @@ async function canResume() {
   return saveSlot;
 }
 
-
 async function resume() {
   const saveSlot = await canResume();
   emit('game/resume', { saveSlot });
   ink.resetStory(); // reset ink story state
   await start(saveSlot);
 }
-
 
 async function restart(saveSlot) {
   emit('game/restart', { saveSlot });
@@ -201,14 +201,12 @@ async function restartFromCheckpoint(checkpointName) {
   await restart(getSaveSlotKey({ type: 'checkpoint', name: checkpointName }));
 }
 
-
 function clear() {
   stopMusic(); // stop all music
   $clearGameState();
   ink.resetStory(); // reset ink story state
   emit('game/clear');
 }
-
 
 function reset() {
   const { state } = interfaces();
@@ -219,21 +217,17 @@ function reset() {
   emit('game/reset');
 }
 
-
 async function saveGame(name, description = '') {
   await save({ type: SAVE_GAME, name, description });
 }
-
 
 async function saveCheckpoint(name) {
   await save({ type: SAVE_CHECKPOINT, name });
 }
 
-
 async function saveAutosave() {
   await save({ type: SAVE_AUTOSAVE });
 }
-
 
 const tagHandlers = {
   CLEAR: () => interfaces().state.setKey('scenes', []),
@@ -247,7 +241,6 @@ const tagHandlers = {
   SAVEGAME: (v) => saveGame(v)
 };
 
-
 function $processTags(list, tags) {
   list.forEach((tag) => {
     if (tag in tags && tag in tagHandlers) {
@@ -257,11 +250,9 @@ function $processTags(list, tags) {
   });
 }
 
-
 function defineSceneProcessor(fn) {
   sceneProcessors.push(fn);
 }
-
 
 function continueStory() {
   const { state } = interfaces();
@@ -297,7 +288,15 @@ function continueStory() {
 
   // tags to do pre-render actions
   $processTags(
-    ['CLEAR', 'STOP_SOUND', 'STOP_MUSIC', 'PLAY_SOUND', 'PLAY_MUSIC', 'AUDIO', 'AUDIOLOOP'],
+    [
+      'CLEAR',
+      'STOP_SOUND',
+      'STOP_MUSIC',
+      'PLAY_SOUND',
+      'PLAY_MUSIC',
+      'AUDIO',
+      'AUDIOLOOP'
+    ],
     tags
   );
 
@@ -321,7 +320,6 @@ function continueStory() {
   }
   emit('game/continueStory');
 }
-
 
 export default {
   // game-control

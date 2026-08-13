@@ -7,10 +7,20 @@ const handlers = {
   volume: (oldValue, newValue) => interfaces().sound.setVolume(newValue)
 };
 
+function runHandlers() {
+  const currentSettings = interfaces().state.get().settings;
+  Object.entries(currentSettings).forEach(([k, v]) => {
+    if (handlers[k]) {
+      handlers[k](null, v);
+    }
+  });
+}
+
 async function load() {
   const { state, persistent } = interfaces();
   // load default values first
-  const defaultSettings = JSON.parse(JSON.stringify(getConfig().settings)); // TODO use deep copy here
+  // TODO use deep copy here
+  const defaultSettings = JSON.parse(JSON.stringify(getConfig().settings));
   // load values from save if exist
   let savedSettings = {};
   const existSavedSettings = await persistent.exists('settings');
@@ -56,19 +66,11 @@ function defineHandler(key, handlerFn) {
   handlers[key] = handlerFn;
 }
 
-function runHandlers() {
-  const currentSettings = interfaces().state.get().settings;
-  Object.entries(currentSettings).forEach(([k, v]) => {
-    if (handlers[k]) {
-      handlers[k](null, v);
-    }
-  });
-}
-
 function reset() {
   const { state } = interfaces();
   // load default values
-  const defaultSettings = JSON.parse(JSON.stringify(getConfig().settings)); // TODO use deep copy here
+  // TODO use deep copy here
+  const defaultSettings = JSON.parse(JSON.stringify(getConfig().settings));
   state.setKey('settings', defaultSettings);
   runHandlers();
   emit('settings/reset', defaultSettings);

@@ -4,7 +4,6 @@ import { emit } from '../utils/emitter';
 
 let inkStory = null;
 
-
 function initStory(content, scriptPath) {
   const { InkStory } = getConfig();
   try {
@@ -16,7 +15,6 @@ function initStory(content, scriptPath) {
   emit('ink/initStory');
 }
 
-
 function resetStory() {
   let success = false;
   if (inkStory) {
@@ -25,7 +23,6 @@ function resetStory() {
   }
   emit('ink/resetStory', success);
 }
-
 
 function $continue(story, scene) {
   if (!story.canContinue) {
@@ -48,7 +45,6 @@ function $continue(story, scene) {
     $continue(story, scene);
   }
 }
-
 
 // get scene from ink
 function getScene(continueMaximally) {
@@ -78,7 +74,6 @@ function getScene(continueMaximally) {
   emit('ink/getScene', scene);
   return scene;
 }
-
 
 export default {
   initStory,

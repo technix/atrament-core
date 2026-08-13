@@ -17,15 +17,17 @@ export function persistentPrefix(section) {
   ].join('/');
 }
 
-
 export function getSaveSlotKey({ name, type }) {
   return [
     persistentPrefix('save'),
-    [SAVE_GAME, SAVE_AUTOSAVE, SAVE_CHECKPOINT].includes(type) ? type : SAVE_GAME,
+    [
+      SAVE_GAME,
+      SAVE_AUTOSAVE,
+      SAVE_CHECKPOINT
+    ].includes(type) ? type : SAVE_GAME,
     typeof name === 'string' || typeof name === 'number' ? name : ''
   ].join('/');
 }
-
 
 export function setState(gameState) {
   const { state } = interfaces();
@@ -33,7 +35,6 @@ export function setState(gameState) {
   state.setKey('game', gameState.game);
   ink.loadState(gameState.state);
 }
-
 
 export async function load(s) {
   let saveSlotKey = s;
@@ -46,7 +47,6 @@ export async function load(s) {
   emit('game/load', saveSlotKey);
 }
 
-
 export function getState() {
   const { state } = interfaces();
   const atramentState = state.get();
@@ -57,7 +57,6 @@ export function getState() {
     scenes: atramentState.scenes
   };
 }
-
 
 export async function save({ name, description, type }) {
   const { persistent } = interfaces();
@@ -73,18 +72,15 @@ export async function save({ name, description, type }) {
   emit('game/save', saveSlotKey, description);
 }
 
-
 export async function existSave(saveSlotKey) {
   const saveExists = await interfaces().persistent.exists(saveSlotKey);
   return saveExists;
 }
 
-
 export async function removeSave(saveSlotKey) {
   await interfaces().persistent.remove(saveSlotKey);
   emit('game/removeSave', saveSlotKey);
 }
-
 
 export async function listSaves() {
   const { persistent } = interfaces();

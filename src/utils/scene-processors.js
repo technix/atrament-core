@@ -1,13 +1,9 @@
 import toArray from './to-array';
 
 function $processTag(scene, tag, store) {
-  if (!scene[store]) {
-    scene[store] = [];
-  }
+  scene[store] ||= []; // initialize if empty
   scene.content = scene.content.map((paragraph) => {
-    if (!paragraph[store]) {
-      paragraph[store] = [];
-    }
+    paragraph[store] ||= []; // initialize if empty
     const processedTag = paragraph.tags?.[tag];
     if (processedTag) {
       const t = toArray(processedTag);

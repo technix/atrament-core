@@ -37,15 +37,24 @@ function appendKey(name, value) {
 }
 
 function setSubkey(name, subname, value) {
-  atramentState[name] = { ...atramentState[name], [subname]: value };
+  atramentState[name] = {
+    ...atramentState[name],
+    [subname]: value
+  };
 }
 
 function toggleSubkey(name, subname) {
-  atramentState[name] = { ...atramentState[name], [subname]: !atramentState[name][subname] };
+  atramentState[name] = {
+    ...atramentState[name],
+    [subname]: !atramentState[name][subname]
+  };
 }
 
 function appendSubkey(name, subname, value) {
-  atramentState[name] = { ...atramentState[name], [subname]: [...atramentState[name][subname], value] };
+  atramentState[name] = {
+    ...atramentState[name],
+    [subname]: [...atramentState[name][subname], value]
+  };
 }
 
 export default {

@@ -594,8 +594,10 @@ Interface to sound management library.
   stopSound(soundFile|undefined)
   playMusic(musicFile)
   stopMusic(musicFile|undefined)
+  reset()
 }
 ```
+`reset()` is optional. Atrament calls it when a game is initialized, before `loader.init()`, so the interface can stop and unload all sounds and music of the previous game.
 
 ## LICENSE
 

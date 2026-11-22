@@ -14,8 +14,10 @@ const defaultInterfaces = {
     setVolume: expect.any(Function),
     getVolume: expect.any(Function),
     playSound: expect.any(Function),
+    stopSound: expect.any(Function),
     playMusic: expect.any(Function),
-    stopMusic: expect.any(Function)
+    stopMusic: expect.any(Function),
+    reset: expect.any(Function)
   },
   state: stateInterface
 };

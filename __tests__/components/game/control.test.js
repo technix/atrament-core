@@ -18,6 +18,7 @@ let mockScene;
 const mockInkState = { inkState: true };
 const mockLoader = jest.fn(() => Promise.resolve(mockInkContent));
 const mockInitLoader = jest.fn(() => Promise.resolve());
+const mockSoundReset = jest.fn();
 const mockGetAssetPath = jest.fn((file) => `${mockState.get().game.$path}/${file}`);
 
 jest.mock('../../../src/components/sound', () => ({
@@ -45,6 +46,9 @@ jest.mock('../../../src/interfaces', () => ({
   interfaces: jest.fn(() => ({
     state: mockState,
     persistent: mockPersistent,
+    sound: {
+      reset: mockSoundReset
+    },
     loader: {
       init: mockInitLoader,
       loadInk: mockLoader,
@@ -90,6 +94,9 @@ describe('components/game', () => {
         $gameUUID: hashCode(`${pathToInkFile}|${inkFile}`)
       });
       expect(mockInitLoader).toHaveBeenCalledWith(pathToInkFile);
+      expect(mockSoundReset).toHaveBeenCalledTimes(1);
+      expect(mockSoundReset.mock.invocationCallOrder[0])
+        .toBeLessThan(mockInitLoader.mock.invocationCallOrder[0]);
       expect(emit).toHaveBeenCalledWith('game/init', { pathToInkFile, inkFile });
     });
 

@@ -6,6 +6,8 @@ export default {
   setVolume: () => {},
   getVolume: () => {},
   playSound: () => {},
+  stopSound: () => {},
   playMusic: () => {},
-  stopMusic: () => {}
+  stopMusic: () => {},
+  reset: () => {}
 };

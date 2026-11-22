@@ -92,6 +92,7 @@ async function $handlePersistent() {
 // Exported functions
 
 async function init(pathToInkFile, inkFile, gameID) {
+  interfaces().sound?.reset?.();
   await interfaces().loader.init(pathToInkFile);
   const gameObj = {
     $path: pathToInkFile,

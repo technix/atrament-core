@@ -82,6 +82,17 @@ describe('components/sound', () => {
     expect(mockState.get().game.$currentMusic).toEqual(['sound/test.mp3', 'sound/test2.mp3']);
   });
 
+  test('playMusic - no duplicates', () => {
+    mockState.setSubkey('game', '$currentMusic', ['sound/m1.mp3', 'sound/m2.mp3']);
+    for (let i = 1; i <= 3; i += 1) {
+      playMusic(mockState.get().game.$currentMusic);
+      expect(mockState.get().game.$currentMusic).toEqual(['sound/m1.mp3', 'sound/m2.mp3']);
+      expect(mockPlayMusic).toHaveBeenCalledTimes(2 * i);
+    }
+    expect(mockPlayMusic).toHaveBeenCalledWith('/assets/sound/m1.mp3');
+    expect(mockPlayMusic).toHaveBeenCalledWith('/assets/sound/m2.mp3');
+  });
+
 
   test('playSingleMusic', () => {
     mockState.setSubkey('game', '$currentMusic', ['sound/m1.mp3', 'sound/m2.mp3']);

@@ -20,7 +20,9 @@ export function playMusic(mus) {
   const currentMusic = state.get().game.$currentMusic || [];
   toArray(mus).forEach((file) => {
     sound.playMusic(loader.getAssetPath(file));
-    currentMusic.push(file);
+    if (!currentMusic.includes(file)) {
+      currentMusic.push(file);
+    }
   });
   state.setSubkey('game', '$currentMusic', currentMusic);
 }

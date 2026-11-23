@@ -38,6 +38,7 @@ import internalSceneProcessors from '../../utils/scene-processors';
 
 let expectedInkScriptUUID = null;
 let currentInkScriptUUID = null;
+let isMetadataCleared = false;
 
 const sceneProcessors = [];
 
@@ -59,6 +60,11 @@ function $iterateObservers(observerHandler) {
   if (observers) {
     toArray(observers).forEach(observerHandler);
   }
+}
+
+function $readMetadata() {
+  interfaces().state.setKey('metadata', ink.getGlobalTags());
+  isMetadataCleared = false;
 }
 
 async function $handlePersistent() {
@@ -130,8 +136,7 @@ async function initInkStory() {
   const { game } = state.get();
   ink.initStory(inkContent, `${game.$path}/${game.$file}`);
   // read global tags
-  const metadata = ink.getGlobalTags();
-  state.setKey('metadata', metadata);
+  $readMetadata();
   // register variable observers
   $iterateObservers((variable) => {
     ink.observeVariable(variable, (name, value) => {
@@ -152,6 +157,9 @@ async function start(saveSlot) {
   if (currentInkScriptUUID !== expectedInkScriptUUID) {
     // ink content is not from the same game, reload
     await initInkStory();
+  } else if (isMetadataCleared) {
+    // restore metadata from story
+    $readMetadata();
   }
   // load saved game, if present
   let isNewGame = true;
@@ -226,6 +234,7 @@ function reset() {
   // clean metadata and game
   state.setKey('metadata', {});
   state.setKey('game', {});
+  isMetadataCleared = true;
   emit('game/reset');
 }
 

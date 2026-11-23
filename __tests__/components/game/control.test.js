@@ -175,6 +175,32 @@ describe('components/game', () => {
     expect(emit).toHaveBeenCalledWith('game/reset');
   });
 
+  test('reset and init of the same game restores metadata without reloading ink file', async () => {
+    // setup
+    mockScene = { content: [{ text: 'aaa' }], text: ['aaaa'], tags: {}, choices: [] };
+    mockGlobalTags = { observe: 'var1', persist: 'var2', single_scene: true };
+    const pathToInkFile = '/reset/directory';
+    const inkFile = 'reset.ink.json';
+    await game.init(pathToInkFile, inkFile);
+    await game.start();
+    expect(mockLoader).toHaveBeenCalledTimes(1);
+    expect(ink.initStory).toHaveBeenCalledTimes(1);
+    expect(ink.observeVariable).toHaveBeenCalledTimes(2);
+    // run
+    game.reset();
+    expect(mockState.get().metadata).toEqual({});
+    await game.init(pathToInkFile, inkFile);
+    await game.start();
+    // check: ink file is not loaded again, story instance and its observers are reused
+    expect(mockLoader).toHaveBeenCalledTimes(1);
+    expect(ink.initStory).toHaveBeenCalledTimes(1);
+    expect(ink.observeVariable).toHaveBeenCalledTimes(2);
+    // metadata is restored from the loaded story
+    expect(mockState.get().metadata).toEqual(mockGlobalTags);
+    expect(mockState.get().vars).toEqual({ var1: 'var1-value' });
+    expect(mockState.get().scenes).toHaveLength(1); // single_scene is applied
+  });
+
   // ============================================================
   // start
   // ============================================================

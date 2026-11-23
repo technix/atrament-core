@@ -79,9 +79,21 @@ async function $handlePersistent() {
   } else {
     persistentVarState[uuid] ||= {};
   }
-  // register observers for persistent vars
+}
+
+function $registerPersistentObservers() {
+  const { state, persistent } = interfaces();
+  const persistentVars = state.get().metadata.persist;
+  if (!persistentVars) {
+    return;
+  }
+  // observers are registered once per ink story instance,
+  // so game UUID and storage key are resolved when the variable changes
   toArray(persistentVars).forEach((variable) => {
     ink.observeVariable(variable, async (name, value) => {
+      const uuid = state.get().game.$gameUUID;
+      const storeID = persistentPrefix('persist');
+      persistentVarState[uuid] ||= {};
       persistentVarState[uuid][name] = value;
       await persistent.set(storeID, persistentVarState[uuid]);
     });
@@ -130,6 +142,8 @@ async function initInkStory() {
       emit('ink/variableObserver', { name, value });
     });
   });
+  // register persistent variable observers
+  $registerPersistentObservers();
   currentInkScriptUUID = expectedInkScriptUUID;
   emit('game/initInkStory');
 }

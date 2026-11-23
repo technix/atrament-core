@@ -312,6 +312,51 @@ describe('components/game', () => {
       expect(ink.setVariable).toHaveBeenCalledWith('var1', 50);
     });
 
+    test('persistent observers are registered once per story', async () => {
+      // set
+      mockGlobalTags = { persist: ['var1', 'var2'] };
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      await game.init(pathToInkFile, inkFile);
+      const persistentStore = persistentPrefix('persist');
+      // run: start, restart, resume of the same story
+      await game.start();
+      await game.restart();
+      await game.resume();
+      await game.start();
+      // check: story initialized once, observers registered once
+      expect(ink.initStory).toHaveBeenCalledTimes(1);
+      expect(ink.observeVariable).toHaveBeenCalledTimes(2);
+      expect(ink.observeVariable).toHaveBeenCalledWith('var1', expect.any(Function));
+      expect(ink.observeVariable).toHaveBeenCalledWith('var2', expect.any(Function));
+      // single variable change results in a single write
+      const setSpy = jest.spyOn(mockPersistent, 'set');
+      await mockObserver('var1', 50);
+      expect(setSpy).toHaveBeenCalledTimes(1);
+      expect(setSpy).toHaveBeenCalledWith(persistentStore, { var1: 50 });
+      setSpy.mockRestore();
+    });
+
+    test('persistent observers use current session storage key', async () => {
+      // set
+      mockGlobalTags = { persist: 'var1' };
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      await game.init(pathToInkFile, inkFile);
+      await game.start();
+      expect(ink.observeVariable).toHaveBeenCalledTimes(1);
+      // switch session without re-initializing the story
+      mockState.setSubkey('game', '$sessionID', 'session2');
+      await game.start();
+      expect(ink.observeVariable).toHaveBeenCalledTimes(1);
+      // run
+      await mockObserver('var1', 42);
+      // check
+      const sessionStore = persistentPrefix('persist');
+      expect(sessionStore).toContain('session2');
+      expect(await mockPersistent.get(sessionStore)).toEqual({ var1: 42 });
+    });
+
     test('load from nonexistent save', async () => {
       // set
       const pathToInkFile = '/some/directory';

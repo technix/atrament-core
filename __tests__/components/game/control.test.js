@@ -357,6 +357,39 @@ describe('components/game', () => {
       expect(await mockPersistent.get(sessionStore)).toEqual({ var1: 42 });
     });
 
+    test('persistent vars do not leak between sessions', async () => {
+      // set
+      mockGlobalTags = { persist: ['var1', 'var2'] };
+      const pathToInkFile = '/some/directory';
+      const inkFile = 'game.ink.json';
+      await game.init(pathToInkFile, inkFile);
+      game.setSession('session1');
+      await game.start();
+      const session1Store = persistentPrefix('persist');
+      await mockObserver('var1', 50);
+      expect(await mockPersistent.get(session1Store)).toEqual({ var1: 50 });
+      // switch to a session that has no persistent record yet
+      game.setSession('session2');
+      await game.start();
+      const session2Store = persistentPrefix('persist');
+      expect(session2Store).not.toEqual(session1Store);
+      expect(await mockPersistent.exists(session2Store)).toEqual(false);
+      // run
+      await mockObserver('var2', 10);
+      // check: session1 values are not written to session2
+      expect(await mockPersistent.get(session2Store)).toEqual({ var2: 10 });
+      expect(await mockPersistent.get(session1Store)).toEqual({ var1: 50 });
+      // switch back: session1 values are restored, session2 values are not mixed in
+      ink.setVariable.mockClear();
+      game.setSession('session1');
+      await game.start();
+      expect(ink.setVariable).toHaveBeenCalledTimes(1);
+      expect(ink.setVariable).toHaveBeenCalledWith('var1', 50);
+      await mockObserver('var2', 20);
+      expect(await mockPersistent.get(session1Store)).toEqual({ var1: 50, var2: 20 });
+      expect(await mockPersistent.get(session2Store)).toEqual({ var2: 10 });
+    });
+
     test('load from nonexistent save', async () => {
       // set
       const pathToInkFile = '/some/directory';
